@@ -14,7 +14,7 @@
 
 #include "histo.h"
 #include "dato.h"
-//#include "CorrelatedGaussianObservables.h"
+#include "CorrelatedGaussianObservables.h"
 
 using namespace std;
 using Parameter = complex<double>;
@@ -26,7 +26,11 @@ public:
     BqDqDqbar();
     ~BqDqDqbar();
 
- // Methods to overload, see file BNLEPModel.cpp
+
+  
+  map<string,dato> meas;
+  map<string,CorrelatedGaussianObservables> corrmeas;
+
   // Map to store computed amplitudes
     map<string, Parameter> amplitudes;
   
@@ -142,9 +146,10 @@ public:
   double CalculateC(const Parameter& amplitude, const Parameter& conjugate_amplitude, const std::string& channel, const CKMParameters& ckm);
   double CalculateS(const Parameter& amplitude, const Parameter& conjugate_amplitude, const std::string& channel, const CKMParameters& ckm);
 
+  std::pair<std::vector<std::string>, std::string> extractChannelFromCorrKey(const std::string& corr_key);
+
 private:
     // Existing members
-    map<string,dato> meas;
     map<string,double> obs;
     histo histos;
 
