@@ -118,12 +118,8 @@ BqDqDqbar::BqDqDqbar() : BCModel(), histos(obs)
     //ACP measurments
 
     //CBddpdm
-    data.push_back(dato(0.265, 0.175, 0.020));  //LHCb:2016inx
     data.push_back(dato(-0.43, 0.16, 0.05)); //Belle:2012mef
-    data.push_back(dato(-0.07, 0.23, 0.03));  //BaBar:2008xnt
     data.push_back(dato(-0.91, 0.23, 0.06)); //Belle:2007ebz
-    //NUOVA MISURA
-    data.push_back(dato(0.162, 0.088, 0.009));  //LHCb:2024gkk
     
 
     pdgaverage.setData(data);
@@ -134,12 +130,8 @@ BqDqDqbar::BqDqDqbar() : BCModel(), histos(obs)
     data.clear();
 
     //SBddpdm
-    data.push_back(dato(-0.535, 0.165, 0.05));  //LHCb:2016inx
     data.push_back(dato(-0.99, 0.175, 0.08)); //Belle:2012mef
-    data.push_back(dato(-0.63, 0.36, 0.05));  //BaBar:2008xnt
     data.push_back(dato(-1.13, 0.37, 0.09)); //Belle:2007ebz
-    //NUOVA MISURA
-    data.push_back(dato(-0.549, 0.085, 0.015));  //LHCb:2024gkk
     
 
     pdgaverage.setData(data);
@@ -150,7 +142,6 @@ BqDqDqbar::BqDqDqbar() : BCModel(), histos(obs)
     data.clear();
 
     //ACPBpdpd0b
-    data.push_back(dato(2.5, 1.0, 0.5));  //LHCb:2023wbb
     data.push_back(dato(0, 8, 2)); //Belle:2008doh
     data.push_back(dato(-13, 14, 2));  //BaBar:2006uih
     
@@ -162,9 +153,103 @@ BqDqDqbar::BqDqDqbar() : BCModel(), histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //ACPBpdpsd0b
-    meas.insert(pair<string, dato>("ACPBpdpsd0b",dato(0.5, 0.2, 0.6))); //LHCb:2023wbb
 
+
+    //------------------------------------------------
+
+    //CORRELATION MATRICES
+    //Bddpdm : C and S observables from LHCb:2016inx
+    std::vector<dato> CorrData;
+    CorrData.push_back(dato(0.265, 0.175, 0.020));  // C observable (LHCb:2016inx)
+    CorrData.push_back(dato(-0.535, 0.165, 0.050)); // S observable (LHCb:2016inx)
+
+// Define the correlation matrix
+    TMatrixD Corr(2, 2);  // 2 measurements (C and S)
+
+// Populate the correlation matrix
+    Corr(0, 0) = 0.031025;       // Variance for C
+    Corr(1, 1) = 0.029725;       // Variance for S
+    Corr(0, 1) = 0.48;      // Correlation between C and S
+    Corr(1, 0) = 0.48;      // Symmetric part (same as Corr(0, 1))
+
+// Insert correlated data for LHCb:2016inx into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bddpdm_LHCb2016",CorrelatedGaussianObservables(CorrData, Corr)));
+
+    CorrData.clear();
+
+    //Bddpdm : C and S observables from BaBar:2008xnt
+    std::vector<dato> CorrData;
+    CorrData.push_back(dato(-0.07, 0.23, 0.03));  // C observable 
+    CorrData.push_back(dato(-0.63, 0.36, 0.05)); // S observable 
+
+// Define the correlation matrix
+    TMatrixD Corr(2, 2);  // 2 measurements (C and S)
+
+// Populate the correlation matrix
+    Corr(0, 0) = 0.0538;       // Variance for C
+    Corr(1, 1) = 0.1321;       // Variance for S
+    Corr(0, 1) = -0.012;      // Correlation between C and S
+    Corr(1, 0) = -0.012;      // Symmetric part (same as Corr(0, 1))
+
+// Insert correlated data for LHCb:2016inx into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bddpdm_BaBar2008",CorrelatedGaussianObservables(CorrData, Corr)));
+
+    CorrData.clear();
+
+    //Bddpdm : C and S observables from LHCb:2024gkk
+    std::vector<dato> CorrData;
+    CorrData.push_back(dato(0.162, 0.088, 0.009));  // C observable 
+    CorrData.push_back(dato(-0.549, 0.085, 0.015)); // S observable 
+
+// Define the correlation matrix
+    TMatrixD Corr(2, 2);  // 2 measurements (C and S)
+
+// Populate the correlation matrix
+    Corr(0, 0) = 0.007825;       // Variance for C
+    Corr(1, 1) = 0.00745;       // Variance for S
+    Corr(0, 1) = 0.474;      // Correlation between C and S
+    Corr(1, 0) = 0.474;      // Symmetric part (same as Corr(0, 1))
+
+// Insert correlated data for LHCb:2016inx into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bddpdm_LHCb2024",CorrelatedGaussianObservables(CorrData, Corr)));
+
+    CorrData.clear();
+
+    //ACPBpdpd0b and ACPBpdpsd0b from LHCb:2023wbb
+
+    std::vector<dato> CorrData;
+    CorrData.push_back(dato(2.5, 1.0, 0.5));  // Bpdpd0b
+    CorrData.push_back(dato(0.5, 0.2, 0.6)); // Bpdpsd0b
+
+// Define the correlation matrix
+    TMatrixD Corr(2, 2);  // 2 measurements (C and S)
+
+// Populate the correlation matrix
+    Corr(0, 0) = 1.25;       // Variance for C
+    Corr(1, 1) = 0.4;       // Variance for S
+    Corr(0, 1) = 0.386;      // Correlation between C and S
+    Corr(1, 0) = 0.386;      // Symmetric part (same as Corr(0, 1))
+
+// Insert correlated data for LHCb:2016inx into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("ACPBpdpd0b_ACPBpdpsd0b_LHCb2023",CorrelatedGaussianObservables(CorrData, Corr)));
+
+    CorrData.clear();
+    
+    
+ 
+
+
+    
+
+
+
+
+
+
+
+
+
+    
   //method to define the parameters needed to calculate each decay amplitude, uses BCModel method AddParameter
 void BqDqDqbar::DefineParameters(const string& channel) {
   if (channel == "Bddpdm") {
@@ -502,6 +587,48 @@ double BqDqDqbar::CalculateC(const Parameter& amplitude, const Parameter& conjug
 }
 
 
+
+ std::pair<std::vector<std::string>, std::string> BqDqDqbar::extractChannelFromCorrKey(const std::string& corr_key) {
+    std::vector<std::string> channels;
+    std::string experiment;
+
+    // First, check if the key starts with "CS_" for C and S observables
+    if (corr_key.find("CS_") == 0) {
+        // Key format: "CS_channel_exp"
+        size_t first_underscore = corr_key.find("_", 3);  // Find underscore after "CS_"
+        size_t last_underscore = corr_key.rfind("_");     // Find the last underscore (before the experiment name)
+
+        // Extract channel and experiment
+        std::string channel = corr_key.substr(3, last_underscore - 3);  // Extract channel name
+        experiment = corr_key.substr(last_underscore + 1);              // Extract experiment name
+
+        // Store the single channel in the vector
+        channels.push_back(channel);
+    }
+    // Otherwise, it might be for ACP observables with two channels
+    else if (corr_key.find("ACP") == 0) {
+        // Key format: "ACPchannel1_ACPchannel2_exp"
+        size_t first_underscore = corr_key.find("_", 3);  // Find underscore after "ACP"
+        size_t second_underscore = corr_key.find("_", first_underscore + 1);
+        size_t last_underscore = corr_key.rfind("_");     // Find the last underscore (before the experiment name)
+
+        // Extract the two channels and the experiment
+        std::string channel1 = corr_key.substr(3, first_underscore - 3);                  // Extract first channel
+        std::string channel2 = corr_key.substr(first_underscore + 1, last_underscore - first_underscore - 1); // Extract second channel
+        experiment = corr_key.substr(last_underscore + 1);                               // Extract experiment name
+
+        // Store both channels in the vector
+        channels.push_back(channel1);
+        channels.push_back(channel2);
+    } else {
+        throw std::runtime_error("Unknown key format: " + corr_key);
+    }
+
+    return {channels, experiment};
+}
+
+
+
  //----------------------------------------------------------------------------------
  bool isFirstRun = true;  // Declare a flag to check if it's the first run
 
@@ -611,7 +738,34 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
 	  std::cerr << "Warning: Skipping channel " << channel << " due to missing amplitude." << std::endl;
 	}
     }
-    return ll;  // Return total log-likelihood
+    // --------------------------------------------------------
+    // Correlated measurements handling using corrmeas map
+    for (const auto& [corr_key, corrObservable] : corrmeas) {
+        // Extract channels and experiment from the key
+        auto [channels, experiment] = extractChannelFromKey(corr_key);
+        TVectorD predicted_values(corrObservable.getObs().GetNrows());
+
+        // Determine if the key corresponds to ACP or CS observables
+        if (corr_key.find("ACP") != std::string::npos) {
+            // Loop over channels and calculate ACP for each channel
+            for (size_t i = 0; i < channels.size(); ++i) {
+                predicted_values[i] = CalculateAcp(get_amplitude(channels[i], ckm), get_conjugate_amplitude(channels[i], ckm));
+            }
+        } else if (corr_key.find("CS") != std::string::npos) {
+            // Calculate C and S observables for the channel (assumes a single channel for CS observables)
+            predicted_values[0] = CalculateC(get_amplitude(channels[0], ckm), get_conjugate_amplitude(channels[0], ckm), channels[0], ckm);
+            predicted_values[1] = CalculateS(get_amplitude(channels[0], ckm), get_conjugate_amplitude(channels[0], ckm), channels[0], ckm);
+        } else {
+            std::cerr << "Unknown correlation key format: " << corr_key << std::endl;
+            continue;
+        }
+
+        // Calculate log-likelihood contribution using correlated data
+        ll += corrObservable.logweight(predicted_values);
+    }
+
+    // Return total log-likelihood
+    return ll;
 }
 
 
@@ -634,6 +788,9 @@ void BModel::PrintHistogram()
 }
 
 // ---------------------------------------------------------
+
+    
+
 
     
 
