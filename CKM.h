@@ -1,6 +1,7 @@
 #ifndef CKM_H
 #define CKM_H
-
+#include "CorrelatedGaussianParameters.h"
+#include "ModelParameter.h"
 #include <vector>
 #include <complex>
 #include <TMatrixD.h>
@@ -12,10 +13,18 @@
 class CKMParameters {
 public:
     // Constructor
-    CKMParameters();
+  CKMParameters(); //constructor to be used if I want to work with CKM elements
+  CKMParameters(bool initialize); //constructor to be used if i want to construct the matrix from Wolfenstein parameters with correlation matrix
 
     // Sample CKM parameters from the multivariate Gaussian
-    void sampleCKMParameters();
+    void sampleCKMParameters(const std::vector<double>& diagonalizedPars);
+     // Compute the CKM matrix based on sampled Wolfenstein parameters
+    void computeCKMwithWolfenstein();
+    void computeCKM(double Vus_v, double Vcb_v, double Vub_v, double gamma_v, bool useVud);
+    void computeCKMfromAngles();
+
+    // Helper function to compute the CKM matrix from angles (Wolfenstein parameters) 
+    void computeCKMfromAngles(double lambda, double A, double rho, double eta);
 
     // Print sampled CKM parameters
     void printParameters() const;
@@ -57,30 +66,36 @@ public:
     // Implement q/p for B_s mixing
     std::complex<double> get_q_p_Bs() const;
 
-    // Implement q/p for K0 (K_S mixing)
-    std::complex<double> get_q_p_KS() const;
-
     std::vector<double> TVectorDToStdVector(const TVectorD& tvec) {
     return std::vector<double>(tvec.GetMatrixArray(), tvec.GetMatrixArray() + tvec.GetNrows());
 }
 
 
 private:
+  // Create an instance of the CorrelatedGaussianParameters class
+    CorrelatedGaussianParameters CGP;
     TVectorD meanValues;   // Mean values of the Wolfenstein parameters
     TVectorD sampledValues;  // Sampled Wolfenstein parameters
     TMatrixDSym covariance;  // Covariance matrix
     TMatrixD L;  // Cholesky decomposition result (lower triangular matrix)
-    TRandom3 randGen;  // Random number generator
+    
+    double Rho, Eta, Lambda, A; ///< The Wolfenstein parameters.
+    double s12, s13, s23; ///< The sine of the three mixing angles
+    double c12, c23, c13; ///< The cosine of the three mixing angles
+    double delta; ///< The CP violating phase in the CKM matrix.
     std::vector<std::vector<std::complex<double>>> V;  // CKM matrix
 
-    // Compute the CKM matrix based on sampled Wolfenstein parameters
-    void computeCKMwithWolfenstein();
-
-    // Helper function to compute the CKM matrix from angles (Wolfenstein parameters)
-    void computeCKMfromAngles(double lambda, double A, double rho, double eta);
+   
+   
 };
 
 #endif  // CKM_H
+
+
+
+
+   
+
 
 
 
