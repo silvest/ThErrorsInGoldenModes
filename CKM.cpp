@@ -9,7 +9,7 @@
 
 // Constructor
 CKMParameters::CKMParameters(bool initialize) 
-    : meanValues(4), covariance(4), sampledValues(4), uncertainties(4), randGen(0), V(3, std::vector<std::complex<double>>(3)) {
+    : meanValues(4), covariance(4), sampledValues(4), uncertainties(4), V(3, std::vector<std::complex<double>>(3)) {
 
     // Set the central values for the Wolfenstein parameters
     meanValues[0] = 0.22504;  // lambda 
