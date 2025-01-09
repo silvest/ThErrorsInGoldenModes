@@ -55,7 +55,7 @@ void CorrelatedGaussianParameters::DiagonalizePars(TMatrixDSym Corr) {
     
     Cov.ResizeTo(size, size);
     for (unsigned int i = 0; i < size; i++)
-        for (unsigned int j = i; j < size; j++)
+        for (unsigned int j = 0; j < size; j++)
             Cov(i, j) = Pars.at(i).geterrg() * Corr(i, j) * Pars.at(j).geterrg();
 
     TMatrixDSymEigen SE(Cov);
@@ -154,7 +154,7 @@ int CorrelatedGaussianParameters::ParseCGPFromData(
     if (nlines > 1) {
         TMatrixDSym mySCorr(nlines);
         for (int i = 0; i < nlines; i++) {
-            for (int j = 0; j <= i; j++) {
+            for (int j = 0; j < nlines; j++) {
                 mySCorr(i, j) = correlations(i, j);
             }
         }

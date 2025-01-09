@@ -15,8 +15,8 @@ CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
 
     Cov.ResizeTo(n, n);
     for(int i = 0; i < n; i++)
-      for(int j = i; j < n; j++)
-	Cov(i,j) = Sig(i)*corr_i(i,j)*Sig(j);
+      for(int j = 0; j < n; j++)
+	      Cov(i,j) = Sig(i)*corr_i(i,j)*Sig(j);
 
     //norm = 1./sqrt(pow(2.*M_PI,n)*Cov.Determinant()); //Fattore di Normalizzazione inutile per il fattore di Bayes
 
@@ -39,8 +39,8 @@ CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
 
     Cov.ResizeTo(n, n);
     for(int i = 0; i < n; i++)
-      for(int j = i; j < n; j++)
-	Cov(i,j) = Sig1(i)*corr_1(i,j)*Sig1(j) + Sig2(i)*corr_2(i,j)*Sig2(j);
+      for(int j = 0; j < n; j++)
+	      Cov(i,j) = Sig1(i)*corr_1(i,j)*Sig1(j) + Sig2(i)*corr_2(i,j)*Sig2(j);
 
     //    norm = 1./sqrt(pow(2.*M_PI,n)*Cov.Determinant());
 
@@ -64,7 +64,7 @@ CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
 
     Cov.ResizeTo(n, n);
     for(int i = 0; i < n; i++)
-      for(int j = i; j < n; j++)
+      for(int j = 0; j < n; j++)
 	      Cov(i,j) = Sig1(i)*corr_1(i,j)*Sig1(j) + Sig2(i)*corr_2(i,j)*Sig2(j) + Sig3(i)*corr_3(i,j)*Sig3(j);
 
     //    norm = 1./sqrt(pow(2.*M_PI,n)*Cov.Determinant());
@@ -84,7 +84,7 @@ double CorrelatedGaussianObservables::logweight(const TVectorD& v) {
     }
     for(int i = 0; i < n; i++)
       for(int j = 0; j < n; j++)
-	chisq += (v(i)-Obs(i))*Cov(i,j)*(v(j)-Obs(j));
+	      chisq += (v(i)-Obs(i))*Cov(i,j)*(v(j)-Obs(j));
 
     return(-0.5*chisq);
   }
