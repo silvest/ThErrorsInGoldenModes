@@ -8,11 +8,11 @@
 
 
 // Constructor
-CKMParameters::CKMParameters(bool initialize) 
+CKMParameters::CKMParameters(bool initialize)
     : meanValues(4), covariance(4), sampledValues(4), uncertainties(4), V(3, std::vector<std::complex<double>>(3)) {
 
     // Set the central values for the Wolfenstein parameters
-    meanValues[0] = 0.22504;  // lambda 
+    meanValues[0] = 0.22504;  // lambda
     meanValues[1] = 0.816;    // A
     meanValues[2] = 0.163;    // rho_bar
     meanValues[3] = 0.356;    // eta_bar
@@ -30,7 +30,7 @@ CKMParameters::CKMParameters(bool initialize)
     correlations(2, 0) = 0.223; correlations(2, 1) = -0.105; correlations(2, 2) = 1.000; correlations(2, 3) = 0.098;
     correlations(3, 0) = -0.127; correlations(3, 1) = -0.280; correlations(3, 2) = 0.098; correlations(3, 3) = 1.000;
 
-     // Create an actual std::vector<ModelParameter> 
+     // Create an actual std::vector<ModelParameter>
     std::vector<ModelParameter> modPars;
 
 
@@ -46,7 +46,7 @@ CKMParameters::CKMParameters() : V(3, std::vector<std::complex<double>>(3, std::
 void CKMParameters::sampleCKMParameters(const std::vector<double>& diagonalizedPars) {
     // Convert diagonalized parameters to original CKM parameters
     std::vector<double> originalPars = CGP.getOrigParsValue(diagonalizedPars);
-    
+
     // Store the sampled CKM parameters
     for (int i = 0; i < 4; ++i) {
         sampledValues[i] = originalPars[i];
@@ -131,11 +131,11 @@ void CKMParameters::computeCKMfromAngles() {
 void CKMParameters::computeCKMfromAngles(double lambda, double A, double rho, double eta) {
     std::complex<double> num(rho, eta);  // num = rho + i*eta
     num = num * sqrt(1.0 - pow(A, 2.0) * pow(lambda, 4.0));  // Adjust numerator
-    
-    std::complex<double> den = sqrt(1.0 - pow(lambda, 2.0)) * 
-    std::complex<double>(1.0 - pow(A, 2.0) * pow(lambda, 4.0) * rho, 
+
+    std::complex<double> den = sqrt(1.0 - pow(lambda, 2.0)) *
+    std::complex<double>(1.0 - pow(A, 2.0) * pow(lambda, 4.0) * rho,
                                                     -pow(A, 2.0) * pow(lambda, 4.0) * eta);  // Denominator
-    
+
     std::complex<double> ratio = num / den;  // ratio = num / den
 
     double rho_nb = ratio.real();  // Real part
@@ -145,7 +145,7 @@ void CKMParameters::computeCKMfromAngles(double lambda, double A, double rho, do
     double s12 = lambda;
     double s23 = A * pow(lambda, 2.0);
     double s13 = std::abs(std::complex<double>(A * pow(lambda, 3.0) * rho_nb, -A * pow(lambda, 3.0) * eta_nb));
-    
+
     // CP-violating phase (delta)
     double delta = -std::arg(std::complex<double>(A * pow(lambda, 3.0) * rho_nb, -A * pow(lambda, 3.0) * eta_nb));
 
@@ -182,6 +182,14 @@ std::complex<double> CKMParameters::get_q_p_Bs() const {
     return std::conj(Vtb) * Vts / (Vtb * std::conj(Vts));
 }
 
+// Implement q/p for K0 (K_S mixing)
+std::complex<double> CKMParameters::get_q_p_KS() const {
+    // Assuming you have CKM elements for K0 (Vcd and Vcs)
+    std::complex<double> Vcd = V[1][0];  // Vcd (K0)
+    std::complex<double> Vcs = V[1][1];  // Vcs (K0)
+    return std::conj(Vcs) * Vcd / (Vcs * std::conj(Vcd));
+}
+
 // Print the sampled CKM parameters
 void CKMParameters::printParameters() const {
     std::cout << "Sampled CKM Parameters:" << std::endl;
@@ -190,4 +198,3 @@ void CKMParameters::printParameters() const {
     std::cout << "Rho: " << sampledValues[2] << std::endl;
     std::cout << "Eta: " << sampledValues[3] << std::endl;
 }
-
