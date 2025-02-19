@@ -1,4 +1,4 @@
-#include "BqDqDqbar_su3.h"
+#include "BqDqDqbar.h"
 #include "dato.h"
 #include "PDGAverage.h"
 #include "CKM.h"
@@ -16,9 +16,9 @@
 #include <iostream>
 #include <complex>
 #include <vector>
-#include <algorithm>  
-#include <cctype>    
-#include <stdexcept>  
+#include <algorithm>
+#include <cctype>
+#include <stdexcept>
 #include <TRandom3.h>
 #include <cmath>
 #include <TMatrixD.h>
@@ -38,7 +38,7 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
     PDGAverage pdgaverage;
 
 
-    
+
     DeclareParameters();  // Ensure parameters are defined
 
       // Add CKM parameters directly in the constructor
@@ -46,20 +46,20 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
     AddParameter("CKM_Vcb", 0.04046, 0.04194 );    // Vcb parameter
     AddParameter("CKM_Vub", 0.00349 , 0.00419);  // Vub parameter
     AddParameter("CKM_gamma", 1.12224671, 1.22347581);   // gamma parameter (in rad)
-    
+
     SetPriorConstantAll();
 
-    
+
     //measurments
 
     //BRBddpdm
     data.push_back(dato(2.12e-4, 0.16e-4, 0.18e-4)); //Belle:2012mef
     data.push_back(dato(2.8e-4, 0.4e-4, 0.5e-4)); //BaBar:2006uih
-    
+
     pdgaverage.setData(data);
     pdgaverage.setName("BRBddpdm");
     pdgaverage.CalculateAverage();
-  
+
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
     if (meas.find("BRBddpdm") != meas.end()) {
@@ -68,17 +68,17 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
 
 
     //BRBddpsdm
-    data.push_back(dato(7.3e-3, 0.4e-3, 0.7e-3)); //Zupanc:2007pu  
+    data.push_back(dato(7.3e-3, 0.4e-3, 0.7e-3)); //Zupanc:2007pu
     data.push_back(dato(6.6e-3, 1.4e-3, 0.6e-3)); //BaBar:2006jvx
     data.push_back(dato(6.8e-3, 2.4e-3, 0.6e-3)); //CLEO:1995psi
     data.push_back(dato(10e-3, 9e-3, 1e-3)); //ARGUS:1991xej
     data.push_back(dato(5.3e-3, 3.0e-3, 0.5e-3)); //CLEO:1991roe
-    
+
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBddpsdm");
     pdgaverage.CalculateAverage();
-    
+
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
@@ -90,7 +90,7 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
     pdgaverage.setData(data);
     pdgaverage.setName("BRBpdpd0b");
     pdgaverage.CalculateAverage();
-    
+
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
@@ -104,10 +104,10 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
     pdgaverage.setData(data);
     pdgaverage.setName("BRBpdpsd0b");
     pdgaverage.CalculateAverage();
-    
+
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
-    
+
     //BRBsdpsdms
     data.push_back(dato(4.0e-3, 0.2e-3, 0.5e-3));  //LHCb:2013sad
     data.push_back(dato(5.9e-3, 1.0e-3, 1.3e-3)); //Belle:2012tsw
@@ -116,7 +116,7 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
     pdgaverage.setData(data);
     pdgaverage.setName("BRBsdpsdms");
     pdgaverage.CalculateAverage();
-    
+
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
@@ -136,31 +136,31 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
     //ACPBpdpd0b
     data.push_back(dato(0.00, 0.08, 0.02)); //Belle:2008doh
     data.push_back(dato(-0.13, 0.14, 0.02));  //BaBar:2006uih
-    
+
 
     pdgaverage.setData(data);
     pdgaverage.setName("ACPBpdpd0b");
     pdgaverage.CalculateAverage();
-    
+
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
 
     //mod(lambda) inserted in meas to predict phi_s
     meas.insert(pair<string, dato>("L_Bsdpsdms", dato(1.054, 0.099, 0.020))); //LHCb:2024gkk
-    
+
 
 
 
     //------------------------------------------------
-    std::vector<dato> CorrData; 
+    std::vector<dato> CorrData;
     TMatrixDSym CorrStat(2);  // 2 measurements (C and S)
     TMatrixDSym CorrSyst(2);  // 2 measurements (C and S)
-    
-   
+
+
     //Bddpdm : C and S observables from BaBar:2008xnt
-    CorrData.push_back(dato(-0.07, 0.23, 0.03));  // C observable 
-    CorrData.push_back(dato(-0.63, 0.36, 0.05)); // S observable 
+    CorrData.push_back(dato(-0.07, 0.23, 0.03));  // C observable
+    CorrData.push_back(dato(-0.63, 0.36, 0.05)); // S observable
 
 
 // Populate the correlation matrix
@@ -172,11 +172,11 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
 
     //CorrSyst
     CorrSyst(0, 0) = 1.;       //
-    CorrSyst(1, 1) = 1.;  
+    CorrSyst(1, 1) = 1.;
     CorrSyst(0, 1) = 0.;      // Correlation between C and S
     CorrSyst(1, 0) = 0.;      // Symmetric part (same as Corr(0, 1))
 
-    
+
 
 // Insert correlated data for BaBar2008 into corrmeas
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bddpdm_BaBar2008",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
@@ -184,23 +184,23 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
     CorrData.clear();
     //CorrStat.Clear();
     //CorrSyst.Clear();
-    
+
 
     //Bddpdm : C and S observables from LHCb:2024gkk
-    CorrData.push_back(dato(0.162, 0.088, 0.009));  // C observable 
-    CorrData.push_back(dato(-0.549, 0.085, 0.015)); // S observable 
+    CorrData.push_back(dato(0.162, 0.088, 0.009));  // C observable
+    CorrData.push_back(dato(-0.549, 0.085, 0.015)); // S observable
 
 
 // Populate the correlation matrix
     CorrStat(0, 0) = 1.;       //
-    CorrStat(1, 1) = 1.;  
+    CorrStat(1, 1) = 1.;
     CorrStat(0, 1) = 0.475;      // Correlation between C and S
     CorrStat(1, 0) = 0.475;      // Symmetric part (same as Corr(0, 1))
 
 
     // Populate the correlation matrix
     CorrSyst(0, 0) = 1.;       //
-    CorrSyst(1, 1) = 1.;  
+    CorrSyst(1, 1) = 1.;
     CorrSyst(0, 1) = 0.;      // Correlation between C and S
     CorrSyst(1, 0) = 0.;      // Symmetric part (same as Corr(0, 1))
 
@@ -209,7 +209,7 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bddpdm_LHCb2024",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
 
     CorrData.clear();
-   
+
 
     //ACPBpdpd0b and ACPBpdpsd0b from LHCb:2023wbb
     dato Bpdpd0b(2.5e-2, 1.0e-2, 0.4e-2, 0.3e-2);
@@ -220,11 +220,11 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
 
     TMatrixDSym Corr(2); //total correlation
 
-    
+
 // Populate the correlation matrix
-    Corr(0, 0) = 1.0;       // Variance 
+    Corr(0, 0) = 1.0;       // Variance
     Corr(1, 1) = 1.0;       // Variance
-    Corr(0, 1) = 0.386;      // Correlation 
+    Corr(0, 1) = 0.386;      // Correlation
     Corr(1, 0) = 0.386;      // Symmetric part (same as Corr(0, 1))
 
 
@@ -233,51 +233,51 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
 
     CorrData.clear();
 
-    data.push_back(dato(-0.43, 0.16, 0.05)); //Belle:2012mef 
+    data.push_back(dato(-0.43, 0.16, 0.05)); //Belle:2012mef
     data.push_back(dato(0.162, 0.088, 0.009)); //LHCb:2024gkk
-    data.push_back(dato(-0.07, 0.23, 0.03));  
+    data.push_back(dato(-0.07, 0.23, 0.03));
 
     pdgaverage.setData(data);
     pdgaverage.setName("CBddpdm");
     pdgaverage.CalculateAverage();
-    
+
     newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    data.push_back(dato(-0.99, 0.175, 0.08)); 
-    data.push_back(dato(-0.549, 0.085, 0.015)); 
-    data.push_back(dato(-0.63, 0.36, 0.05));  
+    data.push_back(dato(-0.99, 0.175, 0.08));
+    data.push_back(dato(-0.549, 0.085, 0.015));
+    data.push_back(dato(-0.63, 0.36, 0.05));
 
     pdgaverage.setData(data);
     pdgaverage.setName("SBddpdm");
     pdgaverage.CalculateAverage();
-    
+
     newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    data.push_back(dato(0.00, 0.08, 0.02)); 
-    data.push_back(dato(-0.13, 0.14, 0.02)); 
-    data.push_back(dato(2.5e-2, 1.0e-2, 0.4e-2, 0.3e-2));  
+    data.push_back(dato(0.00, 0.08, 0.02));
+    data.push_back(dato(-0.13, 0.14, 0.02));
+    data.push_back(dato(2.5e-2, 1.0e-2, 0.4e-2, 0.3e-2));
 
     pdgaverage.setData(data);
     pdgaverage.setName("ACPBpdpd0b");
     pdgaverage.CalculateAverage();
-    
+
     newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    newmeas.insert(pair<string, dato>("ACPBpdpsd0b", dato(0.5e-2, 0.2e-2, 0.5e-2, 0.3e-2))); 
+    newmeas.insert(pair<string, dato>("ACPBpdpsd0b", dato(0.5e-2, 0.2e-2, 0.5e-2, 0.3e-2)));
 
     std::cout << "All meas inserted" << endl;
 
-    
+
    // Create histograms for uncorrelated observables (from meas)
     for (const auto& channel : channelNames) {
         // Branching ratio (BR)
         if (meas.find("BR" + channel) != meas.end()) {
             if (histos.h1d.find("BR_" + channel) == histos.h1d.end()) {  // Check if it already exists
                 histos.createH1D("BR_" + channel, 500, 0.0, 0.0);
-		
+
             }
         }
 
@@ -285,19 +285,19 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
         if (meas.find("ACP" + channel) != meas.end()) {
             if (histos.h1d.find("ACP_" + channel) == histos.h1d.end()) {
                 histos.createH1D("ACP_" + channel, 500, 0.0, 0.0);
-	        
+
             }
         }
         if (meas.find("C" + channel) != meas.end()) {
             if (histos.h1d.find("C_" + channel) == histos.h1d.end()) {
                 histos.createH1D("C_" + channel, 500, 0.0, 0.0);
-		
+
             }
         }
         if (meas.find("S" + channel) != meas.end()) {
             if (histos.h1d.find("S_" + channel) == histos.h1d.end()) {
                 histos.createH1D("S_" + channel, 500, 0.0, 0.0);
-		
+
             }
         }
     }
@@ -315,11 +315,11 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
         if (corr_key.find("CS_") != std::string::npos) {
             if (histos.h1d.find("C_" + channels[0]) == histos.h1d.end()) {
                 histos.createH1D("C_" + channels[0], 500, 0.0, 0.0);
-		
+
             }
             if (histos.h1d.find("S_" + channels[0]) == histos.h1d.end()) {
                 histos.createH1D("S_" + channels[0], 500, 0.0, 0.0);
-		
+
             }
         }
 
@@ -328,23 +328,23 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
             for (size_t i = 0; i < channels.size(); ++i) {
                 if (histos.h1d.find("ACP_" + channels[i]) == histos.h1d.end()) {
                     histos.createH1D("ACP_" + channels[i], 500, 0.0, 0.0);
-		    
+
                 }
             }
         }
-	
+
     }
-    
+
     histos.createH1D("phi_Bsdpsdms", 500, 0.0, 0.0);
     histos.createH1D("lamda_Bsdpsdms", 500, 0.0, 0.0);
-    
+
 
     //create hinstogram to store delta_phi_s
-    
+
 
     histos.createH1D("delta_phi", 500, 0.0, 0.0);
     // Create histograms for uncorrelated observables (from meas)
-    
+
     for (const auto& channel : channelNames) {
       histos.createH1D("A_" + channel + "_re", 500, 0.0, 0.0);
       histos.createH1D("A_" + channel + "_im", 500, 0.0, 0.0);
@@ -355,7 +355,7 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
       histos.createH1D("|B|(" + channel + ")", 500, 0.0, 0.0);
       histos.createH1D("B_phase (" + channel +  ")", 500, 0.0, 0.0);
     }
-    
+
 
 
     histos.createH1D("|E1|", 500, 0.0, 0.0);
@@ -376,10 +376,10 @@ BqDqDqbar::BqDqDqbar() : BCModel() , histos(obs)
     histos.createH1D("P1_GIM_im", 500, 0., 0.);
     histos.createH1D("P3_GIM_re", 500, 0.0, 0.0);
     histos.createH1D("P3_GIM_im", 500, 0., 0.);
-    
-    
-    
-    
+
+
+
+
 }
 
 
@@ -416,9 +416,9 @@ void BqDqDqbar::DefineParameters(const string& channel) {
 	GetParameter("P1_GIM_dc_Bddpdm_im").SetLowerLimit(-100.);
 	GetParameter("P3_GIM_dc_Bddmdp_im").SetUpperLimit(100.);
 	GetParameter("P3_GIM_dc_Bddmdp_im").SetLowerLimit(-100.);
-	
 
-    } 
+
+    }
   else if (channel == "Bddpsdm") {
         std::vector<std::string> params = {
             "su3_E1_scc_Bddpsdm_re",
@@ -428,7 +428,7 @@ void BqDqDqbar::DefineParameters(const string& channel) {
 	};
         channelParameters[channel] = params;
         for (const auto& param : params) {
-	  AddParameter(param, -0.1, 0.1);
+	  AddParameter(param, -1., 1.);
         }
     } else if (channel == "Bpdpd0b") {
         std::vector<std::string> params = {
@@ -445,8 +445,8 @@ void BqDqDqbar::DefineParameters(const string& channel) {
         };
 	 channelParameters[channel] = params;
 
-	AddParameter("su3_A1_scu_Bpdpsd0b_re", -0.1, 0.1);
-	AddParameter("su3_A1_scu_Bpdpsd0b_im", -0.1, 0.1);
+	AddParameter("su3_A1_scu_Bpdpsd0b_re", -1., 1.);
+	AddParameter("su3_A1_scu_Bpdpsd0b_im", -1., 1.);
 
     } else if (channel == "Bsdpsdms") {
         std::vector<std::string> params = {
@@ -457,11 +457,11 @@ void BqDqDqbar::DefineParameters(const string& channel) {
             "su3_P1_GIM_sc_Bsdpsdms_re",
 	    "su3_P1_GIM_sc_Bsdpsdms_im",
             "su3_P3_GIM_sc_Bsdpsdms_re",
-	    "su3_P3_GIM_sc_Bsdpsdms_im"  
+	    "su3_P3_GIM_sc_Bsdpsdms_im"
         };
         channelParameters[channel] = params;
         for (const auto& param : params) {
-            AddParameter(param, -0.1, 0.1);
+            AddParameter(param, -1., 1.);
         }
     } else if (channel == "Bsdpdms") {
     std::vector<std::string> params = {
@@ -469,18 +469,18 @@ void BqDqDqbar::DefineParameters(const string& channel) {
 	    "su3_E1_dcc_Bsdpdms_im",
             "su3_P1_GIM_dc_Bsdpdms_re",
 	    "su3_P1_GIM_dc_Bsdpdms_im",
-	    
+
     };
     channelParameters[channel] = params;
     for (const auto& param : params) {
-        AddParameter(param, -0.1, 0.1);
+        AddParameter(param, -1., 1.);
     }
     } else {
         // Handle the case where the channel is not recognized
         std::cerr << "Error: Unrecognized channel \"" << channel << "\" in DefineParameters." << std::endl;
         throw std::runtime_error("Unrecognized channel: " + channel);
 	}
-  
+
   std::cout << "Number of parameters: " << GetNParameters() << std::endl;
   SetPriorConstantAll();
 
@@ -489,7 +489,7 @@ void BqDqDqbar::DefineParameters(const string& channel) {
 
 
 std::map<std::string, double> parameterValues;
- //function that given the channels and the string inside the map channelParameters adds every parameter name to a map <string, double> and returns said map. now parameterValues[channelParameters] is a complex double. 
+ //function that given the channels and the string inside the map channelParameters adds every parameter name to a map <string, double> and returns said map. now parameterValues[channelParameters] is a complex double.
 std::map<std::string, double> BqDqDqbar::DeclareParameters() {
 
     // Ensure channelParameters is populated
@@ -508,7 +508,7 @@ std::map<std::string, double> BqDqDqbar::DeclareParameters() {
             }
         }
     }
-	    
+
     cout << "Declare Parameters called correctly" << endl;
     return parameterValues;
 }
@@ -580,15 +580,15 @@ void BqDqDqbar::compute_decay_amplitudes(const std::string& channel, bool conjug
     double B_imag = 0.0;
     complex<double> A = 0.;
     complex<double> B = 0.;
-    
+
  // Define the SU(3)-breaking for the E1 terms
-std::complex<double> E1_Bddpsdm = std::complex<double>( getParameterValue("E1_dcc_Bddpdm_re") * (1 + getParameterValue("su3_E1_scc_Bddpsdm_re")), 
-    getParameterValue("E1_dcc_Bddpdm_re") * getParameterValue("su3_E1_scc_Bddpsdm_im")  
+std::complex<double> E1_Bddpsdm = std::complex<double>( getParameterValue("E1_dcc_Bddpdm_re") * (1 + getParameterValue("su3_E1_scc_Bddpsdm_re")),
+    getParameterValue("E1_dcc_Bddpdm_re") * getParameterValue("su3_E1_scc_Bddpsdm_im")
 );
 
 std::complex<double> E1_Bsdpsdms = std::complex<double>(
-							getParameterValue("E1_dcc_Bddpdm_re") * (1 + getParameterValue("su3_E1_scc_Bsdpsdms_re")), 
-							getParameterValue("E1_dcc_Bddpdm_re") * getParameterValue("su3_E1_scc_Bsdpsdms_im")  
+							getParameterValue("E1_dcc_Bddpdm_re") * (1 + getParameterValue("su3_E1_scc_Bsdpsdms_re")),
+							getParameterValue("E1_dcc_Bddpdm_re") * getParameterValue("su3_E1_scc_Bsdpsdms_im")
 );
 
 std::complex<double> E1_Bsdpdms = std::complex<double>(
@@ -599,11 +599,11 @@ std::complex<double> E1_Bsdpdms = std::complex<double>(
 
   std::complex<double> P1_GIM_Bddpsdm = std::complex<double>(
 							     getParameterValue("P1_GIM_dc_Bddpdm_re") * (1 + getParameterValue("su3_P1_GIM_sc_Bddpsdm_re")),
-							     getParameterValue("P1_GIM_dc_Bddpdm_im") * (1 +  getParameterValue("su3_P1_GIM_sc_Bddpsdm_im") ) 
+							     getParameterValue("P1_GIM_dc_Bddpdm_im") * (1 +  getParameterValue("su3_P1_GIM_sc_Bddpsdm_im") )
 );
-  
+
   std::complex<double> A1_Bpdpsd0b = std::complex<double>(getParameterValue("A1_dcu_Bpdpd0b_re") * (1 + getParameterValue("su3_A1_scu_Bpdpsd0b_re")),
-							  getParameterValue("A1_dcu_Bpdpd0b_im") * (1 +  getParameterValue("su3_A1_scu_Bpdpsd0b_im")) 
+							  getParameterValue("A1_dcu_Bpdpd0b_im") * (1 +  getParameterValue("su3_A1_scu_Bpdpsd0b_im"))
 );
 
   std::complex<double> A2_Bsdpsdms = std::complex<double>(getParameterValue("A2_cdc_Bddmdp_re") * (1+ getParameterValue("su3_A2_csc_Bsdmsdps_re")),
@@ -635,13 +635,13 @@ std::complex<double> E1_Bsdpdms = std::complex<double>(
 	phaseB = arg(B);
 	modA = abs(A);
 	modB = abs(B);
-	
-	
-        
+
+
+
 
 
     } else if (channel == "Bddpsdm") {
-      amp = Vcs * Vbc * (E1_Bddpsdm) 
+      amp = Vcs * Vbc * (E1_Bddpsdm)
 	- Vus * Vbu * (P1_GIM_Bddpsdm);
         amplitudes[channel] = amp;
 	A_real = E1_Bddpsdm.real();
@@ -654,9 +654,9 @@ std::complex<double> E1_Bsdpdms = std::complex<double>(
 	phaseB = arg(B);
 	modA = abs(A);
 	modB = abs(B);
-	
-        
-	
+
+
+
 
     } else if (channel == "Bpdpd0b") {
       amp = Vcd * Vbc * getPar("E1_dcc_Bddpdm")
@@ -672,9 +672,9 @@ std::complex<double> E1_Bsdpdms = std::complex<double>(
 	phaseB = arg(B);
 	modA = abs(A);
 	modB = abs(B);
-        
 
-	
+
+
 
     } else if (channel == "Bpdpsd0b") {
       amp = Vcs * Vbc * (E1_Bddpsdm)
@@ -690,9 +690,9 @@ std::complex<double> E1_Bsdpdms = std::complex<double>(
 	phaseB = arg(B);
 	modA = abs(A);
 	modB = abs(B);
-	
 
-	
+
+
 
     } else if (channel == "Bsdpsdms") {
       amp = Vcs * Vbc * (E1_Bsdpsdms + A2_Bsdpsdms)
@@ -709,12 +709,12 @@ std::complex<double> E1_Bsdpdms = std::complex<double>(
 	modA = abs(A);
 	modB = abs(B);
 
-	
+
     } else if (channel == "Bsdpdms") {
       amp = Vcd * Vbc * (E1_Bsdpdms)
 	- Vud * Vbu * (P1_GIM_Bsdpdms);
         amplitudes[channel] = amp;
-	
+
 	A_real = E1_Bsdpdms.real();
 	A_imag = E1_Bsdpdms.imag();
 	B_real = P1_GIM_Bsdpdms.real();
@@ -725,11 +725,11 @@ std::complex<double> E1_Bsdpdms = std::complex<double>(
 	phaseB = arg(B);
 	modA = abs(A);
 	modB = abs(B);
-	  
 
-	
+
+
     }
-    
+
     obs["A_" + channel + "_re"] = A_real;
     obs["A_" + channel + "_im"] = A_imag;
     obs["B_" + channel + "_re"] = B_real;
@@ -738,17 +738,17 @@ std::complex<double> E1_Bsdpdms = std::complex<double>(
     obs["A_phase (" + channel + ")"] = phaseA;
     obs["|B|(" + channel + ")"] = modB;
     obs["B_phase (" + channel +  ")"] = phaseB;
-    
-    
+
+
 }
-   
+
  //getter for amplitudes
 Parameter BqDqDqbar::get_amplitude(const std::string& channel) {
   compute_decay_amplitudes(channel, false);  // false for normal
     return amplitudes[channel];
 }
 
- 
+
  //getter for conjugated amplitudes
 Parameter BqDqDqbar::get_conjugate_amplitude(const std::string& channel) {
   compute_decay_amplitudes(channel, true);  // true for conjugate
@@ -760,7 +760,7 @@ BqDqDqbar::~BqDqDqbar() {
   //delete histos;  // Clean up the dynamically allocated memory
 };
 
-// --------------------------------------------------------- 
+// ---------------------------------------------------------
 std::pair<std::string, std::pair<std::string, std::string>> BqDqDqbar::parseChannel(const std::string& channel) const {
     // First, identify the B meson part
     std::string bMeson;
@@ -813,7 +813,7 @@ std::pair<std::string, std::pair<std::string, std::string>> BqDqDqbar::parseChan
 
 
 
- 
+
 
 double BqDqDqbar::getBMesonLifetime(const std::string& bMeson) const {
     if (bMeson == "Bp") {
@@ -827,7 +827,7 @@ double BqDqDqbar::getBMesonLifetime(const std::string& bMeson) const {
     }
 }
 
- 
+
 double BqDqDqbar::getBMesonMass(const std::string& bMeson) const {
     if (bMeson == "Bp") {
         return m_Bp;
@@ -863,7 +863,7 @@ double BqDqDqbar::CalculateBR(Parameter amplitude, const string& channel) const 
 
     // The decay width (Γ) is proportional to |p| and the square of the amplitude
     double decay_width = (std::pow(G_F, 2) / 2) * (p / (std::pow(m_B, 2) * 16 * M_PI * h_t)) * (std::norm(amplitude));
-   
+
 
     // Get the lifetime and calculate total width
     double lifetime = getBMesonLifetime(bMeson);
@@ -874,7 +874,7 @@ double BqDqDqbar::CalculateBR(Parameter amplitude, const string& channel) const 
     }
 
     return BR;
-						  
+
  }
 
 ///-----------------------------------------------------------------------
@@ -884,7 +884,7 @@ double BqDqDqbar::CalculateAcp(const Parameter& amplitude, const Parameter& conj
     double A2 = std::norm(amplitude);
     double Abar2 = std::norm(conjugate_amplitude);
 
-    // Compute A_CP 
+    // Compute A_CP
     double Acp = (Abar2 - A2) / (A2 + Abar2);
 
     return Acp;
@@ -896,7 +896,7 @@ double BqDqDqbar::CalculateC(const Parameter& amplitude, const Parameter& conjug
     std::string bMeson = parsed.first;
 
     std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
-    
+
     // Calculate the ratio lambda = eta * (q/p) * (A_cp / A_conj)
     double eta = cpEigenvalue[channel];  // Assume cpEigenvalue map has eta for each channel
     std::complex<double> lambda = eta * q_p * (conjugate_amplitude / amplitude);
@@ -914,7 +914,7 @@ double BqDqDqbar::CalculateC(const Parameter& amplitude, const Parameter& conjug
     std::string bMeson = parsed.first;
 
     std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
-    
+
     // Calculate the ratio lambda = eta * (q/p) * (A_cp / A_conj)
     double eta = cpEigenvalue[channel];  // Assume cpEigenvalue map has eta for each channel
     std::complex<double> lambda = eta * q_p * (conjugate_amplitude / amplitude);
@@ -999,7 +999,7 @@ std::pair<std::vector<std::string>, std::string> BqDqDqbar::extractChannelFromCo
 double BqDqDqbar::Calculate_UncorrelatedObservables(const std::map<std::string, std::pair<Parameter, Parameter>>& amplitude_map) {
     double ll_uncorr = 0.0;  // Initialize the log-likelihood contribution
 
-    
+
     // ACP for Bpdpd0b
     {
         const auto& amp_pair_Bpdpd0b = amplitude_map.at("Bpdpd0b");
@@ -1055,8 +1055,8 @@ double BqDqDqbar::Calculate_UncorrelatedObservables(const std::map<std::string, 
 	// Store phi_s and |lambda| in the obs map
         obs["phi_Bsdpsdms"] = phi_lambda_result.first;   // phi_s for Bsdpsdms
         obs["lamda_Bsdpsdms"] = phi_lambda_result.second;  // |lambda| for Bsdpsdms
-	
-    
+
+
     try {
       double lamda_observed = meas.at("L_Bsdpsdms").getMean();
       double lamda_uncertainty = meas.at("L_Bsdpsdms").getSigma();
@@ -1066,7 +1066,7 @@ double BqDqDqbar::Calculate_UncorrelatedObservables(const std::map<std::string, 
             std::cerr << "Error: mod(lamda) not found in meas map." << std::endl;
         }
     }
-      
+
 
     return ll_uncorr;
 }
@@ -1091,7 +1091,7 @@ double BqDqDqbar::Calculate_CorrelatedObservables(const std::map<std::string, st
     {
         const auto& amp_pair_Bpdpd0b = amplitude_map.at("Bpdpd0b");
         const auto& amp_pair_Bpdpsd0b = amplitude_map.at("Bpdpsd0b");
-	
+
 
         // Calculate and store ACP for Bpdpd0b
         double acp_Bpdpd0b = CalculateAcp(amp_pair_Bpdpd0b.first, amp_pair_Bpdpd0b.second);
@@ -1102,7 +1102,7 @@ double BqDqDqbar::Calculate_CorrelatedObservables(const std::map<std::string, st
         obs["ACP_Bpdpsd0b"] = acp_Bpdpsd0b;  // Store in obs map for histogram
         corr(1) = acp_Bpdpsd0b;
 
-        ll_corr += corrmeas.at("ACP_Bpdpd0b_Bpdpsd0b_LHCb2023").logweight(corr); 
+        ll_corr += corrmeas.at("ACP_Bpdpd0b_Bpdpsd0b_LHCb2023").logweight(corr);
     }
 
     return ll_corr;
@@ -1114,6 +1114,9 @@ double BqDqDqbar::Calculate_CorrelatedObservables(const std::map<std::string, st
 double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
     static int iteration_counter = 0;  // Static to persist across calls
     ++iteration_counter;  // Increment the counter on every call
+    if (iteration_counter % 50000 == 0) {
+        cout << "Iteration " << iteration_counter << " processing... " << endl;
+    }
 
     obs.clear();  // Clear obs map for each iteration
     double ll = 0.0;  // Log-likelihood accumulator
@@ -1127,7 +1130,7 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
     }
     //std::cout << "Expected parameters size: " << expectedSize << std::endl;
     if (parameters.size() != expectedSize + 4) {
-      std::cerr << "Error: parameters.size() = " << parameters.size() 
+      std::cerr << "Error: parameters.size() = " << parameters.size()
               << ", but expectedSize = " << expectedSize + 4 << std::endl;
       return -1e30;
     }
@@ -1184,7 +1187,7 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
    }
 
    // Loop over channelNames
-   
+
     for (const std::string& channel : channelNames) {
      // Compute and store amplitudes for each channel
       amplitude_map[channel] = std::make_pair(
@@ -1192,7 +1195,7 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
                 get_conjugate_amplitude(channel)
             );
     //Step 1: Use amplitudes to calculate BR and log-likelihood contributions
-      
+
         const auto& amp_pair = amplitude_map[channel];  // Get precomputed amplitude and conjugate amplitude
 
         if (std::isnan(amp_pair.first.real()) || std::isnan(amp_pair.first.imag()) ||
@@ -1210,11 +1213,11 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
 
 	double modE1 = abs(E1);
 	double phaseE1 = arg(E1);
-	
+
 	complex<double> A2 = getPar("A2_cdc_Bddmdp");
 	double A2_re = getPar("A2_cdc_Bddmdp").real();
 	double A2_im = getPar("A2_cdc_Bddmdp").imag();
-       
+
 	double modA2 = abs(A2);
 	double phaseA2 = arg(A2);
 
@@ -1222,21 +1225,21 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
 	complex<double> A1 = getPar("A1_dcu_Bpdpd0b");
 	double A1_re = getPar("A1_dcu_Bpdpd0b").real();
 	double A1_im = getPar("A1_dcu_Bpdpd0b").imag();
-       
-        
+
+
 	double modA1 = abs(A1);
 	double phaseA1 = arg(A1);
 
-	
+
 	complex<double> P1_GIM = getPar("P1_GIM_dc_Bddpdm");
 	double P1_GIM_re = getPar("P1_GIM_dc_Bddpdm").real();
 	double P1_GIM_im = getPar("P1_GIM_dc_Bddpdm").imag();
-	
+
 
 	double modP1_GIM = abs(P1_GIM);
 	double phaseP1_GIM = arg(P1_GIM);
 
-	
+
 	complex<double> P3_GIM = getPar("P3_GIM_dc_Bddmdp");
 	double P3_GIM_re = getPar("P3_GIM_dc_Bddmdp").real();
 	double P3_GIM_im = getPar("P3_GIM_dc_Bddmdp").imag();
@@ -1245,10 +1248,10 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
 	double phaseP3_GIM = arg(P3_GIM);
 
 
-	
 
 
-	
+
+
 
 
 	obs["|E1|"] = modE1;
@@ -1269,9 +1272,9 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
 	obs["P1_GIM_im"] = P1_GIM_im;
 	obs["P3_GIM_re"] = P3_GIM_re;
 	obs["P3_GIM_im"] = P3_GIM_im;
-	
-	
-	
+
+
+
 
         // Calculate BR for each channel
         double br_A = CalculateBR(amp_pair.first, channel);
@@ -1279,9 +1282,9 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
         double br_predicted = 0.5 * (br_A + br_conj_A);
         obs["BR_" + channel] = br_predicted;
 
-        // Compute log-likelihood for BR 
+        // Compute log-likelihood for BR
 
-	
+
         try {
             std::string br_key = "BR" + channel;
             double br_observed = meas.at(br_key).getMean();
@@ -1292,7 +1295,7 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
             std::cerr << "Error: Branching ratio for " << channel << " not found in meas map." << std::endl;
             return -1e30;
 	    }
-	} 
+	}
 
     //Step 2: Calculate the log-likelihood contribution for uncorrelated observables
     ll += Calculate_UncorrelatedObservables(amplitude_map);
@@ -1310,7 +1313,7 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
 
 void BqDqDqbar::MCMCUserIterationInterface() {
     // Loop over all MCMC chains
-  const unsigned int log_interval = 1000;  // Log every 1000 iterations
+  const unsigned int log_interval = 10000;  // Log every 1000 iterations
   std::vector<double> pars;
 
     for (unsigned int i = 0; i < fMCMCNChains; ++i) {
@@ -1412,7 +1415,7 @@ void BqDqDqbar::PrintObservablePulls(const std::string& filename) {
 	  obs_measurement = meas.at("L_Bsdpsdms").getMean();
 	  sigma_measurement = meas.at("L_Bsdpsdms").getSigma();
 	  found_measurement = true;
-	} 
+	}
 
         if (found_measurement) {
             // Calculate the pull value
@@ -1442,4 +1445,5 @@ void BqDqDqbar::PrintObservablePulls(const std::string& filename) {
 
     outfile.close();
     std::cout << "Pull values saved to " << filename << std::endl;
+
 }
