@@ -303,7 +303,6 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     data.push_back(dato(0.587, 0.011)); //D0:2008nly
     data.push_back(dato(0.556, 0.009, 0.010)); //BaBar:2007rbr
     data.push_back(dato(0.562, 0.026, 0.018)); //CDF:2004dxr
-    data.push_back(dato(0.574, 0.012, 0.009)); //Belle:2005qtf
     data.push_back(dato(0.59, 0.06, 0.01)); //CDF:2000edf
     data.push_back(dato(0.52, 0.07, 0.04)); //CLEO:1997ilq
 
@@ -315,13 +314,20 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     data.clear();
 
     //f_paral Bdjpsikst
-    meas.insert(pair<string, dato>("f_paral_Bdjpsikst", dato(0.230, 0.013, 0.025))); //D0:2008nly
+    data.push_back(dato(0.230, 0.013, 0.025)); //D0:2008nly
+    data.push_back(dato(0.227, 0.07, 0.06)); //Belle:2014nuw
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("f_paral_Bdjpsikst");
+    pdgaverage.CalculateAverage();
+   
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
 
     //f_perp Bdjpsikst
     data.push_back(dato(0.233, 0.010, 0.005)); //BaBar:2007rbr
     data.push_back(dato(0.215, 0.032, 0.006)); //CDF:2004dxr
-    data.push_back(dato(0.195, 0.012, 0.008)); //Belle:2005qtf
-
+    data.push_back(dato(0.201, 0.007, 0.005)); //Belle:2014nuw
 
     pdgaverage.setData(data);
     pdgaverage.setName("f_perp_Bdjpsikst");
@@ -333,10 +339,7 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     //delta_paral Bdjpsikst
     data.push_back(dato(-2.69, 0.08, 0.11)); //D0:2008nly
     data.push_back(dato(-2.93, 0.08, 0.04)); //BaBar:2007rbr
-    data.push_back(dato(-2.887, 0.090, 0.008)); //Belle:2005qtf
-
-
-
+    data.push_back(dato(-2.92, 0.04, 0.04)); //Belle:2014nuw
 
     pdgaverage.setData(data);
     pdgaverage.setName("delta_paral_Bdjpsikst");
@@ -348,7 +351,7 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     //delta_perp Bdjpsikst
     data.push_back(dato(3.21, 0.06, 0.06)); //D0:2008nly
     data.push_back(dato(2.91, 0.05, 0.03)); //BaBar:2007rbr
-    data.push_back(dato(2.938, 0.064, 0.010)); //Belle:2005qtf
+    data.push_back(dato(2.91, 0.03, 0.03)); //Belle:2014nuw
 
     pdgaverage.setData(data);
     pdgaverage.setName("delta_perp_Bdjpsikst");
@@ -959,7 +962,7 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     //fperp Bdjpsikst
     data.push_back(dato(0.233, 0.010, 0.005)); //BaBar:2007rbr
     data.push_back(dato(0.215, 0.032, 0.006)); //CDF:2004dxr
-    data.push_back(dato(0.195, 0.012, 0.008)); //Belle:2005qtf
+    data.push_back(dato(0.201, 0.007, 0.005)); //Belle:2014nuw
     data.push_back(dato(0.201, 0.004, 0.008));
 
 
