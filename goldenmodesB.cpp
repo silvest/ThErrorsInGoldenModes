@@ -141,19 +141,6 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-
-    //BRBsjpsik0s
-    data.push_back(dato(1.92e-5, 0.14e-5, 0.05e-5));  //LHCb:2015brj
-    data.push_back(dato(2.0e-5, 0.4e-5, 0.2e-5)); //CDF:2011fhd
-
-
-    pdgaverage.setData(data);
-    pdgaverage.setName("BRBsjpsik0s");
-    pdgaverage.CalculateAverage();
-
-    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
-    data.clear();
-
     //BRBdjpsikst
     data.push_back(dato(1.19e-3, 0.01e-3, 0.08e-3));  //Belle:2014nuw
     data.push_back(dato(1.335e-3, 0.215e-3, 0.02e-3)); //BaBar:2007esv
@@ -216,6 +203,7 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
+    //R_Bdjpsikst_Bdjpsik0
 
     data.push_back(dato(1.51, 0.05, 0.08));  //BaBar:2004htr
     data.push_back(dato(1.39, 0.36, 0.10)); //CDF:1996ivk
@@ -224,7 +212,11 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     pdgaverage.setName("R_Bdjpsikst_Bdjpsik0");
     pdgaverage.CalculateAverage();
 
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
 
+    //R_BRBsjpsik0s_Bdjpsik0s
+    meas.insert(pair<string, dato>( "R_BRBsjpsik0s_Bdjpsik0s", dato(0.0431, 0.0017, 0.0012, 0.0025));  //LHCb:2015brj
 
     //ACP measurments
 
@@ -277,16 +269,18 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>("SBdjpsik0l", dato(0.642, 0.047, 0.021))); //Belle:2012paq
 
 
-
+    //SBsjpsik0s
+    meas.insert(pair<string, dato>("SBsjpsik0s", dato(-0.08, 0.40, 0.08))); //LHCb:2015brj
+    meas.insert(pair<string, dato>("CBsjpsik0s", dato(-0.28, 0.41, 0.08))); //LHCb:2015brj
 
 
     //ACPBpjpsikp
     data.push_back(dato(0.09e-2, 0.27e-2, 0.07e-2)); //LHCb:2017joy
     data.push_back(dato(5.9e-3, 3.6e-3, 0.7e-3)); //D0:2013mrm
     data.push_back(dato(-7.6e-3, 5.0e-3, 2.2e-3)); //Belle:2010zqr
-    data.push_back(dato(90e-3, 70e-3, 20e-3)); //Belle:2007oni
-    data.push_back(dato(30e-3, 14e-3, 10e-3)); //BaBar:2004htr
-    data.push_back(dato(18e-3, 43e-3, 4e-3)); //CLEO:2000oig
+    data.push_back(dato(90.e-3, 70.e-3, 20.e-3)); //Belle:2007oni
+    data.push_back(dato(30.e-3, 15.e-3, 6.e-3)); //BaBar:2004htr
+    data.push_back(dato(18.e-3, 43.e-3, 4.e-3)); //CLEO:2000oig
 
 
     pdgaverage.setData(data);
