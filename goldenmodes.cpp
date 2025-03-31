@@ -25,6 +25,8 @@
 #include <fstream>
 using namespace std;
 
+#define DEG2RAD 180.0/M_PI
+
 // ---------------------------------------------------------
 
 CKMParameters ckm;
@@ -51,18 +53,12 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
 
     SetPriorConstantAll();
 
-    //measurments
+    //measurements
 
     //BRBdjpsik0
-    data.push_back(dato(9.02e-4, 0.10e-4, 0.26e-4)); //Belle:2019xld
-    data.push_back(dato(8.1e-4, 0.9e-4, 0.6e-4)); //Belle:2019avj
-    data.push_back(dato(8.85e-4, 1.35e-4, 0.1e-4)); //BaBar:2007esv
+    data.push_back(dato(9.02e-4, 0.10e-4, 0.26e-4)); //BELLE:2019xld
     data.push_back(dato(8.69e-4, 0.22e-4, 0.30e-4)); //BaBar:2004htr
     data.push_back(dato(9.5e-4, 0.8e-4, 0.6e-4)); //CLEO:2000emb
-    data.push_back(dato(11.5e-4, 2.3e-4, 1.7e-4)); //CDF:1995izg
-    data.push_back(dato(6.93e-4, 4.07e-4, 0.04e-4)); //CLEO:1991roe
-    data.push_back(dato(9.24e-4, 7.21e-4, 0.05e-4)); //ARGUS:1990jet
-
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBdjpsik0");
@@ -73,6 +69,7 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
 
 
     //BRBdjpsip0
+    data.push_back(dato(2.00e-5, 0.12e-5, 0.09e-5)); //Belle-II:2024hqw
     data.push_back(dato(1.62e-5, 0.11e-5, 0.06e-5)); //Belle:2018nxw
     data.push_back(dato(1.69e-5, 0.14e-5, 0.07e-5)); //BaBar:2008kfx
     data.push_back(dato(2.6e-5, 1.0e-5, 0.2e-5)); //CLEO:2000emb
@@ -85,28 +82,13 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-
     //BRBdjpsiom
-    data.push_back(dato(1.9e-5, 0.6e-5, 0.1e-5)); //LHCb:2014vbo
-    data.push_back(dato(2.16e-5, 0.30e-5, 0.14e-5)); //Belle-II:2024fgp
-
-    pdgaverage.setData(data);
-    pdgaverage.setName("BRBdjpsiom");
-    pdgaverage.CalculateAverage();
-
-    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
-    data.clear();
+ 
+    meas.insert(pair<string, dato>("BRBdjpsiom",dato(2.16e-5, 0.30e-5, 0.14e-5))); //Belle-II:2024fgp
 
     //BRBpjpsikp
-    data.push_back(dato(10.32e-3, 0.07e-3, 0.24e-3));  //BELLE:2019xld
-    data.push_back(dato(9.4e-3, 0.7e-3, 0.8e-3)); //Belle:2019avj
-    data.push_back(dato(8.9e-3, 0.6e-3, 0.5e-3)); //Belle:2017psv
-    data.push_back(dato(8.1e-3, 1.3e-3, 0.7e-3)); //BaBar:2005pcw
-    data.push_back(dato(10.61e-3, 0.15e-3, 0.48e-3)); //BaBar:2004htr
-    data.push_back(dato(10.4e-3, 1.1e-3, 0.1e-3)); //BaBar:2005sdl
-    data.push_back(dato(10.2e-3, 0.8e-3, 0.7e-3)); //CLEO:1997ilq
-    data.push_back(dato(9.24e-3, 3.04e-3, 0.05e-3)); //CLEO:1991roe
-    data.push_back(dato(8.09e-3, 3.50e-3, 0.04e-3)); //ARGUS:1990jet
+    data.push_back(dato(10.32e-4, 0.07e-4, 0.24e-4));  //BELLE:2019xld
+    data.push_back(dato(10.61e-4, 0.15e-4, 0.48e-4)); //BaBar:2004htr
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBpjpsikp");
@@ -115,24 +97,23 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //BRBpjpsipp
-    data.push_back(dato(3.8e-5, 0.6e-5, 0.3e-5));  //Belle:2002oex
-    data.push_back(dato(2.02e-5, 0.12e-5, 0.10e-5)); //Belle-II:2024hqw
-
+    //BRBpjpsikstp
+    data.push_back(dato(12.8e-4, 1.7e-4, 1.4e-4));  //Belle:2002otd
+    data.push_back(dato(14.54e-4, 0.47e-4, 0.97e-4)); //BaBar:2004htr
 
     pdgaverage.setData(data);
-    pdgaverage.setName("BRBpjpsipp");
+    pdgaverage.setName("BRBpjpsikstp");
     pdgaverage.CalculateAverage();
 
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
+    //BRBpjpsipp
+    meas.insert(pair<string, dato>("BRBpjpsipp",dato(3.8e-5, 0.6e-5, 0.3e-5))); //Belle:2002oe
 
     //BRBsjpsiph
-    data.push_back(dato(1.037e-3, 0.032e-3, 0.022e-3));  //LHCb:2021qbv
+    data.push_back(dato(1.018e-3, 0.032e-3, 0.037e-3));  //LHCb:2021qbv
     data.push_back(dato(1.25e-3, 0.07e-3, 0.23e-3)); //Belle:2013sdi
-    data.push_back(dato(1.5e-3, 0.5e-3, 0.1e-3)); //CDF:1996ivk
-
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBsjpsiph");
@@ -141,29 +122,9 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-
-    //BRBsjpsik0s
-    data.push_back(dato(1.92e-5, 0.14e-5, 0.05e-5));  //LHCb:2015brj
-    data.push_back(dato(2.0e-5, 0.4e-5, 0.2e-5)); //CDF:2011fhd
-
-
-    pdgaverage.setData(data);
-    pdgaverage.setName("BRBsjpsik0s");
-    pdgaverage.CalculateAverage();
-
-    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
-    data.clear();
-
     //BRBdjpsikst
     data.push_back(dato(1.19e-3, 0.01e-3, 0.08e-3));  //Belle:2014nuw
-    data.push_back(dato(1.335e-3, 0.215e-3, 0.02e-3)); //BaBar:2007esv
     data.push_back(dato(1.309e-3, 0.026e-3, 0.077e-3)); //BaBar:2004htr
-    data.push_back(dato(1.29e-3, 0.05e-3, 0.13e-3)); //Belle:2002otd
-    data.push_back(dato(1.74e-3, 0.20e-3, 0.18e-3)); //CDF:1998tqc
-    data.push_back(dato(1.32e-3, 0.17e-3, 0.17e-3)); //CLEO:1997ilq
-    data.push_back(dato(1.27e-3, 0.65e-3, 0.01e-3)); //CLEO:1991roe
-    data.push_back(dato(1.27e-3, 0.60e-3, 0.01e-3)); //ARGUS:1990jet
-    data.push_back(dato(4.04e-3, 1.81e-3, 0.02e-3)); //CLEO:1987iba
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBdjpsikst");
@@ -184,7 +145,7 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     data.clear();
 
     //BRBsjpsikst
-    meas.insert(pair<string, dato>("BRBsjpsikst", dato(4.14e-5, 0.18e-5, 0.35e-5)));
+    //meas.insert(pair<string, dato>("BRBsjpsikst", dato(4.14e-5, 0.18e-5, 0.35e-5)));
 
     //BR Ratios
 
@@ -193,9 +154,6 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     data.push_back(dato(3.5e-2, 0.3e-2, 1.2e-2)); //ATLAS:2016rxw
     data.push_back(dato(4.86e-2, 0.82e-2, 0.15e-2)); //CDF:2007mkw
     data.push_back(dato(5.37e-2, 0.45e-2, 0.11e-2)); //BaBar:2004kla
-    data.push_back(dato(5.1e-2, 1.8e-2, 0.1e-2));  //CDF:1996efe
-    data.push_back(dato(5.2e-2, 2.4e-2)); //CLEO:1995zgs
-
 
     pdgaverage.setData(data);
     pdgaverage.setName("R_Bpjpsipp_Bpjpsikp");
@@ -204,17 +162,9 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
+    //R_Bdjpsiom_Bdjpsirh
 
-    data.push_back(dato(0.86, 0.19, 0.10));  //LHCb:2012cw
-    data.push_back(dato(0.70, 0.30, 0.05)); //LHCb:2013dkk
-
-
-    pdgaverage.setData(data);
-    pdgaverage.setName("R_Bdjpsiom_Bdjpsirh");
-    pdgaverage.CalculateAverage();
-
-    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
-    data.clear();
+    meas.insert(pair<string, dato>("R_Bdjpsiom_Bdjpsirh", dato(0.86, 0.19, 0.10))); //LHCb:2012cw
 
 
     data.push_back(dato(1.51, 0.05, 0.08));  //BaBar:2004htr
@@ -224,9 +174,35 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     pdgaverage.setName("R_Bdjpsikst_Bdjpsik0");
     pdgaverage.CalculateAverage();
 
+    //R_Bdjpsip0_BpjpsiKstp
 
+    meas.insert(pair<string, dato>("R_Bdjpsip0_BpjpsiKstp", dato(1.153e-2, 0.053e-2, 0.048e-2))); //LHCb:2024ier
 
-    //ACP measurments
+    //R_Bsjpsik0s_Bdjpsik0s
+    meas.insert(pair<string, dato>("R_Bsjpsik0s_Bdjpsik0s", dato(.0431,.0017,.0012,.0025)));
+
+    //R_Bsjpsikst_Bsjpsiph
+    meas.insert(pair<string, dato>("R_Bsjpsikst_Bsjpsiph", dato(.0405,.0019,.0013))); //LHCb:2015esn
+
+    //R_Bsjpsikst_Bdjpsikst
+    meas.insert(pair<string, dato>("R_Bsjpsikst_Bdjpsikst", dato(.0299,.0014,.0012,.0017)));  //LHCb:2015esn
+
+    //R_Bpjpsirp_Bpjpsikp
+    meas.insert(pair<string, dato>("R_Bpjpsirp_Bpjpsikp",dato(.0378, 0.0025, 0.0035))); //LHCb:2018pil
+
+    //R_Bsjpsiet_Bdjpsirh
+
+    meas.insert(pair<string, dato>("R_Bsjpsiet_Bdjpsirh", dato(13.8, 1.2, 1.3, 1.1))); //LHCb:2012cw
+
+    //R_Bsjpsietp_Bdjpsirh
+
+    meas.insert(pair<string, dato>("R_Bsjpsietp_Bdjpsirh", dato(12.3, 1.1, 0.9, 1.0))); //LHCb:2012cw
+
+    //R_Bsjpsietp_Bsjpsiet
+
+    meas.insert(pair<string, dato>("R_Bsjpsietp_Bsjpsiet", dato(0.92, 0.09, 0.04))); //LHCb:2012cw
+
+    //ACP measurements
 
     //CBdjpsip0
 
@@ -271,14 +247,8 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-
-
     meas.insert(pair<string, dato>("CBdjpsik0l", dato(-0.031, 0.026, 0.029))); //Belle:2012paq
     meas.insert(pair<string, dato>("SBdjpsik0l", dato(0.642, 0.047, 0.021))); //Belle:2012paq
-
-
-
-
 
     //ACPBpjpsikp
     data.push_back(dato(0.09e-2, 0.27e-2, 0.07e-2)); //LHCb:2017joy
@@ -322,6 +292,10 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     //SBdjpsikst
     meas.insert(pair<string, dato>("SBdjpsikst", dato(0.601, 0.239, 0.087))); //BaBar:2009byl
 
+    //ABpjpsirp
+    data.push_back(dato(-0.11, 0.12, 0.08)); //BaBar:2007yvx
+    data.push_back(dato(-.045,.057,.008)); //LHCb:2018pil
+    meas.insert(pair<string, dato>("ABpjpsirp", dato(-0.11, 0.12, 0.08))); //BaBar:2007yvx
 
     //polarization
 
@@ -332,9 +306,6 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     data.push_back(dato(0.574, 0.012, 0.009)); //Belle:2005qtf
     data.push_back(dato(0.59, 0.06, 0.01)); //CDF:2000edf
     data.push_back(dato(0.52, 0.07, 0.04)); //CLEO:1997ilq
-    data.push_back(dato(0.65, 0.10, 0.04)); //CDF:1995kwt
-    data.push_back(dato(0.97, 0.16, 0.15)); //ARGUS:1994rms
-
 
     pdgaverage.setData(data);
     pdgaverage.setName("f_0_Bdjpsikst");
@@ -344,16 +315,7 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     data.clear();
 
     //f_paral Bdjpsikst
-    data.push_back(dato(0.230, 0.013, 0.025)); //D0:2008nly
-    data.push_back(dato(0.211, 0.010, 0.006)); //BaBar:2007rbr
-
-
-    pdgaverage.setData(data);
-    pdgaverage.setName("f_paral_Bdjpsikst");
-    pdgaverage.CalculateAverage();
-
-    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
-    data.clear();
+    meas.insert(pair<string, dato>("f_paral_Bdjpsikst", dato(0.230, 0.013, 0.025))); //D0:2008nly
 
     //f_perp Bdjpsikst
     data.push_back(dato(0.233, 0.010, 0.005)); //BaBar:2007rbr
@@ -371,6 +333,7 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     //delta_paral Bdjpsikst
     data.push_back(dato(-2.69, 0.08, 0.11)); //D0:2008nly
     data.push_back(dato(-2.93, 0.08, 0.04)); //BaBar:2007rbr
+    data.push_back(dato(-2.887, 0.090, 0.008)); //Belle:2005qtf
 
 
 
@@ -385,7 +348,7 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     //delta_perp Bdjpsikst
     data.push_back(dato(3.21, 0.06, 0.06)); //D0:2008nly
     data.push_back(dato(2.91, 0.05, 0.03)); //BaBar:2007rbr
-
+    data.push_back(dato(2.938, 0.064, 0.010)); //Belle:2005qtf
 
     pdgaverage.setData(data);
     pdgaverage.setName("delta_perp_Bdjpsikst");
@@ -393,6 +356,36 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
 
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
+
+    //f_0 Bpjpsikstp
+    meas.insert(pair<string, dato>("f_0_Bpjpsikstp", dato(0.604, 0.015, 0.018))); //Belle:2005qtf
+
+    //f_perp Bpjpsikstp
+    meas.insert(pair<string, dato>("f_perp_Bpjpsikstp", dato(0.180, 0.014, 0.010))); //Belle:2005qtf
+
+    //delta_paral Bpjpsikstp
+    meas.insert(pair<string, dato>("delta_paral_Bpjpsikstp", dato(-3.090, 0.108, 0.006))); //Belle:2005qtf
+
+    //delta_perp Bpjpsikstp
+    meas.insert(pair<string, dato>("delta_perp_Bpjpsikstp", dato(2.983, 0.076, 0.004))); //Belle:2005qtf
+
+    //AT1 Bdjpsikst
+    meas.insert(pair<string, dato>("AT1_Bdjpsikst", dato(0.091, 0.034, 0.007))); //Belle:2005qtf
+    //AT2 Bdjpsikst
+    meas.insert(pair<string, dato>("AT2_Bdjpsikst", dato(-0.098, 0.032, 0.003))); //Belle:2005qtf
+    //AT1-AT1bar Bdjpsikst
+    meas.insert(pair<string, dato>("AT1mAT1b_Bdjpsikst", dato(0.044, 0.046))); //Belle:2005qtf
+    //AT2-AT2bar Bdjpsikst
+    meas.insert(pair<string, dato>("AT2mAT2b_Bdjpsikst", dato(0.009, 0.043))); //Belle:2005qtf
+
+    //AT1 Bpjpsikstp
+    meas.insert(pair<string, dato>("AT1_Bpjpsikstp", dato(0.062, 0.038, 0.005))); //Belle:2005qtf
+    //AT2 Bpjpsikstp
+    meas.insert(pair<string, dato>("AT2_Bpjpsikstp", dato(-0.049, 0.034, 0.002))); //Belle:2005qtf
+    //AT1-AT1bar Bpjpsikstp
+    meas.insert(pair<string, dato>("AT1mAT1b_Bpjpsikstp", dato(0.016, 0.054))); //Belle:2005qtf
+    //AT2-AT2bar Bpjpsikstp
+    meas.insert(pair<string, dato>("AT2mAT2b_Bpjpsikstp", dato(0.018, 0.052))); //Belle:2005qtf
 
     //------------------------------------------------
 
@@ -469,27 +462,61 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
 
     CorrData.clear();
 
-    //C and S for Bdjpsirh from LHCb:2014xpr
+    //Alpha and 2betaeff for Bdjpsirh from LHCb:2014xpr
 
-    CorrData.push_back(dato(-0.0605, 0.056, 0.0165));  // C observable
-    CorrData.push_back(dato(-0.652, 0.125, 0.06)); // S observable
+    CorrData.push_back(dato(-47.e-3, 34.e-3, 11.e-3));  // Alpha 0
+    CorrData.push_back(dato(20.5e-3, 109.e-3, 18.5e-3)); // Alpha perp
+    CorrData.push_back(dato(-60.e-3, 60.e-3, 7.e-3)); // Alpha par
+    CorrData.push_back(dato(-3.3*DEG2RAD, 7.2*DEG2RAD, 1.7*DEG2RAD)); // 2betaeff perp - 2betaeff 0
+    CorrData.push_back(dato(-0.5*DEG2RAD, 6.5*DEG2RAD, 1.6*DEG2RAD)); // 2betaeff par - 2betaeff 0
+    CorrData.push_back(dato(42.1*DEG2RAD, 10.2*DEG2RAD, 5.*DEG2RAD)); // 2betaeff 0
 
-
+    TMatrixDSym Corr(6);
 // Populate the correlation matrix
-    CorrStat(0, 0) = 1.;       // Variance for C
-    CorrStat(1, 1) = 1.;       // Variance for S
-    CorrStat(0, 1) = -0.01;      // Correlation between C and S
-    CorrStat(1, 0) = -0.01;      // Symmetric part (same as Corr(0, 1))
+    Corr(0, 0) = 1.;       // Alpha 0
+    Corr(1, 1) = 1.;       // Alpha perp
+    Corr(2, 2) = 1.;       // Alpha par
+    Corr(3, 3) = 1.;       // 2betaeff perp - 2betaeff 0
+    Corr(4, 4) = 1.;       // 2betaeff par - 2betaeff 0
+    Corr(5, 5) = 1.;       // 2betaeff 0
+    Corr(0, 1) = 0.03;    // Correlation between Alpha 0 and Alpha perp
+    Corr(1, 0) = 0.03;    // Symmetric part (same as Corr(0, 1))
+    Corr(0, 2) = 0.16;    // Correlation between Alpha 0 and Alpha par
+    Corr(2, 0) = 0.16;    // Symmetric part (same as Corr(0, 2))
+    Corr(1, 2) = -0.21;    // Correlation between Alpha perp and Alpha par
+    Corr(2, 1) = -0.21;    // Symmetric part (same as Corr(1, 2))
+    Corr(0, 3) = 0.22;    // Correlation between Alpha 0 and 2betaeff perp - 2betaeff 0
+    Corr(3, 0) = 0.22;    // Symmetric part (same as Corr(0, 3))
+    Corr(1, 3) = 0.59;    // Correlation between Alpha perp and 2betaeff perp - 2betaeff 0
+    Corr(3, 1) = 0.59;    // Symmetric part (same as Corr(1, 3))
+    Corr(2, 3) = -0.04;    // Correlation between Alpha par and 2betaeff perp - 2betaeff 0
+    Corr(3, 2) = -0.04;    // Symmetric part (same as Corr(2, 3))
+    Corr(0, 4) = 0.16;    // Correlation between Alpha 0 and 2betaeff par - 2betaeff 0
+    Corr(4, 0) = 0.16;    // Symmetric part (same as Corr(0, 4))
+    Corr(1, 4) = -0.07;    // Correlation between Alpha perp and 2betaeff par - 2betaeff 0
+    Corr(4, 1) = -0.07;    // Symmetric part (same as Corr(1, 4))
+    Corr(2, 4) = -0.25;    // Correlation between Alpha par and 2betaeff par - 2betaeff 0
+    Corr(4, 2) = -0.25;    // Symmetric part (same as Corr(2, 4))
+    Corr(0, 5) = -0.11;    // Correlation between Alpha 0 and 2betaeff 0
+    Corr(5, 0) = -0.11;    // Symmetric part (same as Corr(0, 5))
+    Corr(1, 5) = 0.10;    // Correlation between Alpha perp and 2betaeff 0
+    Corr(5, 1) = 0.10;    // Symmetric part (same as Corr(1, 5))
+    Corr(2, 5) = -0.09;    // Correlation between Alpha par and 2betaeff 0
+    Corr(5, 2) = -0.09;    // Symmetric part (same as Corr(2, 5))
+    Corr(3, 4) = 0.39;    // Correlation between 2betaeff perp - 2betaeff 0 and 2betaeff par - 2betaeff 0
+    Corr(4, 3) = 0.39;    // Symmetric part (same as Corr(3, 4))
+    Corr(3, 5) = -0.08;    // Correlation between 2betaeff perp - 2betaeff 0 and 2betaeff 0
+    Corr(5, 2) = -0.09;    // Symmetric part (same as Corr(2, 5))
+    Corr(4, 5) = -0.10;    // Correlation between 2betaeff par - 2betaeff 0 and 2betaeff 0
+    Corr(5, 4) = -0.10;    // Symmetric part (same as Corr(4, 5))
 
-
-// Insert correlated data into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsirh_LHCb2014",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    // Insert correlated data into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Alpha2betaeff_Bdjpsirh_LHCb2014",CorrelatedGaussianObservables(CorrData, Corr, TMatrixDSym(TMatrixDSym::kUnit,Corr))));
 
     CorrData.clear();
 
-
     //CP violating observables Bsjpsiph from LHCb:2023sim
-    TMatrixDSym Corr(6);
+
     CorrData.push_back(dato(-0.031, 0.018)); //phi_s
     CorrData.push_back(dato(0.990, 0.010)); //lambda
     CorrData.push_back(dato(0.2471, 0.0031)); //f_perp
@@ -1773,6 +1800,41 @@ double goldenmodes::CalculateC(const Parameter& amplitude, const Parameter& conj
     double mod_lambda_squared = std::norm(lambda);
     return (1.0 - mod_lambda_squared) / (1.0 + mod_lambda_squared);
 }
+
+// ---------------------------------------------------------------------
+// Function to calculate direct CP violation parameter alpha (see 1411.1634)
+double goldenmodes::CalculateAlpha(const Parameter& amplitude, const Parameter& conjugate_amplitude, const std::string& channel) {
+    // Parse the channel to determine the B meson type
+    auto parsed = parseChannel(channel);
+    std::string bMeson = parsed.first;
+
+    // Get q/p ratio for Bd or Bs
+    std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+
+    // Special case for K0s and K0l channels (apply q/p_KS)
+    if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l" || channel == "Bsjpsik0s") {
+        q_p *= ckm.get_q_p_KS();  // Multiply by q/p for K0 mixing
+    }
+
+    // Get CP eigenvalue for the channel (ensure it exists)
+    if (cpEigenvalue.find(channel) == cpEigenvalue.end()) {
+        throw std::runtime_error("Error: CalculateC - CP eigenvalue missing for channel: " + channel);
+    }
+    double eta = cpEigenvalue.at(channel);
+
+    // Compute λ (lambda) = η * (q/p) * (A_conjugate / A)
+    if (std::abs(amplitude) == 0) {
+        std::cerr << "Error: CalculateC - Zero amplitude for " << channel << ", division by zero detected." << std::endl;
+        return 0.0; // Return safe value instead of crashing
+    }
+
+    std::complex<double> lambda = eta * q_p * (conjugate_amplitude / amplitude);
+
+    // Compute Alpha observable: C = (1 - |λ|) / (1 + |λ|) 
+    double mod_lambda = std::abs(lambda);
+    return (1.0 - mod_lambda) / (1.0 + mod_lambda);
+}
+
 
 
 // ---------------------------------------------------------------------

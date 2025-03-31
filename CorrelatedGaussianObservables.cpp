@@ -20,6 +20,22 @@ CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
 
     //norm = 1./sqrt(pow(2.*M_PI,n)*Cov.Determinant()); //Fattore di Normalizzazione inutile per il fattore di Bayes
 
+    // Check covariance is positive definite
+    TMatrixDSymEigen covES(Cov);
+    TVectorD egval(covES.GetEigenValues());
+    unsigned int EVbad = 0;
+    for (unsigned int i = 0; i < n; i++) {
+        if (egval(i) <= 0.) {
+            EVbad++;
+        }
+    }
+    if (EVbad > 0) {
+        std::cout << "WARNING: Covariance matrix of the correlated observables is not a positive definite matrix!" << std::endl;
+        std::cout << "("<< EVbad <<" non positive eigenvalue(s).)" << std::endl;
+            sleep(2);
+        }
+
+
     Cov.InvertFast();
 
   }
@@ -43,6 +59,22 @@ CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
 	      Cov(i,j) = Sig1(i)*corr_1(i,j)*Sig1(j) + Sig2(i)*corr_2(i,j)*Sig2(j);
 
     //    norm = 1./sqrt(pow(2.*M_PI,n)*Cov.Determinant());
+
+    // Check covariance is positive definite
+    TMatrixDSymEigen covES(Cov);
+    TVectorD egval(covES.GetEigenValues());
+    unsigned int EVbad = 0;
+    for (unsigned int i = 0; i < n; i++) {
+        if (egval(i) <= 0.) {
+            EVbad++;
+        }
+    }
+    if (EVbad > 0) {
+        std::cout << "WARNING: Covariance matrix of the correlated observables is not a positive definite matrix!" << std::endl;
+        std::cout << "("<< EVbad <<" non positive eigenvalue(s).)" << std::endl;
+            sleep(2);
+        }
+
 
     Cov.InvertFast(); //Calcola l'inversa
 
@@ -69,6 +101,21 @@ CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
 
     //    norm = 1./sqrt(pow(2.*M_PI,n)*Cov.Determinant());
 
+    // Check covariance is positive definite
+    TMatrixDSymEigen covES(Cov);
+    TVectorD egval(covES.GetEigenValues());
+    unsigned int EVbad = 0;
+    for (unsigned int i = 0; i < n; i++) {
+        if (egval(i) <= 0.) {
+            EVbad++;
+        }
+    }
+    if (EVbad > 0) {
+        std::cout << "WARNING: Covariance matrix of the correlated observables is not a positive definite matrix!" << std::endl;
+        std::cout << "("<< EVbad <<" non positive eigenvalue(s).)" << std::endl;
+            sleep(2);
+        }
+    
     Cov.InvertFast(); //Calcola l'inversa
 
   }

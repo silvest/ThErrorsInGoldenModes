@@ -65,12 +65,22 @@ void CorrelatedGaussianParameters::DiagonalizePars(TMatrixDSym Corr) {
 
     v = new TMatrixD(size, size);  // Allocate new TMatrixD for v
     e = new TVectorD(size);        // Allocate new TVectorD for e
+    unsigned int EVbad = 0;
 
     for (unsigned int i = 0; i < size; i++) {
         (*e)(i) = ee(i);  // Copy eigenvalues
         for (unsigned int j = 0; j < size; j++) {
             (*v)(i, j) = vv(i, j);  // Copy eigenvectors
         }
+        if (ee(i) <= 0.) {
+            EVbad++;
+        }
+    }
+
+    if (EVbad > 0) {
+        std::cout << "WARNING: Covariance matrix of the correlated parameters in "<< name <<" is not a positive definite matrix!" << std::endl;
+        std::cout << "("<< EVbad <<" non positive eigenvalue(s).)" << std::endl;
+        sleep(2);
     }
 
     TVectorD ave_in(size);  // Create a TVectorD for average values
