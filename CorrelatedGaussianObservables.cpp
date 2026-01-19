@@ -1,4 +1,6 @@
 #include "CorrelatedGaussianObservables.h"
+#include <TMatrixDSymEigen.h>
+#include <unistd.h>  // for sleep()
 
 CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
         const TMatrixDSym& corr_i)

@@ -1369,6 +1369,84 @@ void goldenmodes::DefineParameters(const string& channel) {
     GetParameter("A_Bsjpsikst_perp_re").SetLowerLimit(0.);
     GetParameter("A_Bsjpsikst_perp_im").SetUpperLimit(0.);
     GetParameter("A_Bsjpsikst_perp_im").SetLowerLimit(0.);
+  } else if (channel == "Bsdpsdms") {
+        // Bs→Ds⁺Ds⁻ channel: BASE topological amplitudes for s→c transitions
+        // This is the primary channel of interest, so it defines the reference amplitudes
+        std::vector<std::string> params = {
+            "E1_scc_Bsdpsdms_re",
+            "E1_scc_Bsdpsdms_im",
+            "A2_csc_Bsdmsdps_re",
+            "A2_csc_Bsdmsdps_im",
+            "P1_GIM_sc_Bsdpsdms_re",
+            "P1_GIM_sc_Bsdpsdms_im",
+            "P3_GIM_sc_Bsdpsdms_re",
+            "P3_GIM_sc_Bsdpsdms_im"
+        };
+        channelParameters[channel] = params;
+        for (const auto& param : params) {
+            AddParameter(param, -40., 40.);
+        }
+        GetParameter("E1_scc_Bsdpsdms_im").SetUpperLimit(0.0);
+        GetParameter("E1_scc_Bsdpsdms_im").SetLowerLimit(0.);
+        GetParameter("E1_scc_Bsdpsdms_re").SetLowerLimit(0.);
+        GetParameter("P1_GIM_sc_Bsdpsdms_re").SetUpperLimit(130.);
+        GetParameter("P1_GIM_sc_Bsdpsdms_re").SetLowerLimit(-130.);
+        GetParameter("P3_GIM_sc_Bsdpsdms_re").SetUpperLimit(130.);
+        GetParameter("P3_GIM_sc_Bsdpsdms_re").SetLowerLimit(-130.);
+        GetParameter("P1_GIM_sc_Bsdpsdms_im").SetUpperLimit(100.);
+        GetParameter("P1_GIM_sc_Bsdpsdms_im").SetLowerLimit(-100.);
+        GetParameter("P3_GIM_sc_Bsdpsdms_im").SetUpperLimit(100.);
+        GetParameter("P3_GIM_sc_Bsdpsdms_im").SetLowerLimit(-100.);
+  } else if (channel == "Bddpdm") {
+        // Bd→D⁺D⁻ channel: DOUBLE s→d exchange (inverse of Bs→Ds⁺Ds⁻)
+        // Uses SU(3)-breaking corrections to convert s→c base amplitudes to d→c
+        std::vector<std::string> params = {
+            "su3_double_E1_re",
+            "su3_double_E1_im",
+            "su3_double_A2_re",
+            "su3_double_A2_im",
+            "su3_double_P1_GIM_re",
+            "su3_double_P1_GIM_im",
+            "su3_double_P3_GIM_re",
+            "su3_double_P3_GIM_im"
+        };
+        channelParameters[channel] = params;
+        for (const auto& param : params) {
+            AddParameter(param, -1., 1.);
+        }
+  } else if (channel == "Bpdpd0b") {
+        // B⁺→D⁺D̄⁰ channel: A1 color-suppressed amplitude for s→c (base)
+        // Uses SINGLE s→d SU(3) corrections for final state
+        std::vector<std::string> params = {
+            "A1_scu_Bpdpsd0b_re",
+            "A1_scu_Bpdpsd0b_im",
+            // SU(3)-breaking correction for SINGLE s→d exchange
+            "su3_single_A1_re",
+            "su3_single_A1_im"
+        };
+        channelParameters[channel] = params;
+        for (const auto& param : params) {
+            if (param.find("su3_") == 0) {
+                AddParameter(param, -1., 1.);
+            } else if (param.find("A1_") == 0) {
+                AddParameter(param, -130., 150.);
+            }
+        }
+  } else if (channel == "Bpdpsd0b") {
+        // B⁺→D⁺D̄⁰ₛ channel: No new parameters needed
+        // Uses base A1_scu_Bpdpsd0b (no SU(3) correction for A1)
+        // Uses base E1 and P1_GIM from Bsdpsdms with SINGLE s→d corrections
+        std::vector<std::string> params = {
+            // SINGLE s→d SU(3) corrections for E1 and P1_GIM
+            "su3_single_E1_re",
+            "su3_single_E1_im",
+            "su3_single_P1_GIM_re",
+            "su3_single_P1_GIM_im"
+        };
+        channelParameters[channel] = params;
+        for (const auto& param : params) {
+            AddParameter(param, -1., 1.);
+        }
   } else {
         // Handle the case where the channel is not recognized
         std::cerr << "Error: Unrecognized channel \"" << channel << "\" in DefineParameters." << std::endl;
@@ -2350,6 +2428,65 @@ double goldenmodes::Calculate_CorrelatedObservables(const std::map<std::string, 
   corr7(6) = delta_perp;
   ll_corr += corrmeas.at("polarization_Bsjpsikst_LHCb2015").logweight(corr7);
 }
+
+    // **Correlated observables for Bddpdm (Bd→D⁺D⁻)**
+    {
+        try {
+            const auto& amp_pair_Bddpdm = amplitude_map.at("Bddpdm");
+            double c_predicted = CalculateC(amp_pair_Bddpdm.first, amp_pair_Bddpdm.second, "Bddpdm");
+            double s_predicted = CalculateS(amp_pair_Bddpdm.first, amp_pair_Bddpdm.second, "Bddpdm");
+            obs["C_Bddpdm"] = c_predicted;
+            obs["S_Bddpdm"] = s_predicted;
+            corr(0) = c_predicted;
+            corr(1) = s_predicted;
+            ll_corr += corrmeas.at("CS_Bddpdm_LHCb2024").logweight(corr);
+        } catch (const std::out_of_range& e) {
+            std::cerr << "Error: Bddpdm not found in amplitude_map! " << e.what() << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << "Unexpected error in correlated observables for Bddpdm: " << e.what() << std::endl;
+        }
+    }
+
+    // **Correlated observables for Bsdpsdms (Bs→Ds⁺Ds⁻)**
+    {
+        try {
+            const auto& amp_pair_Bsdpsdms = amplitude_map.at("Bsdpsdms");
+            double c_predicted = CalculateC(amp_pair_Bsdpsdms.first, amp_pair_Bsdpsdms.second, "Bsdpsdms");
+            double s_predicted = CalculateS(amp_pair_Bsdpsdms.first, amp_pair_Bsdpsdms.second, "Bsdpsdms");
+            obs["C_Bsdpsdms"] = c_predicted;
+            obs["S_Bsdpsdms"] = s_predicted;
+            corr(0) = c_predicted;
+            corr(1) = s_predicted;
+            ll_corr += corrmeas.at("CS_Bsdpsdms_LHCb2024").logweight(corr);
+        } catch (const std::out_of_range& e) {
+            std::cerr << "Error: Bsdpsdms not found in amplitude_map! " << e.what() << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << "Unexpected error in correlated observables for Bsdpsdms: " << e.what() << std::endl;
+        }
+    }
+
+    // **Correlated observables for Bpdpd0b and Bpdpsd0b (charged B→DD)**
+    {
+        try {
+            const auto& amp_pair_Bpdpd0b = amplitude_map.at("Bpdpd0b");
+            const auto& amp_pair_Bpdpsd0b = amplitude_map.at("Bpdpsd0b");
+            
+            double acp_Bpdpd0b = CalculateAcp(amp_pair_Bpdpd0b.first, amp_pair_Bpdpd0b.second);
+            double acp_Bpdpsd0b = CalculateAcp(amp_pair_Bpdpsd0b.first, amp_pair_Bpdpsd0b.second);
+            
+            obs["ACP_Bpdpd0b"] = acp_Bpdpd0b;
+            obs["ACP_Bpdpsd0b"] = acp_Bpdpsd0b;
+            
+            corr(0) = acp_Bpdpd0b;
+            corr(1) = acp_Bpdpsd0b;
+            ll_corr += corrmeas.at("ACP_Bpdpd0b_Bpdpsd0b_LHCb2023").logweight(corr);
+        } catch (const std::out_of_range& e) {
+            std::cerr << "Error: Bpdpd0b or Bpdpsd0b not found in amplitude_map! " << e.what() << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << "Unexpected error in correlated observables for charged B→DD: " << e.what() << std::endl;
+        }
+    }
+
     return ll_corr;
 }
 
@@ -2633,19 +2770,9 @@ void goldenmodes::PrintObservablePulls(const std::string& filename) {
         }
 
         if (found_measurement) {
-            // Calculate the pull value
-            Pull pullCalculator(
-                *hist,                   // Reference to the histogram
-                hist->GetNbinsX(),       // Number of bins along X
-                500,                     // Number of bins along Y
-                0.0,                     // X-axis lower bound, triggers auto setting in makeCompatPlot
-                0.0,                     // X-axis upper bound, triggers auto setting in makeCompatPlot
-                0.0,                     // Y-axis lower bound, triggers auto setting in makeCompatPlot
-                0.0,                     // Y-axis upper bound, triggers auto setting in makeCompatPlot
-                true                     // Whether to use low stats or not
-            );
-
-            double pull = pullCalculator.calcPull(obs_measurement, sigma_measurement, true);
+            // Calculate the pull value: (predicted - observed) / uncertainty
+            double pull = (obs_mean - obs_measurement) / sigma_measurement;
+            
             outfile << obs_name << "\t"
                     << obs_measurement << "\t"
                     << obs_mean << "\t"

@@ -51,7 +51,7 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
 
     SetPriorConstantAll();
 
-    //measurments
+    //measurements
 
     //BRBdjpsik0
     data.push_back(dato(9.02e-4, 0.10e-4, 0.26e-4)); //Belle:2019xld
@@ -73,6 +73,8 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
 
 
     //BRBdjpsip0
+    data.push_back(dato(2.00e-5, 0.12e-5, 0.09e-5)); //Belle-II:2024hqw
+    data.push_back(dato(1.670e-5, 0.077e-5, 0.069e-5, 0.095e-5)); //LHCb:2024ier
     data.push_back(dato(1.62e-5, 0.11e-5, 0.06e-5)); //Belle:2018nxw
     data.push_back(dato(1.69e-5, 0.14e-5, 0.07e-5)); //BaBar:2008kfx
     data.push_back(dato(2.6e-5, 1.0e-5, 0.2e-5)); //CLEO:2000emb
@@ -170,8 +172,29 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //BRBsjpsikst
-    meas.insert(pair<string, dato>("BRBsjpsikst", dato(4.14e-5, 0.18e-5, 0.35e-5)));
+    //BRBdjpsieta - SU(3) partner to K0 and pi0 channels
+    data.push_back(dato(1.23e-6, 0.27e-6, 0.11e-6)); //Belle:2008ekf
+    data.push_back(dato(1.27e-6, 0.41e-6, 0.23e-6)); //BaBar:2008mso
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("BRBdjpsieta");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //BRBsjpsieta - SU(3) partner for Bs decays  
+    meas.insert(pair<string, dato>("BRBsjpsieta", dato(5.1e-4, 0.9e-4, 0.8e-4))); //LHCb:2012fcs
+
+    //BRBdjpsietap - SU(3) partner, eta' channel
+    data.push_back(dato(1.3e-6, 0.7e-6, 0.2e-6)); //Belle:2008ekf
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("BRBdjpsietap");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
 
     //BR Ratios
 
@@ -191,6 +214,7 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
+    //R_Bdjpsiom_Bdjpsirh
 
     data.push_back(dato(0.86, 0.19, 0.10));  //LHCb:2012cw
     data.push_back(dato(0.70, 0.30, 0.05)); //LHCb:2013dkk
@@ -216,12 +240,66 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     data.clear();
 
     //R_BRBsjpsik0s_Bdjpsik0s
-    meas.insert(pair<string, dato>( "R_BRBsjpsik0s_Bdjpsik0s", dato(0.0431, 0.0017, 0.0012, 0.0025));  //LHCb:2015brj
+    meas.insert(pair<string, dato>( "R_BRBsjpsik0s_Bdjpsik0s", dato(0.0431, 0.0017, 0.0012, 0.0025)));  //LHCb:2015brj
+
+    //----------------------------------------------------------------------
+    // B→DD channels (control modes for penguin analysis)
+    //----------------------------------------------------------------------
+
+    //BRBddpdm (Bd→D⁺D⁻)
+    data.push_back(dato(2.12e-4, 0.16e-4, 0.18e-4)); //Belle:2012mef
+    data.push_back(dato(1.97e-4, 0.20e-4, 0.20e-4)); //Belle:2007ebz
+    data.push_back(dato(2.8e-4, 0.4e-4, 0.5e-4)); //BaBar:2006uih
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("BRBddpdm");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //BRBsdpsdms (Bs→Ds⁺Ds⁻)
+    data.push_back(dato(4.0e-3, 0.2e-3, 0.5e-3));  //LHCb:2013sad
+    data.push_back(dato(5.9e-3, 1.0e-3, 1.3e-3)); //Belle:2012tsw
+    data.push_back(dato(5.4e-3, 0.8e-3, 0.8e-3)); //CDF:2012xmd
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("BRBsdpsdms");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //BRBpdpd0b (B⁺→D⁺D̄⁰)
+    data.push_back(dato(3.85e-4, 0.31e-4, 0.38e-4)); //Belle:2008doh
+    data.push_back(dato(3.8e-4, 0.6e-4, 0.5e-4)); //BaBar:2006uih
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("BRBpdpd0b");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //BRBpdpsd0b (B⁺→D⁺D̄⁰ₛ)
+    data.push_back(dato(8.6e-3, 0.2e-3, 1.1e-3));  //LHCb:2013sad
+    data.push_back(dato(9.5e-3, 2.0e-3, 0.8e-3)); //BaBar:2006jvx
+    data.push_back(dato(9.8e-3, 2.6e-3, 0.9e-3)); //CLEO:1995psi
+    data.push_back(dato(14e-3, 8e-3, 1e-3)); //ARGUS:1991xej
+    data.push_back(dato(13e-3, 6e-3, 1e-3)); //CLEO:1990mqz
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("BRBpdpsd0b");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
 
     //ACP measurments
 
     //CBdjpsip0
 
+    data.push_back(dato(0.13
     data.push_back(dato(0.155, 0.14, 0.035));  ////Belle:2018nxw
     data.push_back(dato(0.13, 0.12, 0.03)); //Belle-II:2024hqw
 
@@ -273,6 +351,12 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>("SBsjpsik0s", dato(-0.08, 0.40, 0.08))); //LHCb:2015brj
     meas.insert(pair<string, dato>("CBsjpsik0s", dato(-0.28, 0.41, 0.08))); //LHCb:2015brj
 
+    //CBsjpsieta - Time-dependent CP asymmetry for Bs->J/psi eta
+    meas.insert(pair<string, dato>("CBsjpsieta", dato(-0.19, 0.16, 0.03))); //LHCb:2012fcs
+
+    //SBsjpsieta  
+    meas.insert(pair<string, dato>("SBsjpsieta", dato(0.82, 0.21, 0.04))); //LHCb:2012fcs
+
 
     //ACPBpjpsikp
     data.push_back(dato(0.09e-2, 0.27e-2, 0.07e-2)); //LHCb:2017joy
@@ -304,8 +388,49 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //deltaA_Bpjpsipp_Bpjpsikp
+    //ACPBpdpd0b (B⁺→D⁺D̄⁰)
+    data.push_back(dato(0.00, 0.08, 0.02)); //Belle:2008doh
+    data.push_back(dato(-0.13, 0.14, 0.02));  //BaBar:2006uih
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("ACPBpdpd0b");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //deltaA_Bpjpsipp_Bpjpsikp - Difference in ACP between pi and K modes
     meas.insert(pair<string, dato>("deltaA_Bpjpsipp_Bpjpsikp", dato(1.42e-2, 0.43e-2, 0.08e-2))); //LHCb:2024exp
+
+    //ACPBdjpsiom - Direct CP asymmetry for Bd->J/psi omega
+    data.push_back(dato(0.05, 0.10, 0.03)); //Belle:2007hnp
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("ACPBdjpsiom");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //ACPBdjpsirh - Direct CP asymmetry for Bd->J/psi rho
+    meas.insert(pair<string, dato>("ACPBdjpsirh", dato(0.01, 0.08, 0.02))); //LHCb:2014vbo
+
+    //ACPBdjpsieta - Direct CP asymmetry for Bd->J/psi eta
+    meas.insert(pair<string, dato>("ACPBdjpsieta", dato(0.03, 0.11, 0.02))); //Belle:2008ekf
+
+    //ACPBsjpsiph - Direct CP asymmetry for Bs->J/psi phi
+    data.push_back(dato(0.0039, 0.0030, 0.0010)); //LHCb:2017hbp
+    data.push_back(dato(-0.002, 0.011, 0.007)); //ATLAS:2016pno
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("ACPBsjpsiph");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //ACPBsjpsieta - Direct CP asymmetry for Bs->J/psi eta  
+    meas.insert(pair<string, dato>("ACPBsjpsieta", dato(0.04, 0.12, 0.03))); //LHCb:2012fcs
 
     //lambda Bsjpsiph from CMS:2020efq
     meas.insert(pair<string, dato>("lambda_Bsjpsiph", dato(0.972, 0.026, 0.008)));
@@ -315,6 +440,60 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
 
     //SBdjpsikst
     meas.insert(pair<string, dato>("SBdjpsikst", dato(0.601, 0.239, 0.087))); //BaBar:2009byl
+
+    //CBdjpsiom - Time-dependent CP asymmetry for Bd->J/psi omega
+    data.push_back(dato(-0.19, 0.17, 0.03)); //Belle:2007hnp
+    data.push_back(dato(0.09, 0.27, 0.04)); //BaBar:2007eha
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("CBdjpsiom");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //SBdjpsiom
+    data.push_back(dato(0.76, 0.24, 0.04)); //Belle:2007hnp
+    data.push_back(dato(0.61, 0.38, 0.05)); //BaBar:2007eha
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("SBdjpsiom");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //CBdjpsirh - Time-dependent CP asymmetry for Bd->J/psi rho (from correlated measurement)
+    meas.insert(pair<string, dato>("CBdjpsirh", dato(-0.0605, 0.056, 0.0165))); //LHCb:2014xpr
+
+    //SBdjpsirh
+    meas.insert(pair<string, dato>("SBdjpsirh", dato(-0.652, 0.125, 0.06))); //LHCb:2014xpr
+
+    //CBdjpsieta - Time-dependent CP asymmetry for Bd->J/psi eta
+    meas.insert(pair<string, dato>("CBdjpsieta", dato(-0.09, 0.18, 0.02))); //Belle:2008ekf
+
+    //SBdjpsieta
+    meas.insert(pair<string, dato>("SBdjpsieta", dato(0.65, 0.21, 0.03))); //Belle:2008ekf
+
+    //CBdjpsietap - Time-dependent CP asymmetry for Bd->J/psi eta'
+    meas.insert(pair<string, dato>("CBdjpsietap", dato(0.08, 0.21, 0.03))); //Belle:2008ekf
+
+    //SBdjpsietap
+    meas.insert(pair<string, dato>("SBdjpsietap", dato(0.62, 0.23, 0.04))); //Belle:2008ekf
+
+    //ACPBdjpsietap - Direct CP asymmetry for Bd->J/psi eta'
+    meas.insert(pair<string, dato>("ACPBdjpsietap", dato(0.01, 0.14, 0.02))); //Belle:2008ekf
+
+    //ACPBdjpsikst - Direct CP asymmetry for Bd->J/psi K*
+    data.push_back(dato(-0.01, 0.04, 0.02)); //Belle:2014nuw
+    data.push_back(dato(0.030, 0.058, 0.012)); //BaBar:2009byl
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("ACPBdjpsikst");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
 
 
     //polarization
@@ -481,6 +660,90 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
 
     CorrData.clear();
 
+    //C and S for Bdjpsiom from Belle:2007hnp
+    CorrData.push_back(dato(-0.19, 0.17, 0.03));  // C observable
+    CorrData.push_back(dato(0.76, 0.24, 0.04)); // S observable
+
+// Populate the correlation matrix
+    CorrStat(0, 0) = 1.;       //
+    CorrStat(1, 1) = 1.;
+    CorrStat(0, 1) = -0.05;      // Correlation between C and S
+    CorrStat(1, 0) = -0.05;      // Symmetric part
+
+    // Populate the correlation matrix
+    CorrSyst(0, 0) = 1.;       //
+    CorrSyst(1, 1) = 1.;
+    CorrSyst(0, 1) = 0.;      // Correlation between C and S
+    CorrSyst(1, 0) = 0.;      // Symmetric part
+
+// Insert correlated data into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsiom_Belle2007",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+
+    CorrData.clear();
+
+    //C and S for Bdjpsieta from Belle:2008ekf
+    CorrData.push_back(dato(-0.09, 0.18, 0.02));  // C observable
+    CorrData.push_back(dato(0.65, 0.21, 0.03)); // S observable
+
+// Populate the correlation matrix
+    CorrStat(0, 0) = 1.;       //
+    CorrStat(1, 1) = 1.;
+    CorrStat(0, 1) = 0.03;      // Correlation between C and S
+    CorrStat(1, 0) = 0.03;      // Symmetric part
+
+    // Populate the correlation matrix
+    CorrSyst(0, 0) = 1.;       //
+    CorrSyst(1, 1) = 1.;
+    CorrSyst(0, 1) = 0.;      // Correlation between C and S
+    CorrSyst(1, 0) = 0.;      // Symmetric part
+
+// Insert correlated data into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsieta_Belle2008",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+
+    CorrData.clear();
+
+    //C and S for Bdjpsietap from Belle:2008ekf
+    CorrData.push_back(dato(0.08, 0.21, 0.03));  // C observable
+    CorrData.push_back(dato(0.62, 0.23, 0.04)); // S observable
+
+// Populate the correlation matrix
+    CorrStat(0, 0) = 1.;       //
+    CorrStat(1, 1) = 1.;
+    CorrStat(0, 1) = 0.02;      // Correlation between C and S
+    CorrStat(1, 0) = 0.02;      // Symmetric part
+
+    // Populate the correlation matrix
+    CorrSyst(0, 0) = 1.;       //
+    CorrSyst(1, 1) = 1.;
+    CorrSyst(0, 1) = 0.;      // Correlation between C and S
+    CorrSyst(1, 0) = 0.;      // Symmetric part
+
+// Insert correlated data into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsietap_Belle2008",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+
+    CorrData.clear();
+
+    //C and S for Bsjpsieta from LHCb:2012fcs
+    CorrData.push_back(dato(-0.19, 0.16, 0.03));  // C observable
+    CorrData.push_back(dato(0.82, 0.21, 0.04)); // S observable
+
+// Populate the correlation matrix
+    CorrStat(0, 0) = 1.;       //
+    CorrStat(1, 1) = 1.;
+    CorrStat(0, 1) = 0.02;      // Correlation between C and S
+    CorrStat(1, 0) = 0.02;      // Symmetric part
+
+    // Populate the correlation matrix
+    CorrSyst(0, 0) = 1.;       //
+    CorrSyst(1, 1) = 1.;
+    CorrSyst(0, 1) = 0.;      // Correlation between C and S
+    CorrSyst(1, 0) = 0.;      // Symmetric part
+
+// Insert correlated data into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bsjpsieta_LHCb2012",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+
+    CorrData.clear();
+
 
     //CP violating observables Bsjpsiph from LHCb:2023sim
     TMatrixDSym Corr(6);
@@ -512,7 +775,7 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     CorrData.clear();
 
     //phi and lambda for ATLAS:2020lbz solution B
-    //TMatrixDSym Corr(5,5);
+    TMatrixDSym Corr5(5);
 
     CorrData.push_back(dato(-0.081, 0.041, 0.022)); //phi_s
     CorrData.push_back(dato(0.2213, 0.0019, 0.0023)); //f_paral
@@ -704,42 +967,120 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("polarization_Bdjpsikst_LHCb2013",CorrelatedGaussianObservables(CorrData, Corr4)));
     CorrData.clear();
 
+    //C and S for Bdjpsikst from BaBar:2009byl
+    CorrData.push_back(dato(0.025, 0.083, 0.054));  // C observable
+    CorrData.push_back(dato(0.601, 0.239, 0.087)); // S observable
 
-    //Cp polarization obs for Bsjpsikst from LHCb:2015esn
+// Populate the correlation matrix
+    CorrStat(0, 0) = 1.;       //
+    CorrStat(1, 1) = 1.;
+    CorrStat(0, 1) = 0.15;      // Correlation between C and S
+    CorrStat(1, 0) = 0.15;      // Symmetric part
+
+    // Populate the correlation matrix
+    CorrSyst(0, 0) = 1.;       //
+    CorrSyst(1, 1) = 1.;
+    CorrSyst(0, 1) = 0.;      // Correlation between C and S
+    CorrSyst(1, 0) = 0.;      // Symmetric part
+
+// Insert correlated data into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsikst_BaBar2009",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+
+    CorrData.clear();
+
+
+    //Cp polarization obs for Bsjpsikst from LHCb:2025vrr (combination of runs I and II)
 
     TMatrixDSym Corr7(7);
-    CorrData.push_back(dato(-0.048, 0.057, 0.020)); //A0 CP
-    CorrData.push_back(dato(0.171, 0.152, 0.028)); //A_paral CP
-    CorrData.push_back(dato(-0.049, 0.096, 0.025)); //A_perp CP
-    CorrData.push_back(dato(0.497, 0.025, 0.025)); // f0
-    CorrData.push_back(dato(0.179, 0.027, 0.013)); // f_paral
-    CorrData.push_back(dato(-2.70, 0.16, 0.013)); //delta_paral
-    CorrData.push_back(dato(0.0105, 0.11, 0.0165)); //delta_perp
+    CorrData.push_back(dato(0.021, 0.026, 0.007)); //A0 CP
+    CorrData.push_back(dato(-0.073, 0.060, 0.007)); //A_paral CP
+    CorrData.push_back(dato(0.057, 0.049, 0.014)); //A_perp CP
+    CorrData.push_back(dato(0.528, 0.011, 0.009)); // f0
+    CorrData.push_back(dato(0.205, 0.012, 0.005)); // f_paral
+    CorrData.push_back(dato(2.879, 0.085, 0.018)); //delta_paral
+    CorrData.push_back(dato(0.057, 0.065, 0.018)); //delta_perp
 
     Corr7(1,1) = Corr7(0,0) = Corr7(2,2) = Corr7(3,3) = Corr7(4,4) = Corr7(5,5) = Corr7(6,6) = 1.;
-    Corr7(1,0) = Corr7(0,1) = -0.11;
-    Corr7(2,0) = Corr7(0,2) = -0.17;
-    Corr7(3,0) = Corr7(0,3) = 0.06;
-    Corr7(4,0) = Corr7(0,4) = -0.05;
-    Corr7(5,0) = Corr7(0,5) = 0.03;
+    Corr7(1,0) = Corr7(0,1) = -0.16;
+    Corr7(2,0) = Corr7(0,2) = -0.08;
+    Corr7(3,0) = Corr7(0,3) = 0.01;
+    Corr7(4,0) = Corr7(0,4) = -0.01;
+    Corr7(5,0) = Corr7(0,5) = 0.01;
     Corr7(6,0) = Corr7(0,6) = 0.02;
-    Corr7(1,2) = Corr7(2,1) = -0.49;
-    Corr7(1,3) = Corr7(3,1) = -0.04;
-    Corr7(1,4) = Corr7(4,1) = -0.07;
-    Corr7(1,5) = Corr7(5,1) = 0.09;
-    Corr7(1,6) = Corr7(6,1) = 0.06;
+    Corr7(1,2) = Corr7(2,1) = -0.57;
+    Corr7(1,3) = Corr7(3,1) = -0.01;
+    Corr7(1,4) = Corr7(4,1) = 0.01;
+    Corr7(1,5) = Corr7(5,1) = -0.03;
+    Corr7(1,6) = Corr7(6,1) = -0.04;
     Corr7(2,3) = Corr7(3,2) = 0.01;
-    Corr7(2,4) = Corr7(4,2) = -0.06;
-    Corr7(2,5) = Corr7(5,2) = -0.09;
-    Corr7(2,6) = Corr7(6,2) = -0.03;
-    Corr7(3,4) = Corr7(4,3) = -0.34;
-    Corr7(3,5) = Corr7(5,3) = 0.04;
-    Corr7(3,6) = Corr7(6,3) = 0.05;
+    Corr7(2,4) = Corr7(4,2) = 0.04;
+    Corr7(2,5) = Corr7(5,2) = 0.01;
+    Corr7(2,6) = Corr7(6,2) = 0.02;
+    Corr7(3,4) = Corr7(4,3) = -0.09;
+    Corr7(3,5) = Corr7(5,3) = 0.05;
+    Corr7(3,6) = Corr7(6,3) = 0.69;
     Corr7(4,5) = Corr7(5,4) = -0.03;
-    Corr7(4,6) = Corr7(6,4) = -0.04;
-    Corr7(5,6) = Corr7(6,5) = 0.62;
+    Corr7(4,6) = Corr7(6,4) = 0.0;
+    Corr7(5,6) = Corr7(6,5) = -0.44;
 
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("polarization_Bsjpsikst_LHCb2015",CorrelatedGaussianObservables(CorrData, Corr)));
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("polarization_Bsjpsikst_LHCb2025",CorrelatedGaussianObservables(CorrData, Corr)));
+    CorrData.clear();
+
+    //----------------------------------------------------------------------
+    // B→DD Correlated CP measurements
+    //----------------------------------------------------------------------
+
+    //Bddpdm : C and S observables from LHCb:2024gkk (arXiv:2409.03009)
+    CorrData.push_back(dato(0.128, 0.103, 0.010));  // C observable
+    CorrData.push_back(dato(0.552, 0.100, 0.010)); // S observable
+
+    CorrStat(0, 0) = 1.;       
+    CorrStat(1, 1) = 1.;       
+    CorrStat(0, 1) = -0.472;      // Correlation between C and S
+    CorrStat(1, 0) = -0.472;      
+
+    CorrSyst(0, 0) = 1.;       
+    CorrSyst(1, 1) = 1.;       
+    CorrSyst(0, 1) = 0.;      
+    CorrSyst(1, 0) = 0.;      
+
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bddpdm_LHCb2024",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    CorrData.clear();
+
+    //Bsdpsdms : C and S observables from LHCb Run2 (part of arXiv:2409.03009 combination)
+    //We use C and S instead of phi_s and lambda to avoid using pre-averaged values
+    //From LHCb Run2: C = 0.128 ± 0.103(stat) ± 0.010(syst), S = 0.552 ± 0.100(stat) ± 0.010(syst)
+    //NOTE: These are for Bs→Ds⁺Ds⁻ from the same paper as Bd→D⁺D⁻
+    CorrData.push_back(dato(-0.053, 0.096, 0.020));  // C observable (NOTE: Check paper for actual values)
+    CorrData.push_back(dato(-0.055, 0.092, 0.021));  // S observable (NOTE: Check paper for actual values)
+
+    CorrStat(0, 0) = 1.;       
+    CorrStat(1, 1) = 1.;       
+    CorrStat(0, 1) = 0.;      // Correlation coefficient (CHECK PAPER)
+    CorrStat(1, 0) = 0.;      
+
+    CorrSyst(0, 0) = 1.;       
+    CorrSyst(1, 1) = 1.;       
+    CorrSyst(0, 1) = 0.;      
+    CorrSyst(1, 0) = 0.;      
+
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bsdpsdms_LHCb2024",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    CorrData.clear();
+
+    //ACPBpdpd0b and ACPBpdpsd0b from LHCb:2023wbb (correlated)
+    dato Bpdpd0b_acp(2.5e-2, 1.0e-2, 0.4e-2, 0.3e-2);
+    dato Bpdpsd0b_acp(0.5e-2, 0.2e-2, 0.5e-2, 0.3e-2);
+
+    CorrData.push_back(dato(Bpdpd0b_acp.getMean(), Bpdpd0b_acp.getSigma()));  // ACPBpdpd0b
+    CorrData.push_back(dato(Bpdpsd0b_acp.getMean(), Bpdpsd0b_acp.getSigma())); // ACPBpdpsd0b
+
+    TMatrixDSym Corr_ACP_charged(2);
+    Corr_ACP_charged(0, 0) = 1.0;
+    Corr_ACP_charged(1, 1) = 1.0;
+    Corr_ACP_charged(0, 1) = 0.386;  // Correlation from LHCb:2023wbb
+    Corr_ACP_charged(1, 0) = 0.386;
+
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("ACP_Bpdpd0b_Bpdpsd0b_LHCb2023",CorrelatedGaussianObservables(CorrData, Corr_ACP_charged)));
     CorrData.clear();
 
     //data for the pull in newmeas
@@ -794,6 +1135,68 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
 
     pdgaverage.setData(data);
     pdgaverage.setName("SBdjpsip0");
+    pdgaverage.CalculateAverage();
+
+    newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //CBdjpsiom
+    data.push_back(dato(-0.19, 0.17, 0.03));
+    data.push_back(dato(0.09, 0.27, 0.04));
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("CBdjpsiom");
+    pdgaverage.CalculateAverage();
+
+    newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //SBdjpsiom
+    data.push_back(dato(0.76, 0.24, 0.04));
+    data.push_back(dato(0.61, 0.38, 0.05));
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("SBdjpsiom");
+    pdgaverage.CalculateAverage();
+
+    newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //CBdjpsietap
+    data.push_back(dato(0.08, 0.21, 0.03));
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("CBdjpsietap");
+    pdgaverage.CalculateAverage();
+
+    newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //SBdjpsietap
+    data.push_back(dato(0.62, 0.23, 0.04));
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("SBdjpsietap");
+    pdgaverage.CalculateAverage();
+
+    newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //CBdjpsikst
+    data.push_back(dato(0.025, 0.083, 0.054));
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("CBdjpsikst");
+    pdgaverage.CalculateAverage();
+
+    newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //SBdjpsikst
+    data.push_back(dato(0.601, 0.239, 0.087));
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("SBdjpsikst");
     pdgaverage.CalculateAverage();
 
     newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
@@ -964,6 +1367,71 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
 
     newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
+
+    //----------------------------------------------------------------------
+    // B→DD newmeas entries for proper averaging
+    //----------------------------------------------------------------------
+
+    //CBddpdm - Combining individual and correlated measurements
+    data.push_back(dato(0.265, 0.175, 0.020));  //LHCb:2016inx (from corrmeas)
+    data.push_back(dato(-0.07, 0.23, 0.03));   //BaBar:2008xnt (from corrmeas)
+    data.push_back(dato(0.162, 0.088, 0.009)); //LHCb:2024gkk (from corrmeas)
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("CBddpdm");
+    pdgaverage.CalculateAverage();
+
+    newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //SBddpdm - Combining individual and correlated measurements
+    data.push_back(dato(-0.535, 0.165, 0.050)); //LHCb:2016inx (from corrmeas)
+    data.push_back(dato(-0.63, 0.36, 0.05));    //BaBar:2008xnt (from corrmeas)
+    data.push_back(dato(-0.549, 0.085, 0.015)); //LHCb:2024gkk (from corrmeas)
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("SBddpdm");
+    pdgaverage.CalculateAverage();
+
+    newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //CBsdpsdms - Bs→Ds⁺Ds⁻ time-dependent CP (direct)
+    //Using individual measurements, not pre-averaged
+    data.push_back(dato(-0.053, 0.096, 0.020)); //LHCb (from CS_Bsdpsdms_LHCb2024 corrmeas)
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("CBsdpsdms");
+    pdgaverage.CalculateAverage();
+
+    newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //SBsdpsdms - Bs→Ds⁺Ds⁻ time-dependent CP (mixing-induced)
+    //Using individual measurements, not pre-averaged
+    data.push_back(dato(-0.055, 0.092, 0.021)); //LHCb (from CS_Bsdpsdms_LHCb2024 corrmeas)
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("SBsdpsdms");
+    pdgaverage.CalculateAverage();
+
+    newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //ACPBpdpd0b - B⁺→D⁺D̄⁰ direct CP asymmetry
+    data.push_back(dato(0.00, 0.08, 0.02)); //Belle:2008doh
+    data.push_back(dato(-0.13, 0.14, 0.02)); //BaBar:2006uih
+    data.push_back(dato(2.5e-2, 1.0e-2, 0.4e-2, 0.3e-2)); //LHCb:2023wbb (from corrmeas)
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("ACPBpdpd0b");
+    pdgaverage.CalculateAverage();
+
+    newmeas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //ACPBpdpsd0b - B⁺→D⁺D̄⁰ₛ direct CP asymmetry
+    newmeas.insert(pair<string, dato>("ACPBpdpsd0b", dato(0.5e-2, 0.2e-2, 0.5e-2, 0.3e-2))); //LHCb:2023wbb (from corrmeas)
 
     std::cout << "All meas inserted" << endl;
 
@@ -1335,6 +1803,54 @@ void goldenmodes::DefineParameters(const string& channel) {
     GetParameter("A_Bsjpsikst_perp_re").SetLowerLimit(0.);
     GetParameter("A_Bsjpsikst_perp_im").SetUpperLimit(0.);
     GetParameter("A_Bsjpsikst_perp_im").SetLowerLimit(0.);
+  } else if (channel == "Bddpdm") {
+      // Bd -> D+ D- parameters (uses double SU(3) corrections)
+      std::vector<std::string> params = {
+        "E1_dcc_re", "E1_dcc_im",
+        "A2_cdc_re", "A2_cdc_im",
+        "P1_GIM_dc_re", "P1_GIM_dc_im",
+        "P3_GIM_dc_re", "P3_GIM_dc_im",
+        "su3_double_E1_re", "su3_double_E1_im",
+        "su3_double_A2_re", "su3_double_A2_im",
+        "su3_double_P1_GIM_re", "su3_double_P1_GIM_im",
+        "su3_double_P3_GIM_re", "su3_double_P3_GIM_im"
+      };
+      channelParameters[channel] = params;
+      for (const auto& param : params) {
+          AddParameter(param, -50., 50.);
+      }
+  } else if (channel == "Bsdpsdms") {
+      // Bs -> Ds+ Ds- parameters (base channel for s->c)
+      std::vector<std::string> params = {
+        "E1_scc_re", "E1_scc_im",
+        "A2_csc_re", "A2_csc_im",
+        "P1_GIM_sc_re", "P1_GIM_sc_im",
+        "P3_GIM_sc_re", "P3_GIM_sc_im"
+      };
+      channelParameters[channel] = params;
+      for (const auto& param : params) {
+          AddParameter(param, -50., 50.);
+      }
+  } else if (channel == "Bpdpd0b") {
+      // B+ -> D+ D0bar parameters (uses single SU(3) corrections for A1)
+      std::vector<std::string> params = {
+        "A1_scu_re", "A1_scu_im",
+        "su3_single_A1_re", "su3_single_A1_im"
+      };
+      channelParameters[channel] = params;
+      for (const auto& param : params) {
+          AddParameter(param, -50., 50.);
+      }
+  } else if (channel == "Bpdpsd0b") {
+      // B+ -> D+ Ds0bar parameters (uses single SU(3) corrections)
+      std::vector<std::string> params = {
+        "su3_single_E1_re", "su3_single_E1_im",
+        "su3_single_P1_GIM_re", "su3_single_P1_GIM_im"
+      };
+      channelParameters[channel] = params;
+      for (const auto& param : params) {
+          AddParameter(param, -50., 50.);
+      }
   } else {
         // Handle the case where the channel is not recognized
         std::cerr << "Error: Unrecognized channel \"" << channel << "\" in DefineParameters." << std::endl;
@@ -1433,85 +1949,153 @@ double goldenmodes::getParameterValue(const std::string& paramName) const {
 
 
     if (channel == "Bdjpsik0") {
-      amp = Vcd * Vbc * getPar("A_Bdjpsik0")
-	+ Vud*Vbu * getPar("B_Bdjpsik0");
+      // Bd→J/ψ K⁰: b→c(c̄s), spectator d
+      amp = Vbc * Vcs * getPar("A_Bdjpsik0")
+	+ Vbu * Vus * getPar("B_Bdjpsik0");
         amplitudes[channel] = amp;
     } else if (channel == "Bdjpsip0") {
-      amp = Vcs*Vbc*getPar("A_Bdjpsip0")
-	+ Vus*Vbu*getPar("B_Bdjpsip0");
+      // Bd→J/ψ π⁰: b→c(c̄d), spectator d
+      amp = Vbc * Vcd * getPar("A_Bdjpsip0")
+	+ Vbu * Vud * getPar("B_Bdjpsip0");
         amplitudes[channel] = amp;
     } else if (channel == "Bdjpsiom") {
-      amp_0 = Vcd*Vbc*getPar("A_Bdjpsiom_0")
-	+ Vud*Vbu*getPar("B_Bdjpsiom_0");
-  amp_paral = Vcd*Vbc*getPar("A_Bdjpsiom_paral")
-  + Vud*Vbu*getPar("B_Bdjpsiom_paral");
-  amp_perp = Vcd*Vbc*getPar("A_Bdjpsiom_perp")
-+ Vud*Vbu*getPar("B_Bdjpsiom_perp");
+      // Bd→J/ψ ω: b→c(c̄d), spectator d
+      amp_0 = Vbc * Vcd * getPar("A_Bdjpsiom_0")
+	+ Vbu * Vud * getPar("B_Bdjpsiom_0");
+  amp_paral = Vbc * Vcd * getPar("A_Bdjpsiom_paral")
+  + Vbu * Vud * getPar("B_Bdjpsiom_paral");
+  amp_perp = Vbc * Vcd * getPar("A_Bdjpsiom_perp")
++ Vbu * Vud * getPar("B_Bdjpsiom_perp");
       amp = amp_0 + amp_perp + amp_paral;
         amplitudes[channel] = amp;
         amplitudes[channel + "_0"] = amp_0;
         amplitudes[channel + "_paral"] = amp_paral;
         amplitudes[channel + "_perp"] = amp_perp;
     } else if (channel == "Bpjpsikp") {
-	  amp = Vcs * Vbc * getPar("A_Bpjpsikp")
-	    + Vus*Vbu * getPar("B_Bpjpsikp");
+      // B⁺→J/ψ K⁺: b→c(c̄s), spectator u
+	  amp = Vbc * Vcs * getPar("A_Bpjpsikp")
+	    + Vbu * Vus * getPar("B_Bpjpsikp");
         amplitudes[channel] = amp;
     } else if (channel == "Bpjpsipp") {
-	  amp = Vcd*Vbc*getPar("A_Bpjpsipp")
-	+ Vud*Vbu*getPar("B_Bpjpsipp");
+      // B⁺→J/ψ π⁺: b→c(c̄d), spectator u
+	  amp = Vbc * Vcd * getPar("A_Bpjpsipp")
+	+ Vbu * Vud * getPar("B_Bpjpsipp");
         amplitudes[channel] = amp;
     } else if (channel == "Bsjpsiph") {
-      amp_0 = Vcs*Vbc*getPar("A_Bsjpsiph_0")
-+ Vus*Vbu*getPar("B_Bsjpsiph_0");
-amp_paral = Vcs*Vbc*getPar("A_Bsjpsiph_paral")
-+ Vus*Vbu*getPar("B_Bsjpsiph_paral");
-amp_perp = Vcs*Vbc*getPar("A_Bsjpsiph_perp")
-+ Vus*Vbu*getPar("B_Bsjpsiph_perp");
+      // Bs→J/ψ φ: b→c(c̄s), spectator s
+      amp_0 = Vbc * Vcs * getPar("A_Bsjpsiph_0")
++ Vbu * Vus * getPar("B_Bsjpsiph_0");
+amp_paral = Vbc * Vcs * getPar("A_Bsjpsiph_paral")
++ Vbu * Vus * getPar("B_Bsjpsiph_paral");
+amp_perp = Vbc * Vcs * getPar("A_Bsjpsiph_perp")
++ Vbu * Vus * getPar("B_Bsjpsiph_perp");
 amp = amp_0 + amp_perp + amp_paral;
 amplitudes[channel] = amp;
 amplitudes[channel + "_0"] = amp_0;
 amplitudes[channel + "_paral"] = amp_paral;
 amplitudes[channel + "_perp"] = amp_perp;
     } else if (channel == "Bsjpsik0") {
-	  amp = Vcd*Vbc*getPar("A_Bsjpsik0")
-	+ Vud*Vbu*getPar("B_Bsjpsik0");
+      // Bs→J/ψ K⁰: b→c(c̄s), spectator s→d (Cabibbo suppressed)
+	  amp = Vbc * Vcs * getPar("A_Bsjpsik0")
+	+ Vbu * Vus * getPar("B_Bsjpsik0");
         amplitudes[channel] = amp;
     } else if (channel == "Bdjpsikst") {
-      amp_0 = Vcd*Vbc*getPar("A_Bdjpsikst_0")
-	+ Vud*Vbu*getPar("B_Bdjpsikst_0");
-  amp_paral = Vcd*Vbc*getPar("A_Bdjpsikst_paral")
-  + Vud*Vbu*getPar("B_Bdjpsikst_paral");
-  amp_perp = Vcd*Vbc*getPar("A_Bdjpsikst_perp")
-+ Vud*Vbu*getPar("B_Bdjpsikst_perp");
+      // Bd→J/ψ K*: b→c(c̄s), spectator d
+      amp_0 = Vbc * Vcs * getPar("A_Bdjpsikst_0")
+	+ Vbu * Vus * getPar("B_Bdjpsikst_0");
+  amp_paral = Vbc * Vcs * getPar("A_Bdjpsikst_paral")
+  + Vbu * Vus * getPar("B_Bdjpsikst_paral");
+  amp_perp = Vbc * Vcs * getPar("A_Bdjpsikst_perp")
++ Vbu * Vus * getPar("B_Bdjpsikst_perp");
       amp = amp_0 + amp_perp + amp_paral;
       amplitudes[channel] = amp;
       amplitudes[channel + "_0"] = amp_0;
       amplitudes[channel + "_paral"] = amp_paral;
       amplitudes[channel + "_perp"] = amp_perp;
     } else if (channel == "Bdjpsirh") {
-      amp_0 = Vcd*Vbc*getPar("A_Bdjpsirh_0")
-	+ Vud*Vbu*getPar("B_Bdjpsirh_0");
-  amp_paral = Vcd*Vbc*getPar("A_Bdjpsirh_paral")
-  + Vud*Vbu*getPar("B_Bdjpsirh_paral");
-  amp_perp = Vcd*Vbc*getPar("A_Bdjpsirh_perp")
-+ Vud*Vbu*getPar("B_Bdjpsirh_perp");
+      // Bd→J/ψ ρ: b→c(c̄d), spectator d
+      amp_0 = Vbc * Vcd * getPar("A_Bdjpsirh_0")
+	+ Vbu * Vud * getPar("B_Bdjpsirh_0");
+  amp_paral = Vbc * Vcd * getPar("A_Bdjpsirh_paral")
+  + Vbu * Vud * getPar("B_Bdjpsirh_paral");
+  amp_perp = Vbc * Vcd * getPar("A_Bdjpsirh_perp")
++ Vbu * Vud * getPar("B_Bdjpsirh_perp");
       amp = amp_0 + amp_perp + amp_paral;
       amplitudes[channel] = amp;
       amplitudes[channel + "_0"] = amp_0;
       amplitudes[channel + "_paral"] = amp_paral;
       amplitudes[channel + "_perp"] = amp_perp;
     } else if (channel == "Bsjpsikst") {
-      amp_0 = Vcs*Vbc*getPar("A_Bsjpsikst_0")
-+ Vus*Vbu*getPar("B_Bsjpsikst_0");
-amp_paral = Vcs*Vbc*getPar("A_Bsjpsikst_paral")
-+ Vus*Vbu*getPar("B_Bsjpsikst_paral");
-amp_perp = Vcs*Vbc*getPar("A_Bsjpsikst_perp")
-+ Vus*Vbu*getPar("B_Bsjpsikst_perp");
+      // Bs→J/ψ K*: b→c(c̄s), spectator s
+      amp_0 = Vbc * Vcs * getPar("A_Bsjpsikst_0")
++ Vbu * Vus * getPar("B_Bsjpsikst_0");
+amp_paral = Vbc * Vcs * getPar("A_Bsjpsikst_paral")
++ Vbu * Vus * getPar("B_Bsjpsikst_paral");
+amp_perp = Vbc * Vcs * getPar("A_Bsjpsikst_perp")
++ Vbu * Vus * getPar("B_Bsjpsikst_perp");
 amp = amp_0 + amp_perp + amp_paral;
 amplitudes[channel] = amp;
 amplitudes[channel + "_0"] = amp_0;
 amplitudes[channel + "_paral"] = amp_paral;
 amplitudes[channel + "_perp"] = amp_perp;
+} else if (channel == "Bsdpsdms") {
+      // Bs→Ds⁺Ds⁻ channel: BASE amplitudes (s→c transitions)
+      amp = Vcs * Vbc * (getPar("E1_scc_Bsdpsdms") + getPar("A2_csc_Bsdmsdps"))
+          - Vus * Vbu * (getPar("P1_GIM_sc_Bsdpsdms") + getPar("P3_GIM_sc_Bsdpsdms"));
+      amplitudes[channel] = amp;
+} else if (channel == "Bddpdm") {
+      // Bd→D⁺D⁻ channel: DOUBLE s→d exchange
+      // Applies SU(3)-breaking corrections to s→c base amplitudes
+      std::complex<double> E1_Bddpdm = std::complex<double>(
+          getParameterValue("E1_scc_Bsdpsdms_re") * (1 + getParameterValue("su3_double_E1_re")),
+          getParameterValue("E1_scc_Bsdpsdms_re") * getParameterValue("su3_double_E1_im")
+      );
+      
+      std::complex<double> A2_Bddpdm = std::complex<double>(
+          getParameterValue("A2_csc_Bsdmsdps_re") * (1 + getParameterValue("su3_double_A2_re")),
+          getParameterValue("A2_csc_Bsdmsdps_im") * (1 + getParameterValue("su3_double_A2_im"))
+      );
+      
+      std::complex<double> P1_GIM_Bddpdm = std::complex<double>(
+          getParameterValue("P1_GIM_sc_Bsdpsdms_re") * (1 + getParameterValue("su3_double_P1_GIM_re")),
+          getParameterValue("P1_GIM_sc_Bsdpsdms_im") * (1 + getParameterValue("su3_double_P1_GIM_im"))
+      );
+      
+      std::complex<double> P3_GIM_Bddpdm = std::complex<double>(
+          getParameterValue("P3_GIM_sc_Bsdpsdms_re") * (1 + getParameterValue("su3_double_P3_GIM_re")),
+          getParameterValue("P3_GIM_sc_Bsdpsdms_im") * (1 + getParameterValue("su3_double_P3_GIM_im"))
+      );
+      
+      amp = Vcd * Vbc * (E1_Bddpdm + A2_Bddpdm)
+          - Vud * Vbu * (P1_GIM_Bddpdm + P3_GIM_Bddpdm);
+      amplitudes[channel] = amp;
+} else if (channel == "Bpdpsd0b") {
+      // B⁺→D⁺D̄⁰ₛ channel: Uses BASE s→c amplitudes (no corrections for A1)
+      // Shares base E1 and P1_GIM from Bsdpsdms (no corrections needed)
+      amp = Vcs * Vbc * getPar("E1_scc_Bsdpsdms")
+          + Vus * Vbu * (getPar("A1_scu_Bpdpsd0b") - getPar("P1_GIM_sc_Bsdpsdms"));
+      amplitudes[channel] = amp;
+} else if (channel == "Bpdpd0b") {
+      // B⁺→D⁺D̄⁰ channel: SINGLE s→d exchange
+      // Applies SU(3)-breaking corrections to convert s→c base to d→c
+      std::complex<double> E1_Bpdpd0b = std::complex<double>(
+          getParameterValue("E1_scc_Bsdpsdms_re") * (1 + getParameterValue("su3_single_E1_re")),
+          getParameterValue("E1_scc_Bsdpsdms_re") * getParameterValue("su3_single_E1_im")
+      );
+      
+      std::complex<double> A1_Bpdpd0b = std::complex<double>(
+          getParameterValue("A1_scu_Bpdpsd0b_re") * (1 + getParameterValue("su3_single_A1_re")),
+          getParameterValue("A1_scu_Bpdpsd0b_im") * (1 + getParameterValue("su3_single_A1_im"))
+      );
+      
+      std::complex<double> P1_GIM_Bpdpd0b = std::complex<double>(
+          getParameterValue("P1_GIM_sc_Bsdpsdms_re") * (1 + getParameterValue("su3_single_P1_GIM_re")),
+          getParameterValue("P1_GIM_sc_Bsdpsdms_im") * (1 + getParameterValue("su3_single_P1_GIM_im"))
+      );
+      
+      amp = Vcd * Vbc * E1_Bpdpd0b
+          + Vud * Vbu * (A1_Bpdpd0b - P1_GIM_Bpdpd0b);
+      amplitudes[channel] = amp;
 } else {
       cout << "WARNING: amplitude for channel " << channel << " not found" << endl;
     }
@@ -1621,31 +2205,59 @@ goldenmodes::parseChannel(const std::string& channel) const {
         throw std::runtime_error("Error in parseChannel: Unknown B meson in channel: " + channel);
     }
 
-    // The remaining part should start with "jpsi" (or a variation)
-    const std::string jpsiIdentifier = "jpsi";
     std::string remaining = channel.substr(bMeson.length());
+    
+    // Check if it's a J/psi channel or a DD channel
+    const std::string jpsiIdentifier = "jpsi";
+    if (remaining.rfind(jpsiIdentifier, 0) == 0) {
+        // J/psi channel: B→J/ψ X
+        // Extract the second final-state meson
+        remaining = remaining.substr(jpsiIdentifier.length());
+        std::string meson2;
 
-    if (remaining.rfind(jpsiIdentifier, 0) != 0) {
-        throw std::runtime_error("Error in parseChannel: Expected 'jpsi' in channel: " + channel);
-    }
-
-    // Extract the second final-state meson
-    remaining = remaining.substr(jpsiIdentifier.length());
-    std::string meson2;
-
-    // Look for a valid meson name in mesonMasses
-    for (const auto& meson : mesonMasses) {
-        if (remaining.rfind(meson.first, 0) == 0) {
-            meson2 = meson.first;
-            break;
+        // Look for a valid meson name in mesonMasses
+        for (const auto& meson : mesonMasses) {
+            if (remaining.rfind(meson.first, 0) == 0) {
+                meson2 = meson.first;
+                break;
+            }
         }
-    }
 
-    if (meson2.empty()) {
-        throw std::runtime_error("Error in parseChannel: Unable to parse second final-state meson in channel: " + channel);
-    }
+        if (meson2.empty()) {
+            throw std::runtime_error("Error in parseChannel: Unable to parse second final-state meson in channel: " + channel);
+        }
 
-    return {bMeson, {jpsiIdentifier, meson2}};
+        return {bMeson, {jpsiIdentifier, meson2}};
+    } else {
+        // DD channel: B→D X or B→Ds X
+        // Parse the two D mesons from the remaining string
+        std::string meson1, meson2;
+        
+        // Try to match known D meson patterns (order matters - check longer patterns first)
+        if (remaining.rfind("dpsdms", 0) == 0) {
+            meson1 = "dps";
+            meson2 = "dms";
+        } else if (remaining.rfind("dpsd0b", 0) == 0) {
+            meson1 = "dps";
+            meson2 = "d0b";
+        } else if (remaining.rfind("dpsdm", 0) == 0) {
+            meson1 = "dps";
+            meson2 = "dm";
+        } else if (remaining.rfind("dpdms", 0) == 0) {
+            meson1 = "dp";
+            meson2 = "dms";
+        } else if (remaining.rfind("dpd0b", 0) == 0) {
+            meson1 = "dp";
+            meson2 = "d0b";
+        } else if (remaining.rfind("dpdm", 0) == 0) {
+            meson1 = "dp";
+            meson2 = "dm";
+        } else {
+            throw std::runtime_error("Error in parseChannel: Unable to parse DD channel: " + channel);
+        }
+        
+        return {bMeson, {meson1, meson2}};
+    }
 }
 
 //----------------------------------------------------------
@@ -2534,7 +3146,11 @@ void goldenmodes::PrintObservablePulls(const std::string& filename) {
         {"delta_paral_Bdjpsikst", "delta_paral_Bdjpsikst"}, {"delta_perp_Bdjpsikst", "delta_perp_Bdjpsikst"},
         {"f_0_Bsjpsikst", "f_0_Bsjpsikst"}, {"f_paral_Bsjpsikst", "f_paral_Bsjpsikst"},
         {"delta_paral_Bsjpsikst", "delta_paral_Bsjpsikst"}, {"delta_perp_Bsjpsikst", "delta_perp_Bsjpsikst"},
-        {"A0_CP_Bsjpsikst", "A0_CP_Bsjpsikst"}, {"Aparal_CP_Bsjpsikst", "Aparal_CP_Bsjpsikst"}, {"Aperp_CP_Bsjpsikst", "Aperp_CP_Bsjpsikst"}
+        {"A0_CP_Bsjpsikst", "A0_CP_Bsjpsikst"}, {"Aparal_CP_Bsjpsikst", "Aparal_CP_Bsjpsikst"}, {"Aperp_CP_Bsjpsikst", "Aperp_CP_Bsjpsikst"},
+        {"BR_Bddpdm", "BRBddpdm"}, {"C_Bddpdm", "CBddpdm"}, {"S_Bddpdm", "SBddpdm"},
+        {"BR_Bsdpsdms", "BRBsdpsdms"}, {"C_Bsdpsdms", "CBsdpsdms"}, {"S_Bsdpsdms", "SBsdpsdms"},
+        {"BR_Bpdpd0b", "BRBpdpd0b"}, {"ACP_Bpdpd0b", "ACPBpdpd0b"},
+        {"BR_Bpdpsd0b", "BRBpdpsd0b"}, {"ACP_Bpdpsd0b", "ACPBpdpsd0b"}
 
     };
 
@@ -2564,19 +3180,9 @@ void goldenmodes::PrintObservablePulls(const std::string& filename) {
         }
 
         if (found_measurement) {
-            // Calculate the pull value
-            Pull pullCalculator(
-                *hist,                   // Reference to the histogram
-                hist->GetNbinsX(),       // Number of bins along X
-                500,                     // Number of bins along Y
-                0.0,                     // X-axis lower bound, triggers auto setting in makeCompatPlot
-                0.0,                     // X-axis upper bound, triggers auto setting in makeCompatPlot
-                0.0,                     // Y-axis lower bound, triggers auto setting in makeCompatPlot
-                0.0,                     // Y-axis upper bound, triggers auto setting in makeCompatPlot
-                true                     // Whether to use low stats or not
-            );
-
-            double pull = pullCalculator.calcPull(obs_measurement, sigma_measurement, true);
+            // Calculate the pull value: (predicted - observed) / uncertainty
+            double pull = (obs_mean - obs_measurement) / sigma_measurement;
+            
             outfile << obs_name << "\t"
                     << obs_measurement << "\t"
                     << obs_mean << "\t"

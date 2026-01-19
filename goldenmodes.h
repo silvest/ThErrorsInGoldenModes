@@ -50,8 +50,8 @@ public:
   void PrintHistogram();
 
   //vector with all the channel names:
-  std::vector<std::string> channelNames = {"Bdjpsik0s", "Bdjpsik0l", "Bdjpsik0" ,"Bdjpsip0", "Bdjpsiom", "Bpjpsikp", "Bpjpsipp", "Bsjpsiph", "Bsjpsik0s", "Bdjpsikst", "Bdjpsirh", "Bsjpsikst"};
-  std::vector<std::string> channelNamesSU3 = {"Bdjpsik0", "Bdjpsip0", "Bdjpsiom", "Bpjpsikp", "Bpjpsipp", "Bsjpsiph", "Bsjpsik0", "Bdjpsikst", "Bdjpsirh", "Bsjpsikst"};
+  std::vector<std::string> channelNames = {"Bdjpsik0s", "Bdjpsik0l", "Bdjpsik0" ,"Bdjpsip0", "Bdjpsiom", "Bpjpsikp", "Bpjpsipp", "Bsjpsiph", "Bsjpsik0s", "Bdjpsikst", "Bdjpsirh", "Bsjpsikst", "Bddpdm", "Bsdpsdms", "Bpdpd0b", "Bpdpsd0b"};
+  std::vector<std::string> channelNamesSU3 = {"Bdjpsik0", "Bdjpsip0", "Bdjpsiom", "Bpjpsikp", "Bpjpsipp", "Bsjpsiph", "Bsjpsik0", "Bdjpsikst", "Bdjpsirh", "Bsjpsikst", "Bddpdm", "Bsdpsdms", "Bpdpd0b", "Bpdpsd0b"};
   std::vector<std::string> vectorMesonChannels = {
     "Bdjpsiom", "Bsjpsiph", "Bdjpsikst", "Bdjpsirh", "Bsjpsikst"
 };
@@ -66,7 +66,9 @@ public:
       {"Bdjpsiom", +1},
       {"Bsjpsik0s", +1},
       {"Bdjpsikst", +1},
-      {"Bdjpsirh", +1}
+      {"Bdjpsirh", +1},
+      {"Bddpdm", +1},      // Bd→D⁺D⁻: two pseudoscalars, CP-even
+      {"Bsdpsdms", +1}     // Bs→Ds⁺Ds⁻: two pseudoscalars, CP-even
 };
 
   //global variables
@@ -95,7 +97,12 @@ public:
     {"om", 0.78266},
     {"ph", 1.019461},
     {"rh", 1.465},
-    {"kst", 0.845}
+    {"kst", 0.845},
+    {"dp", 1.86966},    // D⁺ meson
+    {"dm", 1.86966},    // D⁻ meson
+    {"d0b", 1.86484},   // D̄⁰ meson
+    {"dps", 1.96835},   // Ds⁺ meson
+    {"dms", 1.96835}    // Ds⁻ meson
 };
 
 
@@ -149,6 +156,7 @@ public:
   //calculate observables
   double CalculateBR(Parameter amplitude, const string& channel) const;
   double CalculateAcp(const Parameter& amplitude, const Parameter& conjugate_amplitude) const;
+  double CalculateAlpha(const Parameter& amplitude, const Parameter& conjugate_amplitude, const std::string& channel);
   double CalculateC(const Parameter& amplitude, const Parameter& conjugate_amplitude, const std::string& channel);
   double CalculateS(const Parameter& amplitude, const Parameter& conjugate_amplitude, const std::string& channel);
   std::pair<double, double> CalculatePhiAndLambda(const Parameter& amplitude, const Parameter& conjugate_amplitude, const std::string& channel);
@@ -170,7 +178,7 @@ private:
     // Existing members
   std::map<std::string, dato> meas;
   std::map<std::string, dato> newmeas;
-  histo histos;
+  Histos histos;
   map<string,CorrelatedGaussianObservables> corrmeas;
 
 

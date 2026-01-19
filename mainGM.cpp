@@ -1,5 +1,6 @@
 #include <BAT/BCLog.h>
 #include <BAT/BCAux.h>
+#include <mpi.h>
 #include <fstream>
 #include "goldenmodes.h"
 #include "CKM.h"
@@ -29,6 +30,7 @@ void showProgressBar(int current, int total, double elapsedTime) {
 
 
 int main() {
+    MPI_Init(NULL, NULL);
     // Initialize BAT logging
     BCLog::OpenLog("log_GM.txt", BCLog::detail, BCLog::detail);
     BCLog::SetLogLevelScreen(BCLog::summary);
@@ -124,5 +126,6 @@ int main() {
     chrono::duration<double> elapsedTime = end - start;
     cout << "\nExecution time: " << elapsedTime.count() << " seconds" << endl;
 
+    MPI_Finalize();
     return 0;
 }
