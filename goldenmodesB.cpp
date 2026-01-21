@@ -29,40 +29,36 @@ using namespace std;
 
 CKMParameters ckm;
 
-goldenmodes::goldenmodes() : BCModel() , histos(obs)
+goldenmodes::goldenmodes() : BCModel(), histos(obs)
 {
-  cout << "constructor for goldenmodes called: inserting the experimental data" << endl;
+    cout << "constructor for goldenmodes called: inserting the experimental data" << endl;
     std::vector<dato> data;
     PDGAverage pdgaverage;
 
-
-    DeclareParameters();  // Ensure parameters are defined
-
+    DeclareParameters(); // Ensure parameters are defined
 
     // Add CKM parameters directly in the constructor
     AddParameter("CKM_Vud", 0.97415, 0.97447);         // Vud parameter
-    AddParameter("CKM_Vcb", 0.04046, 0.04194 );    // Vcb parameter
-    AddParameter("CKM_Vub", 0.00349 , 0.00419);  // Vub parameter
-    AddParameter("CKM_gamma", 1.12224671, 1.22347581);   // gamma parameter (in rad)
+    AddParameter("CKM_Vcb", 0.04046, 0.04194);         // Vcb parameter
+    AddParameter("CKM_Vub", 0.00349, 0.00419);         // Vub parameter
+    AddParameter("CKM_gamma", 1.12224671, 1.22347581); // gamma parameter (in rad)
 
-
-    //Add mixing angle between om1 and om8
-    //AddParameter("theta_om", 0.6370451769779, 0.6370451769779); //in rad
+    // Add mixing angle between om1 and om8
+    // AddParameter("theta_om", 0.6370451769779, 0.6370451769779); //in rad
 
     SetPriorConstantAll();
 
-    //measurements
+    // measurements
 
-    //BRBdjpsik0
-    data.push_back(dato(9.02e-4, 0.10e-4, 0.26e-4)); //Belle:2019xld
-    data.push_back(dato(8.1e-4, 0.9e-4, 0.6e-4)); //Belle:2019avj
-    data.push_back(dato(8.85e-4, 1.35e-4, 0.1e-4)); //BaBar:2007esv
-    data.push_back(dato(8.69e-4, 0.22e-4, 0.30e-4)); //BaBar:2004htr
-    data.push_back(dato(9.5e-4, 0.8e-4, 0.6e-4)); //CLEO:2000emb
-    data.push_back(dato(11.5e-4, 2.3e-4, 1.7e-4)); //CDF:1995izg
-    data.push_back(dato(6.93e-4, 4.07e-4, 0.04e-4)); //CLEO:1991roe
-    data.push_back(dato(9.24e-4, 7.21e-4, 0.05e-4)); //ARGUS:1990jet
-
+    // BRBdjpsik0
+    data.push_back(dato(9.02e-4, 0.10e-4, 0.26e-4)); // Belle:2019xld
+    data.push_back(dato(8.1e-4, 0.9e-4, 0.6e-4));    // Belle:2019avj
+    data.push_back(dato(8.85e-4, 1.35e-4, 0.1e-4));  // BaBar:2007esv
+    data.push_back(dato(8.69e-4, 0.22e-4, 0.30e-4)); // BaBar:2004htr
+    data.push_back(dato(9.5e-4, 0.8e-4, 0.6e-4));    // CLEO:2000emb
+    data.push_back(dato(11.5e-4, 2.3e-4, 1.7e-4));   // CDF:1995izg
+    data.push_back(dato(6.93e-4, 4.07e-4, 0.04e-4)); // CLEO:1991roe
+    data.push_back(dato(9.24e-4, 7.21e-4, 0.05e-4)); // ARGUS:1990jet
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBdjpsik0");
@@ -71,14 +67,12 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-
-    //BRBdjpsip0
-    data.push_back(dato(2.00e-5, 0.12e-5, 0.09e-5)); //Belle-II:2024hqw
-    data.push_back(dato(1.670e-5, 0.077e-5, 0.069e-5, 0.095e-5)); //LHCb:2024ier
-    data.push_back(dato(1.62e-5, 0.11e-5, 0.06e-5)); //Belle:2018nxw
-    data.push_back(dato(1.69e-5, 0.14e-5, 0.07e-5)); //BaBar:2008kfx
-    data.push_back(dato(2.6e-5, 1.0e-5, 0.2e-5)); //CLEO:2000emb
-
+    // BRBdjpsip0
+    data.push_back(dato(2.00e-5, 0.12e-5, 0.09e-5));              // Belle-II:2024hqw
+    data.push_back(dato(1.670e-5, 0.077e-5, 0.069e-5, 0.095e-5)); // LHCb:2024ier
+    data.push_back(dato(1.62e-5, 0.11e-5, 0.06e-5));              // Belle:2018nxw
+    data.push_back(dato(1.69e-5, 0.14e-5, 0.07e-5));              // BaBar:2008kfx
+    data.push_back(dato(2.6e-5, 1.0e-5, 0.2e-5));                 // CLEO:2000emb
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBdjpsip0");
@@ -87,10 +81,9 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-
-    //BRBdjpsiom
-    data.push_back(dato(1.9e-5, 0.6e-5, 0.1e-5)); //LHCb:2014vbo
-    data.push_back(dato(2.16e-5, 0.30e-5, 0.14e-5)); //Belle-II:2024fgp
+    // BRBdjpsiom
+    data.push_back(dato(1.9e-5, 0.6e-5, 0.1e-5));    // LHCb:2014vbo
+    data.push_back(dato(2.16e-5, 0.30e-5, 0.14e-5)); // Belle-II:2024fgp
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBdjpsiom");
@@ -99,16 +92,16 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //BRBpjpsikp
-    data.push_back(dato(10.32e-3, 0.07e-3, 0.24e-3));  //BELLE:2019xld
-    data.push_back(dato(9.4e-3, 0.7e-3, 0.8e-3)); //Belle:2019avj
-    data.push_back(dato(8.9e-3, 0.6e-3, 0.5e-3)); //Belle:2017psv
-    data.push_back(dato(8.1e-3, 1.3e-3, 0.7e-3)); //BaBar:2005pcw
-    data.push_back(dato(10.61e-3, 0.15e-3, 0.48e-3)); //BaBar:2004htr
-    data.push_back(dato(10.4e-3, 1.1e-3, 0.1e-3)); //BaBar:2005sdl
-    data.push_back(dato(10.2e-3, 0.8e-3, 0.7e-3)); //CLEO:1997ilq
-    data.push_back(dato(9.24e-3, 3.04e-3, 0.05e-3)); //CLEO:1991roe
-    data.push_back(dato(8.09e-3, 3.50e-3, 0.04e-3)); //ARGUS:1990jet
+    // BRBpjpsikp
+    data.push_back(dato(10.32e-3, 0.07e-3, 0.24e-3)); // BELLE:2019xld
+    data.push_back(dato(9.4e-3, 0.7e-3, 0.8e-3));     // Belle:2019avj
+    data.push_back(dato(8.9e-3, 0.6e-3, 0.5e-3));     // Belle:2017psv
+    data.push_back(dato(8.1e-3, 1.3e-3, 0.7e-3));     // BaBar:2005pcw
+    data.push_back(dato(10.61e-3, 0.15e-3, 0.48e-3)); // BaBar:2004htr
+    data.push_back(dato(10.4e-3, 1.1e-3, 0.1e-3));    // BaBar:2005sdl
+    data.push_back(dato(10.2e-3, 0.8e-3, 0.7e-3));    // CLEO:1997ilq
+    data.push_back(dato(9.24e-3, 3.04e-3, 0.05e-3));  // CLEO:1991roe
+    data.push_back(dato(8.09e-3, 3.50e-3, 0.04e-3));  // ARGUS:1990jet
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBpjpsikp");
@@ -117,10 +110,9 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //BRBpjpsipp
-    data.push_back(dato(3.8e-5, 0.6e-5, 0.3e-5));  //Belle:2002oex
-    data.push_back(dato(2.02e-5, 0.12e-5, 0.10e-5)); //Belle-II:2024hqw
-
+    // BRBpjpsipp
+    data.push_back(dato(3.8e-5, 0.6e-5, 0.3e-5));    // Belle:2002oex
+    data.push_back(dato(2.02e-5, 0.12e-5, 0.10e-5)); // Belle-II:2024hqw
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBpjpsipp");
@@ -129,12 +121,10 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-
-    //BRBsjpsiph
-    data.push_back(dato(1.037e-3, 0.032e-3, 0.022e-3));  //LHCb:2021qbv
-    data.push_back(dato(1.25e-3, 0.07e-3, 0.23e-3)); //Belle:2013sdi
-    data.push_back(dato(1.5e-3, 0.5e-3, 0.1e-3)); //CDF:1996ivk
-
+    // BRBsjpsiph
+    data.push_back(dato(1.037e-3, 0.032e-3, 0.022e-3)); // LHCb:2021qbv
+    data.push_back(dato(1.25e-3, 0.07e-3, 0.23e-3));    // Belle:2013sdi
+    data.push_back(dato(1.5e-3, 0.5e-3, 0.1e-3));       // CDF:1996ivk
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBsjpsiph");
@@ -143,16 +133,16 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //BRBdjpsikst
-    data.push_back(dato(1.19e-3, 0.01e-3, 0.08e-3));  //Belle:2014nuw
-    data.push_back(dato(1.335e-3, 0.215e-3, 0.02e-3)); //BaBar:2007esv
-    data.push_back(dato(1.309e-3, 0.026e-3, 0.077e-3)); //BaBar:2004htr
-    data.push_back(dato(1.29e-3, 0.05e-3, 0.13e-3)); //Belle:2002otd
-    data.push_back(dato(1.74e-3, 0.20e-3, 0.18e-3)); //CDF:1998tqc
-    data.push_back(dato(1.32e-3, 0.17e-3, 0.17e-3)); //CLEO:1997ilq
-    data.push_back(dato(1.27e-3, 0.65e-3, 0.01e-3)); //CLEO:1991roe
-    data.push_back(dato(1.27e-3, 0.60e-3, 0.01e-3)); //ARGUS:1990jet
-    data.push_back(dato(4.04e-3, 1.81e-3, 0.02e-3)); //CLEO:1987iba
+    // BRBdjpsikst
+    data.push_back(dato(1.19e-3, 0.01e-3, 0.08e-3));    // Belle:2014nuw
+    data.push_back(dato(1.335e-3, 0.215e-3, 0.02e-3));  // BaBar:2007esv
+    data.push_back(dato(1.309e-3, 0.026e-3, 0.077e-3)); // BaBar:2004htr
+    data.push_back(dato(1.29e-3, 0.05e-3, 0.13e-3));    // Belle:2002otd
+    data.push_back(dato(1.74e-3, 0.20e-3, 0.18e-3));    // CDF:1998tqc
+    data.push_back(dato(1.32e-3, 0.17e-3, 0.17e-3));    // CLEO:1997ilq
+    data.push_back(dato(1.27e-3, 0.65e-3, 0.01e-3));    // CLEO:1991roe
+    data.push_back(dato(1.27e-3, 0.60e-3, 0.01e-3));    // ARGUS:1990jet
+    data.push_back(dato(4.04e-3, 1.81e-3, 0.02e-3));    // CLEO:1987iba
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBdjpsikst");
@@ -161,9 +151,9 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //BRBdjpsirh
-    data.push_back(dato(2.515e-5, 0.10e-5, 0.165e-5)); //LHCb:2014vbo
-    data.push_back(dato(2.7e-5, 0.3e-5, 0.2e-5)); //BaBar:2007yvx
+    // BRBdjpsirh
+    data.push_back(dato(2.515e-5, 0.10e-5, 0.165e-5)); // LHCb:2014vbo
+    data.push_back(dato(2.7e-5, 0.3e-5, 0.2e-5));      // BaBar:2007yvx
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBdjpsirh");
@@ -172,9 +162,9 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //BRBdjpsieta - SU(3) partner to K0 and pi0 channels
-    data.push_back(dato(1.23e-6, 0.27e-6, 0.11e-6)); //Belle:2008ekf
-    data.push_back(dato(1.27e-6, 0.41e-6, 0.23e-6)); //BaBar:2008mso
+    // BRBdjpsieta - SU(3) partner to K0 and pi0 channels
+    data.push_back(dato(1.23e-6, 0.27e-6, 0.11e-6)); // Belle:2008ekf
+    data.push_back(dato(1.27e-6, 0.41e-6, 0.23e-6)); // BaBar:2008mso
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBdjpsieta");
@@ -183,11 +173,11 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //BRBsjpsieta - SU(3) partner for Bs decays  
-    meas.insert(pair<string, dato>("BRBsjpsieta", dato(5.1e-4, 0.9e-4, 0.8e-4))); //LHCb:2012fcs
+    // BRBsjpsieta - SU(3) partner for Bs decays
+    meas.insert(pair<string, dato>("BRBsjpsieta", dato(5.1e-4, 0.9e-4, 0.8e-4))); // LHCb:2012fcs
 
-    //BRBdjpsietap - SU(3) partner, eta' channel
-    data.push_back(dato(1.3e-6, 0.7e-6, 0.2e-6)); //Belle:2008ekf
+    // BRBdjpsietap - SU(3) partner, eta' channel
+    data.push_back(dato(1.3e-6, 0.7e-6, 0.2e-6)); // Belle:2008ekf
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBdjpsietap");
@@ -196,16 +186,15 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //BR Ratios
+    // BR Ratios
 
-    //R_Bpjpsipp_Bpjpsikp
-    data.push_back(dato(3.846e-2, 0.018e-2, 0.018e-2));  //LHCb:2024exp
-    data.push_back(dato(3.5e-2, 0.3e-2, 1.2e-2)); //ATLAS:2016rxw
-    data.push_back(dato(4.86e-2, 0.82e-2, 0.15e-2)); //CDF:2007mkw
-    data.push_back(dato(5.37e-2, 0.45e-2, 0.11e-2)); //BaBar:2004kla
-    data.push_back(dato(5.1e-2, 1.8e-2, 0.1e-2));  //CDF:1996efe
-    data.push_back(dato(5.2e-2, 2.4e-2)); //CLEO:1995zgs
-
+    // R_Bpjpsipp_Bpjpsikp
+    data.push_back(dato(3.846e-2, 0.018e-2, 0.018e-2)); // LHCb:2024exp
+    data.push_back(dato(3.5e-2, 0.3e-2, 1.2e-2));       // ATLAS:2016rxw
+    data.push_back(dato(4.86e-2, 0.82e-2, 0.15e-2));    // CDF:2007mkw
+    data.push_back(dato(5.37e-2, 0.45e-2, 0.11e-2));    // BaBar:2004kla
+    data.push_back(dato(5.1e-2, 1.8e-2, 0.1e-2));       // CDF:1996efe
+    data.push_back(dato(5.2e-2, 2.4e-2));               // CLEO:1995zgs
 
     pdgaverage.setData(data);
     pdgaverage.setName("R_Bpjpsipp_Bpjpsikp");
@@ -214,11 +203,10 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //R_Bdjpsiom_Bdjpsirh
+    // R_Bdjpsiom_Bdjpsirh
 
-    data.push_back(dato(0.86, 0.19, 0.10));  //LHCb:2012cw
-    data.push_back(dato(0.70, 0.30, 0.05)); //LHCb:2013dkk
-
+    data.push_back(dato(0.86, 0.19, 0.10)); // LHCb:2012cw
+    data.push_back(dato(0.70, 0.30, 0.05)); // LHCb:2013dkk
 
     pdgaverage.setData(data);
     pdgaverage.setName("R_Bdjpsiom_Bdjpsirh");
@@ -227,10 +215,10 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //R_Bdjpsikst_Bdjpsik0
+    // R_Bdjpsikst_Bdjpsik0
 
-    data.push_back(dato(1.51, 0.05, 0.08));  //BaBar:2004htr
-    data.push_back(dato(1.39, 0.36, 0.10)); //CDF:1996ivk
+    data.push_back(dato(1.51, 0.05, 0.08)); // BaBar:2004htr
+    data.push_back(dato(1.39, 0.36, 0.10)); // CDF:1996ivk
     pdgaverage.setData(data);
 
     pdgaverage.setName("R_Bdjpsikst_Bdjpsik0");
@@ -239,17 +227,17 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //R_BRBsjpsik0s_Bdjpsik0s
-    meas.insert(pair<string, dato>( "R_BRBsjpsik0s_Bdjpsik0s", dato(0.0431, 0.0017, 0.0012, 0.0025)));  //LHCb:2015brj
+    // R_BRBsjpsik0s_Bdjpsik0s
+    meas.insert(pair<string, dato>("R_BRBsjpsik0s_Bdjpsik0s", dato(0.0431, 0.0017, 0.0012, 0.0025))); // LHCb:2015brj
 
     //----------------------------------------------------------------------
     // B→DD channels (control modes for penguin analysis)
     //----------------------------------------------------------------------
 
-    //BRBddpdm (Bd→D⁺D⁻)
-    data.push_back(dato(2.12e-4, 0.16e-4, 0.18e-4)); //Belle:2012mef
-    data.push_back(dato(1.97e-4, 0.20e-4, 0.20e-4)); //Belle:2007ebz
-    data.push_back(dato(2.8e-4, 0.4e-4, 0.5e-4)); //BaBar:2006uih
+    // BRBddpdm (Bd→D⁺D⁻)
+    data.push_back(dato(2.12e-4, 0.16e-4, 0.18e-4)); // Belle:2012mef
+    data.push_back(dato(1.97e-4, 0.20e-4, 0.20e-4)); // Belle:2007ebz
+    data.push_back(dato(2.8e-4, 0.4e-4, 0.5e-4));    // BaBar:2006uih
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBddpdm");
@@ -258,10 +246,10 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //BRBsdpsdms (Bs→Ds⁺Ds⁻)
-    data.push_back(dato(4.0e-3, 0.2e-3, 0.5e-3));  //LHCb:2013sad
-    data.push_back(dato(5.9e-3, 1.0e-3, 1.3e-3)); //Belle:2012tsw
-    data.push_back(dato(5.4e-3, 0.8e-3, 0.8e-3)); //CDF:2012xmd
+    // BRBsdpsdms (Bs→Ds⁺Ds⁻)
+    data.push_back(dato(4.0e-3, 0.2e-3, 0.5e-3)); // LHCb:2013sad
+    data.push_back(dato(5.9e-3, 1.0e-3, 1.3e-3)); // Belle:2012tsw
+    data.push_back(dato(5.4e-3, 0.8e-3, 0.8e-3)); // CDF:2012xmd
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBsdpsdms");
@@ -270,9 +258,9 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //BRBpdpd0b (B⁺→D⁺D̄⁰)
-    data.push_back(dato(3.85e-4, 0.31e-4, 0.38e-4)); //Belle:2008doh
-    data.push_back(dato(3.8e-4, 0.6e-4, 0.5e-4)); //BaBar:2006uih
+    // BRBpdpd0b (B⁺→D⁺D̄⁰)
+    data.push_back(dato(3.85e-4, 0.31e-4, 0.38e-4)); // Belle:2008doh
+    data.push_back(dato(3.8e-4, 0.6e-4, 0.5e-4));    // BaBar:2006uih
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBpdpd0b");
@@ -281,12 +269,12 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //BRBpdpsd0b (B⁺→D⁺D̄⁰ₛ)
-    data.push_back(dato(8.6e-3, 0.2e-3, 1.1e-3));  //LHCb:2013sad
-    data.push_back(dato(9.5e-3, 2.0e-3, 0.8e-3)); //BaBar:2006jvx
-    data.push_back(dato(9.8e-3, 2.6e-3, 0.9e-3)); //CLEO:1995psi
-    data.push_back(dato(14e-3, 8e-3, 1e-3)); //ARGUS:1991xej
-    data.push_back(dato(13e-3, 6e-3, 1e-3)); //CLEO:1990mqz
+    // BRBpdpsd0b (B⁺→D⁺D̄⁰ₛ)
+    data.push_back(dato(8.6e-3, 0.2e-3, 1.1e-3)); // LHCb:2013sad
+    data.push_back(dato(9.5e-3, 2.0e-3, 0.8e-3)); // BaBar:2006jvx
+    data.push_back(dato(9.8e-3, 2.6e-3, 0.9e-3)); // CLEO:1995psi
+    data.push_back(dato(14e-3, 8e-3, 1e-3));      // ARGUS:1991xej
+    data.push_back(dato(13e-3, 6e-3, 1e-3));      // CLEO:1990mqz
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBpdpsd0b");
@@ -295,9 +283,9 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //ACP measurments
+    // ACP measurments
 
-    //CBdjpsip0
+    // CBdjpsip0
 
     data.push_back(dato(0.13
     data.push_back(dato(0.155, 0.14, 0.035));  ////Belle:2018nxw
@@ -1442,87 +1430,93 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
    histos.createH1D("R_Bdjpsikst_Bdjpsik0", 500, 0.0, 0.0);
    histos.createH1D("deltaA_Bpjpsipp_Bpjpsikp", 500, 0.0, 0.0);
     for (const auto& channel : channelNamesSU3) {
-      //create histos for mod and phase as well as real and imaginary parts for the effective parameters
-      if (std::find(vectorMesonChannels.begin(), vectorMesonChannels.end(), channel) != vectorMesonChannels.end()) {
+        // create histos for mod and phase as well as real and imaginary parts for the effective parameters
+        if (std::find(vectorMesonChannels.begin(), vectorMesonChannels.end(), channel) != vectorMesonChannels.end())
+        {
 
-        // Vector meson channels: store histograms for all polarization components
-        histos.createH1D("mod_A_0_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("phase_A_0_" + channel, 500, 0.0, 0.0);
-        histos.createH2D("mod_A_0_" + channel, "phase_A_0_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
-        histos.createH1D("A_0_re_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("A_0_im_" + channel, 500, 0.0, 0.0);
+            // Vector meson channels: store histograms for all polarization components
+            histos.createH1D("mod_A_0_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("phase_A_0_" + channel, 500, 0.0, 0.0);
+            histos.createH2D("mod_A_0_" + channel, "phase_A_0_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
+            histos.createH1D("A_0_re_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("A_0_im_" + channel, 500, 0.0, 0.0);
 
-        histos.createH1D("mod_B_0_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("phase_B_0_" + channel, 500, 0.0, 0.0);
-        histos.createH2D("mod_B_0_" + channel, "phase_B_0_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
-        histos.createH1D("B_0_re_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("B_0_im_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("mod_B_0_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("phase_B_0_" + channel, 500, 0.0, 0.0);
+            histos.createH2D("mod_B_0_" + channel, "phase_B_0_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
+            histos.createH1D("B_0_re_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("B_0_im_" + channel, 500, 0.0, 0.0);
 
-        // Perpendicular polarization
-        histos.createH1D("mod_A_perp_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("phase_A_perp_" + channel, 500, 0.0, 0.0);
-        histos.createH2D("mod_A_perp_" + channel, "phase_A_perp_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
-        histos.createH1D("A_perp_re_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("A_perp_im_" + channel, 500, 0.0, 0.0);
+            // Perpendicular polarization
+            histos.createH1D("mod_A_perp_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("phase_A_perp_" + channel, 500, 0.0, 0.0);
+            histos.createH2D("mod_A_perp_" + channel, "phase_A_perp_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
+            histos.createH1D("A_perp_re_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("A_perp_im_" + channel, 500, 0.0, 0.0);
 
-        histos.createH1D("mod_B_perp_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("phase_B_perp_" + channel, 500, 0.0, 0.0);
-        histos.createH2D("mod_B_perp_" + channel, "phase_B_perp_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
-        histos.createH1D("B_perp_re_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("B_perp_im_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("mod_B_perp_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("phase_B_perp_" + channel, 500, 0.0, 0.0);
+            histos.createH2D("mod_B_perp_" + channel, "phase_B_perp_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
+            histos.createH1D("B_perp_re_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("B_perp_im_" + channel, 500, 0.0, 0.0);
 
-        // Parallel polarization
-        histos.createH1D("mod_A_paral_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("phase_A_paral_" + channel, 500, 0.0, 0.0);
-        histos.createH2D("mod_A_paral_" + channel, "phase_A_paral_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
-        histos.createH1D("A_paral_re_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("A_paral_im_" + channel, 500, 0.0, 0.0);
+            // Parallel polarization
+            histos.createH1D("mod_A_paral_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("phase_A_paral_" + channel, 500, 0.0, 0.0);
+            histos.createH2D("mod_A_paral_" + channel, "phase_A_paral_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
+            histos.createH1D("A_paral_re_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("A_paral_im_" + channel, 500, 0.0, 0.0);
 
-        histos.createH1D("mod_B_paral_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("phase_B_paral_" + channel, 500, 0.0, 0.0);
-        histos.createH2D("mod_B_paral_" + channel, "phase_B_paral_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
-        histos.createH1D("B_paral_re_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("B_paral_im_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("mod_B_paral_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("phase_B_paral_" + channel, 500, 0.0, 0.0);
+            histos.createH2D("mod_B_paral_" + channel, "phase_B_paral_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
+            histos.createH1D("B_paral_re_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("B_paral_im_" + channel, 500, 0.0, 0.0);
+        }
+        else
+        {
+            // Pseudoscalar channels: only A and B
+            histos.createH1D("mod_A_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("phase_A_" + channel, 500, 0.0, 0.0);
+            histos.createH2D("mod_A_" + channel, "phase_A_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
+            histos.createH1D("A_re_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("A_im_" + channel, 500, 0.0, 0.0);
 
-    } else {
-        // Pseudoscalar channels: only A and B
-        histos.createH1D("mod_A_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("phase_A_" + channel, 500, 0.0, 0.0);
-        histos.createH2D("mod_A_" + channel, "phase_A_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
-        histos.createH1D("A_re_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("A_im_" + channel, 500, 0.0, 0.0);
-
-        histos.createH1D("mod_B_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("phase_B_" + channel, 500, 0.0, 0.0);
-        histos.createH2D("mod_B_" + channel, "phase_B_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
-        histos.createH1D("B_re_" + channel, 500, 0.0, 0.0);
-        histos.createH1D("B_im_" + channel, 500, 0.0, 0.0);
-    }
-         // Branching ratio (BR)
-        if (meas.find("BR" + channel) != meas.end()) {
-            if (histos.h1d.find("BR_" + channel) == histos.h1d.end()) {  // Check if it already exists
+            histos.createH1D("mod_B_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("phase_B_" + channel, 500, 0.0, 0.0);
+            histos.createH2D("mod_B_" + channel, "phase_B_" + channel, 500, 0.0, 0.0, 500, 0.0, 0.0);
+            histos.createH1D("B_re_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("B_im_" + channel, 500, 0.0, 0.0);
+        }
+        // Branching ratio (BR)
+        if (meas.find("BR" + channel) != meas.end())
+        {
+            if (histos.h1d.find("BR_" + channel) == histos.h1d.end())
+            { // Check if it already exists
                 histos.createH1D("BR_" + channel, 500, 0.0, 0.0);
-
             }
         }
 
         // ACP, C, and S observables
-        if (meas.find("ACP" + channel) != meas.end()) {
-            if (histos.h1d.find("ACP_" + channel) == histos.h1d.end()) {
+        if (meas.find("ACP" + channel) != meas.end())
+        {
+            if (histos.h1d.find("ACP_" + channel) == histos.h1d.end())
+            {
                 histos.createH1D("ACP_" + channel, 500, 0., 0.);
-
             }
         }
-        if (meas.find("C" + channel) != meas.end()) {
-            if (histos.h1d.find("C_" + channel) == histos.h1d.end()) {
+        if (meas.find("C" + channel) != meas.end())
+        {
+            if (histos.h1d.find("C_" + channel) == histos.h1d.end())
+            {
                 histos.createH1D("C_" + channel, 500, 0.0, 0.0);
-
             }
         }
-        if (meas.find("S" + channel) != meas.end()) {
-            if (histos.h1d.find("S_" + channel) == histos.h1d.end()) {
+        if (meas.find("S" + channel) != meas.end())
+        {
+            if (histos.h1d.find("S_" + channel) == histos.h1d.end())
+            {
                 histos.createH1D("S_" + channel, 500, 0.0, 0.0);
-
             }
         }
 
@@ -1530,31 +1524,34 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
 
     // Create histograms for correlated observables (from corrmeas)
     for (auto& pair : corrmeas) {
-        const auto& corr_key = pair.first;
-        auto& corrObservable = pair.second;
+        const auto &corr_key = pair.first;
+        auto &corrObservable = pair.second;
 
         // Parse the channels from the key
         auto channel_and_experiment = extractChannelFromCorrKey(corr_key);
-        auto& channels = channel_and_experiment.first;
+        auto &channels = channel_and_experiment.first;
 
         // Handle C and S observables (e.g., "CS_" prefix)
-        if (corr_key.find("CS_") != std::string::npos) {
-            if (histos.h1d.find("C_" + channels[0]) == histos.h1d.end()) {
+        if (corr_key.find("CS_") != std::string::npos)
+        {
+            if (histos.h1d.find("C_" + channels[0]) == histos.h1d.end())
+            {
                 histos.createH1D("C_" + channels[0], 500, 0.0, 0.0);
-
             }
-            if (histos.h1d.find("S_" + channels[0]) == histos.h1d.end()) {
+            if (histos.h1d.find("S_" + channels[0]) == histos.h1d.end())
+            {
                 histos.createH1D("S_" + channels[0], 500, 0.0, 0.0);
-
             }
         }
 
         // Handle ACP observables (e.g., "ACP_" prefix)
-        if (corr_key.find("ACP_") != std::string::npos) {
-            for (size_t i = 0; i < channels.size(); ++i) {
-                if (histos.h1d.find("ACP_" + channels[i]) == histos.h1d.end()) {
+        if (corr_key.find("ACP_") != std::string::npos)
+        {
+            for (size_t i = 0; i < channels.size(); ++i)
+            {
+                if (histos.h1d.find("ACP_" + channels[i]) == histos.h1d.end())
+                {
                     histos.createH1D("ACP_" + channels[i], 500, 0.0, 0.0);
-
                 }
             }
         }
@@ -1578,310 +1575,340 @@ goldenmodes::goldenmodes() : BCModel() , histos(obs)
         histos.createH1D("A0_CP_Bsjpsikst", 500, 0.0, 0.0);
         histos.createH1D("Aperp_CP_Bsjpsikst", 500, 0.0, 0.0);
         histos.createH1D("Aparal_CP_Bsjpsikst", 500, 0.0, 0.0);
-      }
-
-
+}
 
 //---------------------------------------------------------------
 
-  //method to define the parameters needed to calculate each decay amplitude, uses BCModel method AddParameter
-void goldenmodes::DefineParameters(const string& channel) {
-   double limit1 = 0.;
+// method to define the parameters needed to calculate each decay amplitude, uses BCModel method AddParameter
+void goldenmodes::DefineParameters(const string &channel)
+{
+    double limit1 = 0.;
 
-
-  if (channel == "Bdjpsik0") {
+    if (channel == "Bdjpsik0")
+    {
         std::vector<std::string> params = {
-	  "A_Bdjpsik0_re",
-	  "A_Bdjpsik0_im",
-	  "B_Bdjpsik0_re",
-	  "B_Bdjpsik0_im"
-        };
+            "A_Bdjpsik0_re",
+            "A_Bdjpsik0_im",
+            "B_Bdjpsik0_re",
+            "B_Bdjpsik0_im"};
         channelParameters[channel] = params;
-        for (const auto& param : params) {
+        for (const auto &param : params)
+        {
             AddParameter(param, -50., 50.);
         }
-	GetParameter("A_Bdjpsik0_re").SetLowerLimit(0.);
-	GetParameter("A_Bdjpsik0_im").SetUpperLimit(0.);
-	GetParameter("A_Bdjpsik0_im").SetLowerLimit(0.);
-  GetParameter("A_Bdjpsik0_re").SetUpperLimit(100.);
-
-} else if (channel == "Bdjpsip0") {
-        std::vector<std::string> params = {
-      "A_Bdjpsip0_re",
-	    "A_Bdjpsip0_im",
-      "B_Bdjpsip0_re",
-	    "B_Bdjpsip0_im"
-    };
-    channelParameters[channel] = params;
-    for (const auto& param : params) {
-      AddParameter(param, -100., 100.);
+        GetParameter("A_Bdjpsik0_re").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsik0_im").SetUpperLimit(0.);
+        GetParameter("A_Bdjpsik0_im").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsik0_re").SetUpperLimit(100.);
     }
-	GetParameter("A_Bdjpsip0_re").SetLowerLimit(0.);
-	//GetParameter("A_Bdjpsip0_re").SetUpperLimit(100.);
-  GetParameter("A_Bdjpsip0_im").SetUpperLimit(0.);
-	GetParameter("A_Bdjpsip0_im").SetLowerLimit(0.);
-} else if (channel == "Bdjpsiom") {
-    std::vector<std::string> params = {
-      "A_Bdjpsiom_0_re",
-	    "A_Bdjpsiom_0_im",
-      "B_Bdjpsiom_0_re",
-	    "B_Bdjpsiom_0_im",
-      "A_Bdjpsiom_perp_re",
-	    "A_Bdjpsiom_perp_im",
-      "B_Bdjpsiom_perp_re",
-	    "B_Bdjpsiom_perp_im",
-      "A_Bdjpsiom_paral_re",
-	    "A_Bdjpsiom_paral_im",
-      "B_Bdjpsiom_paral_re",
-	    "B_Bdjpsiom_paral_im"
-        };
+    else if (channel == "Bdjpsip0")
+    {
+        std::vector<std::string> params = {
+            "A_Bdjpsip0_re",
+            "A_Bdjpsip0_im",
+            "B_Bdjpsip0_re",
+            "B_Bdjpsip0_im"};
         channelParameters[channel] = params;
-        for (const auto& param : params) {
+        for (const auto &param : params)
+        {
+            AddParameter(param, -100., 100.);
+        }
+        GetParameter("A_Bdjpsip0_re").SetLowerLimit(0.);
+        // GetParameter("A_Bdjpsip0_re").SetUpperLimit(100.);
+        GetParameter("A_Bdjpsip0_im").SetUpperLimit(0.);
+        GetParameter("A_Bdjpsip0_im").SetLowerLimit(0.);
+    }
+    else if (channel == "Bdjpsiom")
+    {
+        std::vector<std::string> params = {
+            "A_Bdjpsiom_0_re",
+            "A_Bdjpsiom_0_im",
+            "B_Bdjpsiom_0_re",
+            "B_Bdjpsiom_0_im",
+            "A_Bdjpsiom_perp_re",
+            "A_Bdjpsiom_perp_im",
+            "B_Bdjpsiom_perp_re",
+            "B_Bdjpsiom_perp_im",
+            "A_Bdjpsiom_paral_re",
+            "A_Bdjpsiom_paral_im",
+            "B_Bdjpsiom_paral_re",
+            "B_Bdjpsiom_paral_im"};
+        channelParameters[channel] = params;
+        for (const auto &param : params)
+        {
             AddParameter(param, -50., 50.);
         }
-	GetParameter("A_Bdjpsiom_0_re").SetLowerLimit(0.);
-	GetParameter("A_Bdjpsiom_0_im").SetUpperLimit(0.);
-	GetParameter("A_Bdjpsiom_0_im").SetLowerLimit(0.);
-  GetParameter("A_Bdjpsiom_paral_re").SetLowerLimit(0.);
-	GetParameter("A_Bdjpsiom_paral_im").SetUpperLimit(0.);
-	GetParameter("A_Bdjpsiom_paral_im").SetLowerLimit(0.);
-  GetParameter("A_Bdjpsiom_perp_re").SetLowerLimit(0.);
-	GetParameter("A_Bdjpsiom_perp_im").SetUpperLimit(0.);
-	GetParameter("A_Bdjpsiom_perp_im").SetLowerLimit(0.);
-} else if (channel == "Bpjpsikp") {
+        GetParameter("A_Bdjpsiom_0_re").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsiom_0_im").SetUpperLimit(0.);
+        GetParameter("A_Bdjpsiom_0_im").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsiom_paral_re").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsiom_paral_im").SetUpperLimit(0.);
+        GetParameter("A_Bdjpsiom_paral_im").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsiom_perp_re").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsiom_perp_im").SetUpperLimit(0.);
+        GetParameter("A_Bdjpsiom_perp_im").SetLowerLimit(0.);
+    }
+    else if (channel == "Bpjpsikp")
+    {
         std::vector<std::string> params = {
-      "A_Bpjpsikp_re",
-	    "A_Bpjpsikp_im",
-      "B_Bpjpsikp_re",
-	    "B_Bpjpsikp_im"
-    };
-    channelParameters[channel] = params;
-    for (const auto& param : params) {
-      AddParameter(param, -100., 100.);
+            "A_Bpjpsikp_re",
+            "A_Bpjpsikp_im",
+            "B_Bpjpsikp_re",
+            "B_Bpjpsikp_im"};
+        channelParameters[channel] = params;
+        for (const auto &param : params)
+        {
+            AddParameter(param, -100., 100.);
+        }
+        GetParameter("A_Bpjpsikp_im").SetUpperLimit(0.);
+        GetParameter("A_Bpjpsikp_re").SetLowerLimit(0.);
+        GetParameter("A_Bpjpsikp_im").SetLowerLimit(0.);
     }
-    GetParameter("A_Bpjpsikp_im").SetUpperLimit(0.);
-	  GetParameter("A_Bpjpsikp_re").SetLowerLimit(0.);
-    GetParameter("A_Bpjpsikp_im").SetLowerLimit(0.);
-  } else if (channel == "Bpjpsipp") {
-    std::vector<std::string> params = {
-      "A_Bpjpsipp_re",
-	    "A_Bpjpsipp_im",
-      "B_Bpjpsipp_re",
-	    "B_Bpjpsipp_im"
-    };
-    channelParameters[channel] = params;
-    for (const auto& param : params) {
-        AddParameter(param, -50., 50.);
+    else if (channel == "Bpjpsipp")
+    {
+        std::vector<std::string> params = {
+            "A_Bpjpsipp_re",
+            "A_Bpjpsipp_im",
+            "B_Bpjpsipp_re",
+            "B_Bpjpsipp_im"};
+        channelParameters[channel] = params;
+        for (const auto &param : params)
+        {
+            AddParameter(param, -50., 50.);
+        }
+        GetParameter("A_Bpjpsipp_im").SetUpperLimit(0.);
+        GetParameter("A_Bpjpsipp_im").SetLowerLimit(0.);
+        GetParameter("A_Bpjpsipp_re").SetLowerLimit(0.);
     }
-    GetParameter("A_Bpjpsipp_im").SetUpperLimit(0.);
-    GetParameter("A_Bpjpsipp_im").SetLowerLimit(0.);
-    GetParameter("A_Bpjpsipp_re").SetLowerLimit(0.);
-  } else if (channel == "Bsjpsiph") {
-      std::vector<std::string> params = {
-        "A_Bsjpsiph_0_re",
-  	    "A_Bsjpsiph_0_im",
-        "B_Bsjpsiph_0_re",
-  	    "B_Bsjpsiph_0_im",
-        "A_Bsjpsiph_perp_re",
-  	    "A_Bsjpsiph_perp_im",
-        "B_Bsjpsiph_perp_re",
-  	    "B_Bsjpsiph_perp_im",
-        "A_Bsjpsiph_paral_re",
-  	    "A_Bsjpsiph_paral_im",
-        "B_Bsjpsiph_paral_re",
-  	    "B_Bsjpsiph_paral_im"
-      };
-      channelParameters[channel] = params;
-      for (const auto& param : params) {
-          AddParameter(param, -50., 50.);
-      }
-      GetParameter("A_Bsjpsiph_0_im").SetUpperLimit(0.);
-      GetParameter("A_Bsjpsiph_0_im").SetLowerLimit(0.);
-      GetParameter("A_Bsjpsiph_0_re").SetLowerLimit(0.);
-      GetParameter("A_Bsjpsiph_paral_im").SetUpperLimit(0.);
-      GetParameter("A_Bsjpsiph_paral_im").SetLowerLimit(0.);
-      GetParameter("A_Bsjpsiph_paral_re").SetLowerLimit(0.);
-      GetParameter("A_Bsjpsiph_perp_im").SetUpperLimit(0.);
-      GetParameter("A_Bsjpsiph_perp_im").SetLowerLimit(0.);
-      GetParameter("A_Bsjpsiph_perp_re").SetLowerLimit(0.);
-
-    } else if (channel == "Bsjpsik0") {
-      std::vector<std::string> params = {
-        "A_Bsjpsik0_re",
-        "A_Bsjpsik0_im",
-        "B_Bsjpsik0_re",
-        "B_Bsjpsik0_im"
-      };
-      channelParameters[channel] = params;
-      for (const auto& param : params) {
-        AddParameter(param, -50., 50.);
-      }
+    else if (channel == "Bsjpsiph")
+    {
+        std::vector<std::string> params = {
+            "A_Bsjpsiph_0_re",
+            "A_Bsjpsiph_0_im",
+            "B_Bsjpsiph_0_re",
+            "B_Bsjpsiph_0_im",
+            "A_Bsjpsiph_perp_re",
+            "A_Bsjpsiph_perp_im",
+            "B_Bsjpsiph_perp_re",
+            "B_Bsjpsiph_perp_im",
+            "A_Bsjpsiph_paral_re",
+            "A_Bsjpsiph_paral_im",
+            "B_Bsjpsiph_paral_re",
+            "B_Bsjpsiph_paral_im"};
+        channelParameters[channel] = params;
+        for (const auto &param : params)
+        {
+            AddParameter(param, -50., 50.);
+        }
+        GetParameter("A_Bsjpsiph_0_im").SetUpperLimit(0.);
+        GetParameter("A_Bsjpsiph_0_im").SetLowerLimit(0.);
+        GetParameter("A_Bsjpsiph_0_re").SetLowerLimit(0.);
+        GetParameter("A_Bsjpsiph_paral_im").SetUpperLimit(0.);
+        GetParameter("A_Bsjpsiph_paral_im").SetLowerLimit(0.);
+        GetParameter("A_Bsjpsiph_paral_re").SetLowerLimit(0.);
+        GetParameter("A_Bsjpsiph_perp_im").SetUpperLimit(0.);
+        GetParameter("A_Bsjpsiph_perp_im").SetLowerLimit(0.);
+        GetParameter("A_Bsjpsiph_perp_re").SetLowerLimit(0.);
+    }
+    else if (channel == "Bsjpsik0")
+    {
+        std::vector<std::string> params = {
+            "A_Bsjpsik0_re",
+            "A_Bsjpsik0_im",
+            "B_Bsjpsik0_re",
+            "B_Bsjpsik0_im"};
+        channelParameters[channel] = params;
+        for (const auto &param : params)
+        {
+            AddParameter(param, -50., 50.);
+        }
         GetParameter("A_Bsjpsik0_im").SetUpperLimit(0.);
         GetParameter("A_Bsjpsik0_im").SetLowerLimit(0.);
         GetParameter("A_Bsjpsik0_re").SetLowerLimit(0.);
-      } else if (channel == "Bdjpsikst") {
+    }
+    else if (channel == "Bdjpsikst")
+    {
         std::vector<std::string> params = {
-          "A_Bdjpsikst_0_re",
-    	    "A_Bdjpsikst_0_im",
-          "B_Bdjpsikst_0_re",
-    	    "B_Bdjpsikst_0_im",
-          "A_Bdjpsikst_perp_re",
-    	    "A_Bdjpsikst_perp_im",
-          "B_Bdjpsikst_perp_re",
-    	    "B_Bdjpsikst_perp_im",
-          "A_Bdjpsikst_paral_re",
-    	    "A_Bdjpsikst_paral_im",
-          "B_Bdjpsikst_paral_re",
-    	    "B_Bdjpsikst_paral_im"
-            };
-            channelParameters[channel] = params;
-            for (const auto& param : params) {
-                AddParameter(param, -50., 50.);
-            }
-    	GetParameter("A_Bdjpsikst_0_re").SetLowerLimit(0.);
-    	GetParameter("A_Bdjpsikst_0_im").SetUpperLimit(0.);
-    	GetParameter("A_Bdjpsikst_0_im").SetLowerLimit(0.);
-      GetParameter("A_Bdjpsikst_paral_re").SetLowerLimit(0.);
-    	GetParameter("A_Bdjpsikst_paral_im").SetUpperLimit(0.);
-    	GetParameter("A_Bdjpsikst_paral_im").SetLowerLimit(0.);
-      GetParameter("A_Bdjpsikst_perp_re").SetLowerLimit(0.);
-    	GetParameter("A_Bdjpsikst_perp_im").SetUpperLimit(0.);
-    	GetParameter("A_Bdjpsikst_perp_im").SetLowerLimit(0.);
-    } else if (channel == "Bdjpsirh") {
-      std::vector<std::string> params = {
-        "A_Bdjpsirh_0_re",
-        "A_Bdjpsirh_0_im",
-        "B_Bdjpsirh_0_re",
-        "B_Bdjpsirh_0_im",
-        "A_Bdjpsirh_perp_re",
-        "A_Bdjpsirh_perp_im",
-        "B_Bdjpsirh_perp_re",
-        "B_Bdjpsirh_perp_im",
-        "A_Bdjpsirh_paral_re",
-        "A_Bdjpsirh_paral_im",
-        "B_Bdjpsirh_paral_re",
-        "B_Bdjpsirh_paral_im"
-          };
-          channelParameters[channel] = params;
-          for (const auto& param : params) {
-              AddParameter(param, -50., 50.);
-          }
-    GetParameter("A_Bdjpsirh_0_re").SetLowerLimit(0.);
-    GetParameter("A_Bdjpsirh_0_im").SetUpperLimit(0.);
-    GetParameter("A_Bdjpsirh_0_im").SetLowerLimit(0.);
-    GetParameter("A_Bdjpsirh_paral_re").SetLowerLimit(0.);
-    GetParameter("A_Bdjpsirh_paral_im").SetUpperLimit(0.);
-    GetParameter("A_Bdjpsirh_paral_im").SetLowerLimit(0.);
-    GetParameter("A_Bdjpsirh_perp_re").SetLowerLimit(0.);
-    GetParameter("A_Bdjpsirh_perp_im").SetUpperLimit(0.);
-    GetParameter("A_Bdjpsirh_perp_im").SetLowerLimit(0.);
-    } else if (channel == "Bsjpsikst") {
-      std::vector<std::string> params = {
-        "A_Bsjpsikst_0_re",
-        "A_Bsjpsikst_0_im",
-        "B_Bsjpsikst_0_re",
-        "B_Bsjpsikst_0_im",
-        "A_Bsjpsikst_perp_re",
-        "A_Bsjpsikst_perp_im",
-        "B_Bsjpsikst_perp_re",
-        "B_Bsjpsikst_perp_im",
-        "A_Bsjpsikst_paral_re",
-        "A_Bsjpsikst_paral_im",
-        "B_Bsjpsikst_paral_re",
-        "B_Bsjpsikst_paral_im"
-          };
-          channelParameters[channel] = params;
-          for (const auto& param : params) {
-              AddParameter(param, -50., 50.);
-          }
-    GetParameter("A_Bsjpsikst_0_re").SetLowerLimit(0.);
-    GetParameter("A_Bsjpsikst_0_im").SetUpperLimit(0.);
-    GetParameter("A_Bsjpsikst_0_im").SetLowerLimit(0.);
-    GetParameter("A_Bsjpsikst_paral_re").SetLowerLimit(0.);
-    GetParameter("A_Bsjpsikst_paral_im").SetUpperLimit(0.);
-    GetParameter("A_Bsjpsikst_paral_im").SetLowerLimit(0.);
-    GetParameter("A_Bsjpsikst_perp_re").SetLowerLimit(0.);
-    GetParameter("A_Bsjpsikst_perp_im").SetUpperLimit(0.);
-    GetParameter("A_Bsjpsikst_perp_im").SetLowerLimit(0.);
-  } else if (channel == "Bddpdm") {
-      // Bd -> D+ D- parameters (uses double SU(3) corrections)
-      std::vector<std::string> params = {
-        "E1_dcc_re", "E1_dcc_im",
-        "A2_cdc_re", "A2_cdc_im",
-        "P1_GIM_dc_re", "P1_GIM_dc_im",
-        "P3_GIM_dc_re", "P3_GIM_dc_im",
-        "su3_double_E1_re", "su3_double_E1_im",
-        "su3_double_A2_re", "su3_double_A2_im",
-        "su3_double_P1_GIM_re", "su3_double_P1_GIM_im",
-        "su3_double_P3_GIM_re", "su3_double_P3_GIM_im"
-      };
-      channelParameters[channel] = params;
-      for (const auto& param : params) {
-          AddParameter(param, -50., 50.);
-      }
-  } else if (channel == "Bsdpsdms") {
-      // Bs -> Ds+ Ds- parameters (base channel for s->c)
-      std::vector<std::string> params = {
-        "E1_scc_re", "E1_scc_im",
-        "A2_csc_re", "A2_csc_im",
-        "P1_GIM_sc_re", "P1_GIM_sc_im",
-        "P3_GIM_sc_re", "P3_GIM_sc_im"
-      };
-      channelParameters[channel] = params;
-      for (const auto& param : params) {
-          AddParameter(param, -50., 50.);
-      }
-  } else if (channel == "Bpdpd0b") {
-      // B+ -> D+ D0bar parameters (uses single SU(3) corrections for A1)
-      std::vector<std::string> params = {
-        "A1_scu_re", "A1_scu_im",
-        "su3_single_A1_re", "su3_single_A1_im"
-      };
-      channelParameters[channel] = params;
-      for (const auto& param : params) {
-          AddParameter(param, -50., 50.);
-      }
-  } else if (channel == "Bpdpsd0b") {
-      // B+ -> D+ Ds0bar parameters (uses single SU(3) corrections)
-      std::vector<std::string> params = {
-        "su3_single_E1_re", "su3_single_E1_im",
-        "su3_single_P1_GIM_re", "su3_single_P1_GIM_im"
-      };
-      channelParameters[channel] = params;
-      for (const auto& param : params) {
-          AddParameter(param, -50., 50.);
-      }
-  } else {
+            "A_Bdjpsikst_0_re",
+            "A_Bdjpsikst_0_im",
+            "B_Bdjpsikst_0_re",
+            "B_Bdjpsikst_0_im",
+            "A_Bdjpsikst_perp_re",
+            "A_Bdjpsikst_perp_im",
+            "B_Bdjpsikst_perp_re",
+            "B_Bdjpsikst_perp_im",
+            "A_Bdjpsikst_paral_re",
+            "A_Bdjpsikst_paral_im",
+            "B_Bdjpsikst_paral_re",
+            "B_Bdjpsikst_paral_im"};
+        channelParameters[channel] = params;
+        for (const auto &param : params)
+        {
+            AddParameter(param, -50., 50.);
+        }
+        GetParameter("A_Bdjpsikst_0_re").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsikst_0_im").SetUpperLimit(0.);
+        GetParameter("A_Bdjpsikst_0_im").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsikst_paral_re").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsikst_paral_im").SetUpperLimit(0.);
+        GetParameter("A_Bdjpsikst_paral_im").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsikst_perp_re").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsikst_perp_im").SetUpperLimit(0.);
+        GetParameter("A_Bdjpsikst_perp_im").SetLowerLimit(0.);
+    }
+    else if (channel == "Bdjpsirh")
+    {
+        std::vector<std::string> params = {
+            "A_Bdjpsirh_0_re",
+            "A_Bdjpsirh_0_im",
+            "B_Bdjpsirh_0_re",
+            "B_Bdjpsirh_0_im",
+            "A_Bdjpsirh_perp_re",
+            "A_Bdjpsirh_perp_im",
+            "B_Bdjpsirh_perp_re",
+            "B_Bdjpsirh_perp_im",
+            "A_Bdjpsirh_paral_re",
+            "A_Bdjpsirh_paral_im",
+            "B_Bdjpsirh_paral_re",
+            "B_Bdjpsirh_paral_im"};
+        channelParameters[channel] = params;
+        for (const auto &param : params)
+        {
+            AddParameter(param, -50., 50.);
+        }
+        GetParameter("A_Bdjpsirh_0_re").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsirh_0_im").SetUpperLimit(0.);
+        GetParameter("A_Bdjpsirh_0_im").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsirh_paral_re").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsirh_paral_im").SetUpperLimit(0.);
+        GetParameter("A_Bdjpsirh_paral_im").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsirh_perp_re").SetLowerLimit(0.);
+        GetParameter("A_Bdjpsirh_perp_im").SetUpperLimit(0.);
+        GetParameter("A_Bdjpsirh_perp_im").SetLowerLimit(0.);
+    }
+    else if (channel == "Bsjpsikst")
+    {
+        std::vector<std::string> params = {
+            "A_Bsjpsikst_0_re",
+            "A_Bsjpsikst_0_im",
+            "B_Bsjpsikst_0_re",
+            "B_Bsjpsikst_0_im",
+            "A_Bsjpsikst_perp_re",
+            "A_Bsjpsikst_perp_im",
+            "B_Bsjpsikst_perp_re",
+            "B_Bsjpsikst_perp_im",
+            "A_Bsjpsikst_paral_re",
+            "A_Bsjpsikst_paral_im",
+            "B_Bsjpsikst_paral_re",
+            "B_Bsjpsikst_paral_im"};
+        channelParameters[channel] = params;
+        for (const auto &param : params)
+        {
+            AddParameter(param, -50., 50.);
+        }
+        GetParameter("A_Bsjpsikst_0_re").SetLowerLimit(0.);
+        GetParameter("A_Bsjpsikst_0_im").SetUpperLimit(0.);
+        GetParameter("A_Bsjpsikst_0_im").SetLowerLimit(0.);
+        GetParameter("A_Bsjpsikst_paral_re").SetLowerLimit(0.);
+        GetParameter("A_Bsjpsikst_paral_im").SetUpperLimit(0.);
+        GetParameter("A_Bsjpsikst_paral_im").SetLowerLimit(0.);
+        GetParameter("A_Bsjpsikst_perp_re").SetLowerLimit(0.);
+        GetParameter("A_Bsjpsikst_perp_im").SetUpperLimit(0.);
+        GetParameter("A_Bsjpsikst_perp_im").SetLowerLimit(0.);
+    }
+    else if (channel == "Bddpdm")
+    {
+        // Bd -> D+ D- parameters (uses double SU(3) corrections)
+        std::vector<std::string> params = {
+            "E1_dcc_re", "E1_dcc_im",
+            "A2_cdc_re", "A2_cdc_im",
+            "P1_GIM_dc_re", "P1_GIM_dc_im",
+            "P3_GIM_dc_re", "P3_GIM_dc_im",
+            "su3_double_E1_re", "su3_double_E1_im",
+            "su3_double_A2_re", "su3_double_A2_im",
+            "su3_double_P1_GIM_re", "su3_double_P1_GIM_im",
+            "su3_double_P3_GIM_re", "su3_double_P3_GIM_im"};
+        channelParameters[channel] = params;
+        for (const auto &param : params)
+        {
+            AddParameter(param, -50., 50.);
+        }
+    }
+    else if (channel == "Bsdpsdms")
+    {
+        // Bs -> Ds+ Ds- parameters (base channel for s->c)
+        std::vector<std::string> params = {
+            "E1_scc_re", "E1_scc_im",
+            "A2_csc_re", "A2_csc_im",
+            "P1_GIM_sc_re", "P1_GIM_sc_im",
+            "P3_GIM_sc_re", "P3_GIM_sc_im"};
+        channelParameters[channel] = params;
+        for (const auto &param : params)
+        {
+            AddParameter(param, -50., 50.);
+        }
+    }
+    else if (channel == "Bpdpd0b")
+    {
+        // B+ -> D+ D0bar parameters (uses single SU(3) corrections for A1)
+        std::vector<std::string> params = {
+            "A1_scu_re", "A1_scu_im",
+            "su3_single_A1_re", "su3_single_A1_im"};
+        channelParameters[channel] = params;
+        for (const auto &param : params)
+        {
+            AddParameter(param, -50., 50.);
+        }
+    }
+    else if (channel == "Bpdpsd0b")
+    {
+        // B+ -> D+ Ds0bar parameters (uses single SU(3) corrections)
+        std::vector<std::string> params = {
+            "su3_single_E1_re", "su3_single_E1_im",
+            "su3_single_P1_GIM_re", "su3_single_P1_GIM_im"};
+        channelParameters[channel] = params;
+        for (const auto &param : params)
+        {
+            AddParameter(param, -50., 50.);
+        }
+    }
+    else
+    {
         // Handle the case where the channel is not recognized
         std::cerr << "Error: Unrecognized channel \"" << channel << "\" in DefineParameters." << std::endl;
         throw std::runtime_error("Unrecognized channel: " + channel);
-	}
+    }
 
-  std::cout << "Number of parameters: " << GetNParameters() << std::endl;
-  SetPriorConstantAll();
-
+    std::cout << "Number of parameters: " << GetNParameters() << std::endl;
+    SetPriorConstantAll();
 }
 
-
 std::map<std::string, double> parameterValues;
- //function that given the channels and the string inside the map channelParameters adds every parameter name to a map <string, double> and returns said map. now parameterValues[channelParameters] is a complex double.
-std::map<std::string, double> goldenmodes::DeclareParameters() {
+// function that given the channels and the string inside the map channelParameters adds every parameter name to a map <string, double> and returns said map. now parameterValues[channelParameters] is a complex double.
+std::map<std::string, double> goldenmodes::DeclareParameters()
+{
 
     // Ensure channelParameters is populated
-    for (const auto& channel : channelNamesSU3) {
+    for (const auto &channel : channelNamesSU3)
+    {
         // Call DefineParameters once per channel
-        if (channelParameters.find(channel) == channelParameters.end()) {
+        if (channelParameters.find(channel) == channelParameters.end())
+        {
             goldenmodes::DefineParameters(channel);
         }
 
         // Add parameters to parameterValues
         auto it = channelParameters.find(channel);
-        if (it != channelParameters.end()) {
-            for (const auto& param : it->second) {
-	      parameterValues[param] = 1.; //initialize
-	      cout << "parameter " << param << " added with value: " << parameterValues[param] << endl;
+        if (it != channelParameters.end())
+        {
+            for (const auto &param : it->second)
+            {
+                parameterValues[param] = 1.; // initialize
+                cout << "parameter " << param << " added with value: " << parameterValues[param] << endl;
             }
-        } else {
+        }
+        else
+        {
             std::cerr << "Channel " << channel << " not found in channelParameters." << std::endl;
         }
     }
@@ -1890,35 +1917,43 @@ std::map<std::string, double> goldenmodes::DeclareParameters() {
     return parameterValues;
 }
 
-Parameter goldenmodes::getPar(const std::string& baseName) const {
+Parameter goldenmodes::getPar(const std::string &baseName) const
+{
     // Look for the real and imaginary parts in the parameterValues map
     auto it_real = parameterValues.find(baseName + "_re");
     auto it_imag = parameterValues.find(baseName + "_im");
 
-    if (it_real != parameterValues.end() && it_imag != parameterValues.end()) {
+    if (it_real != parameterValues.end() && it_imag != parameterValues.end())
+    {
         // Construct a complex number from the real and imaginary parts
         return std::complex<double>(it_real->second, it_imag->second);
-    } else {
+    }
+    else
+    {
         throw std::runtime_error("Error: Real or imaginary part for parameter " + baseName + " not found.");
     }
 }
 
 // Setter function: sets the value for a given parameter in the map
-void goldenmodes::SetParameterValue(const std::string& paramName, double value) {
-    parameterValues[paramName] = value;  // Insert or update the value for the given parameter name
+void goldenmodes::SetParameterValue(const std::string &paramName, double value)
+{
+    parameterValues[paramName] = value; // Insert or update the value for the given parameter name
 }
-
 
 //---------------------------------------------------------------------
 
-double goldenmodes::getParameterValue(const std::string& paramName) const {
+double goldenmodes::getParameterValue(const std::string &paramName) const
+{
     // Find the parameter in the parameterValues map
     auto it = parameterValues.find(paramName);
 
     // If the parameter is found, return its value
-    if (it != parameterValues.end()) {
+    if (it != parameterValues.end())
+    {
         return it->second;
-    } else {
+    }
+    else
+    {
         // If the parameter is not found, throw an error or return a default value
         std::cerr << "Error: Parameter " << paramName << " not found in parameterValues map." << std::endl;
         throw std::runtime_error("Parameter not found: " + paramName);
@@ -1927,251 +1962,365 @@ double goldenmodes::getParameterValue(const std::string& paramName) const {
 
 //----------------------------------------------------------
 
- //compute decay amplitude for each channel
- void goldenmodes::compute_decay_amplitudes(const std::string& channel, bool conjugate) {
-   //cout << "computing decay amplitude for channel " << channel << endl;
-   amplitudes[channel] = std::complex<double>(0.0, 0.0);
+// compute decay amplitude for each channel
+void goldenmodes::compute_decay_amplitudes(const std::string &channel, bool conjugate)
+{
+    // cout << "computing decay amplitude for channel " << channel << endl;
+    amplitudes[channel] = std::complex<double>(0.0, 0.0);
 
     Parameter amp;
     Parameter amp_0;
     Parameter amp_paral;
     Parameter amp_perp;
-   // Get the CKM elements for the current channel, apply conjugation based on the 'conjugate' flag
-    std::complex<double> Vcd = conjugate ? ckm.getVdc() : ckm.getVcd();
-    std::complex<double> Vcs = conjugate ? ckm.getVsc() : ckm.getVcs();
-    std::complex<double> Vbc = conjugate ? ckm.getVcb() : ckm.getVbc();
-    std::complex<double> Vtd = conjugate ? ckm.getVdt() : ckm.getVtd();
-    std::complex<double> Vbt = conjugate ? ckm.getVtb() : ckm.getVbt();
-    std::complex<double> Vud = conjugate ? ckm.getVdu() : ckm.getVud();
-    std::complex<double> Vbu = conjugate ? ckm.getVub() : ckm.getVbu();
-    std::complex<double> Vts = conjugate ? ckm.getVst() : ckm.getVts();
-    std::complex<double> Vus = conjugate ? ckm.getVsu() : ckm.getVus();
+    // Get the CKM elements for the current channel, apply conjugation based on the 'conjugate' flag
+    TComplex lam_bs_c = conjugate ? ckm.getVcb() * conjugate(ckm.getVcs()) : ckm.getVcs() * conjugate(ckm.getVcb());
+    TComplex lam_bs_u = conjugate ? ckm.getVub() * conjugate(ckm.getVus()) : ckm.getVus() * conjugate(ckm.getVub());
+    TComplex lam_bd_c = conjugate ? ckm.getVcb() * conjugate(ckm.getVcd()) : ckm.getVcd() * conjugate(ckm.getVcb());
+    TComplex lam_bd_u = conjugate ? ckm.getVub() * conjugate(ckm.getVud()) : ckm.getVud() * conjugate(ckm.getVub());
 
-
-    if (channel == "Bdjpsik0") {
-      // Bd→J/ψ K⁰: b→c(c̄s), spectator d
-      amp = Vbc * Vcs * getPar("A_Bdjpsik0")
-	+ Vbu * Vus * getPar("B_Bdjpsik0");
+    if (channel == "Bdjpsik0")
+    {
+        // Bd→J/ψ K⁰: b→c(c̄s), spectator d
+        amp = lam_bs_c * getPar("E2t_ccsd_BJPSIK") - lam_bs_u * getPar("G2t_scd_BJPSIK");
         amplitudes[channel] = amp;
-    } else if (channel == "Bdjpsip0") {
-      // Bd→J/ψ π⁰: b→c(c̄d), spectator d
-      amp = Vbc * Vcd * getPar("A_Bdjpsip0")
-	+ Vbu * Vud * getPar("B_Bdjpsip0");
+    }
+    else if (channel == "Bdjpsip0")
+    {
+        // Bd→J/ψ π⁰: b→c(c̄d), spectator d
+        amp = (lam_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BdP0JPSI")) - 
+            lam_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BdP0JPSI") + getPar("G2t_dcd_BJPSIP"))) / sqrt(2.);
         amplitudes[channel] = amp;
-    } else if (channel == "Bdjpsiom") {
-      // Bd→J/ψ ω: b→c(c̄d), spectator d
-      amp_0 = Vbc * Vcd * getPar("A_Bdjpsiom_0")
-	+ Vbu * Vud * getPar("B_Bdjpsiom_0");
-  amp_paral = Vbc * Vcd * getPar("A_Bdjpsiom_paral")
-  + Vbu * Vud * getPar("B_Bdjpsiom_paral");
-  amp_perp = Vbc * Vcd * getPar("A_Bdjpsiom_perp")
-+ Vbu * Vud * getPar("B_Bdjpsiom_perp");
-      amp = amp_0 + amp_perp + amp_paral;
+    }
+    else if (channel == "Bdjpsiet8")
+    {
+        // Bd→J/ψ eta_8: b→c(c̄d), spectator d
+        amp = ((lam_bd_c * (getPar("E2t_ccdd_BJPSIET8") + getPar("dP4EW_ucd_BdET8JPSI") + 2. * getPar("EA2t_ccdd_BJPSIET8") - 2. * getPar("EA2t_ccsd_BJPSIET8"))) + 
+            lam_bd_u * (getPar("EA2_ddcd_BET8JPSI") + getPar("dP4EW_ucd_BdET8JPSI") - getPar("G2t_dcd_BJPSIET8") - 2. * getPar("G4t_cdd_BJPSIET8") + 2. * getPar("G4t_csd_BJPSIET8"))) / sqrt(6.);
         amplitudes[channel] = amp;
+    }
+    else if (channel == "Bdjpsiet1")
+    {
+        // Bd→J/ψ eta_1: b→c(c̄d), spectator d
+        amp = ((lam_bd_c * (getPar("E2t_ccdd_BJPSIET1") + getPar("dP4EW_ucd_BdET1JPSI") + 2. * getPar("EA2t_ccdd_BJPSIET1") + getPar("EA2t_ccsd_BJPSIET1"))) + 
+            lam_bd_u * (getPar("EA2_ddcd_BET1JPSI") + getPar("dP4EW_ucd_BdET1JPSI") - getPar("G2t_dcd_BJPSIET1") - 2. * getPar("G4t_cdd_BJPSIET1") - getPar("G4t_csd_BJPSIET1"))) / sqrt(3.);
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bpjpsikp")
+    {
+        // B⁺→J/ψ K⁺: b→c(c̄s), spectator u
+        amp = lam_bs_c * (getPar("E2t_ccsd_BJPSIK") + getPar("dP2EW_scu_Bpjpsikp")) + 
+            lam_bs_u * (getPar("EA1_sdcd_BKJPSI") + getPar("dP2EW_scu_Bpjpsikp") - getPar("G2t_scd_BJPSIK"));
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bpjpsipp")
+    {
+        // B⁺→J/ψ π⁺: b→c(c̄d), spectator u
+        amp = lam_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP2EW_dcu_Bpjpsipp")) + 
+            lam_bd_u * (getPar("EA1_ddcd_BPJPSI") + getPar("dP2EW_dcu_Bpjpsipp") - getPar("G2t_dcd_BJPSIP"));
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bsjpsip0")
+    {
+        // Bs→J/ψ π⁰: b→c(c̄s), spectator s
+        amp = - (lam_bs_c * getPar("dP4EW_ucs_BsP0JPSI")  + lam_bs_u * (getPar("EA2_ddcs_BsPJPSI") + getPar("dP4EW_ucs_BsP0JPSI")) )/ sqrt(2.);
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bsjpsik0b")
+    {
+        // Bs→J/ψ \bar{K}⁰: b→c(c̄d), spectator s
+        amp = lam_bd_c * getPar("E2t_ccds_BsJPSIKb") - lam_bd_u * getPar("G2t_dcs_BsJPSIKb");
+        amplitudes[channel] = amp;
+    }
+        else if (channel == "Bsjpsiet8")
+    {
+        // Bs→J/ψ eta_8: b→c(c̄s), spectator s
+        amp = ((lam_bs_c * (-2. *getPar("E2t_ccss_BsJPSIET8") + getPar("dP4EW_ucs_BsET8JPSI") + 2. * getPar("EA2t_ccds_BsJPSIET8") - 2. * getPar("EA2t_ccss_BsJPSIET8"))) + 
+            lam_bs_u * (getPar("EA2_ddcs_BsET8JPSI") + getPar("dP4EW_ucs_BsET8JPSI") + 2. * getPar("G2t_scs_BsJPSIET8") - 2. * getPar("G4t_cds_BsJPSIET8") + 2. * getPar("G4t_css_BsJPSIET8"))) / sqrt(6.);
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bsjpsiet1")
+    {
+        // Bs→J/ψ eta_1: b→c(c̄s), spectator s
+        amp = ((lam_bs_c * (getPar("E2t_ccss_BJPSIET1") + getPar("dP4EW_ucs_BsET1JPSI") + 2. * getPar("EA2t_ccds_BsJPSIET1") + getPar("EA2t_ccss_BsJPSIET1"))) + 
+            lam_bs_u * (getPar("EA2_ddcs_BsET1JPSI") + getPar("dP4EW_ucs_BsET1JPSI") - getPar("G2t_scs_BsJPSIET1") - 2. * getPar("G4t_cds_BsJPSIET1") - getPar("G4t_css_BsJPSIET1"))) / sqrt(3.);
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bsjpsiph")
+    {
+        // Bs→J/ψ φ: b→c(c̄s), spectator s
+        amp_0 = - lam_bs_c * (getPar("E2t_ccss_BsJPSIPH_0") + getPar("EA2t_ccss_BsJPSIPH_0")) + 
+            lam_bs_u * (getPar("G2t_scs_BsJPSIPH_0") + getPar("G4t_css_BsJPSIPH_0"));
+        amp_paral = - lam_bs_c * (getPar("E2t_ccss_BsJPSIPH_paral") + getPar("EA2t_ccss_BsJPSIPH_paral")) + 
+            lam_bs_u * (getPar("G2t_scs_BsJPSIPH_paral") + getPar("G4t_css_BsJPSIPH_paral"));
+        amp_perp = - lam_bs_c * (getPar("E2t_ccss_BsJPSIPH_perp") + getPar("EA2t_ccss_BsJPSIPH_perp")) + 
+            lam_bs_u * (getPar("G2t_scs_BsJPSIPH_perp") + getPar("G4t_css_BsJPSIPH_perp"));
         amplitudes[channel + "_0"] = amp_0;
         amplitudes[channel + "_paral"] = amp_paral;
         amplitudes[channel + "_perp"] = amp_perp;
-    } else if (channel == "Bpjpsikp") {
-      // B⁺→J/ψ K⁺: b→c(c̄s), spectator u
-	  amp = Vbc * Vcs * getPar("A_Bpjpsikp")
-	    + Vbu * Vus * getPar("B_Bpjpsikp");
-        amplitudes[channel] = amp;
-    } else if (channel == "Bpjpsipp") {
-      // B⁺→J/ψ π⁺: b→c(c̄d), spectator u
-	  amp = Vbc * Vcd * getPar("A_Bpjpsipp")
-	+ Vbu * Vud * getPar("B_Bpjpsipp");
-        amplitudes[channel] = amp;
-    } else if (channel == "Bsjpsiph") {
-      // Bs→J/ψ φ: b→c(c̄s), spectator s
-      amp_0 = Vbc * Vcs * getPar("A_Bsjpsiph_0")
-+ Vbu * Vus * getPar("B_Bsjpsiph_0");
-amp_paral = Vbc * Vcs * getPar("A_Bsjpsiph_paral")
-+ Vbu * Vus * getPar("B_Bsjpsiph_paral");
-amp_perp = Vbc * Vcs * getPar("A_Bsjpsiph_perp")
-+ Vbu * Vus * getPar("B_Bsjpsiph_perp");
-amp = amp_0 + amp_perp + amp_paral;
-amplitudes[channel] = amp;
-amplitudes[channel + "_0"] = amp_0;
-amplitudes[channel + "_paral"] = amp_paral;
-amplitudes[channel + "_perp"] = amp_perp;
-    } else if (channel == "Bsjpsik0") {
-      // Bs→J/ψ K⁰: b→c(c̄s), spectator s→d (Cabibbo suppressed)
-	  amp = Vbc * Vcs * getPar("A_Bsjpsik0")
-	+ Vbu * Vus * getPar("B_Bsjpsik0");
-        amplitudes[channel] = amp;
-    } else if (channel == "Bdjpsikst") {
-      // Bd→J/ψ K*: b→c(c̄s), spectator d
-      amp_0 = Vbc * Vcs * getPar("A_Bdjpsikst_0")
-	+ Vbu * Vus * getPar("B_Bdjpsikst_0");
-  amp_paral = Vbc * Vcs * getPar("A_Bdjpsikst_paral")
-  + Vbu * Vus * getPar("B_Bdjpsikst_paral");
-  amp_perp = Vbc * Vcs * getPar("A_Bdjpsikst_perp")
-+ Vbu * Vus * getPar("B_Bdjpsikst_perp");
-      amp = amp_0 + amp_perp + amp_paral;
-      amplitudes[channel] = amp;
-      amplitudes[channel + "_0"] = amp_0;
-      amplitudes[channel + "_paral"] = amp_paral;
-      amplitudes[channel + "_perp"] = amp_perp;
-    } else if (channel == "Bdjpsirh") {
-      // Bd→J/ψ ρ: b→c(c̄d), spectator d
-      amp_0 = Vbc * Vcd * getPar("A_Bdjpsirh_0")
-	+ Vbu * Vud * getPar("B_Bdjpsirh_0");
-  amp_paral = Vbc * Vcd * getPar("A_Bdjpsirh_paral")
-  + Vbu * Vud * getPar("B_Bdjpsirh_paral");
-  amp_perp = Vbc * Vcd * getPar("A_Bdjpsirh_perp")
-+ Vbu * Vud * getPar("B_Bdjpsirh_perp");
-      amp = amp_0 + amp_perp + amp_paral;
-      amplitudes[channel] = amp;
-      amplitudes[channel + "_0"] = amp_0;
-      amplitudes[channel + "_paral"] = amp_paral;
-      amplitudes[channel + "_perp"] = amp_perp;
-    } else if (channel == "Bsjpsikst") {
-      // Bs→J/ψ K*: b→c(c̄s), spectator s
-      amp_0 = Vbc * Vcs * getPar("A_Bsjpsikst_0")
-+ Vbu * Vus * getPar("B_Bsjpsikst_0");
-amp_paral = Vbc * Vcs * getPar("A_Bsjpsikst_paral")
-+ Vbu * Vus * getPar("B_Bsjpsikst_paral");
-amp_perp = Vbc * Vcs * getPar("A_Bsjpsikst_perp")
-+ Vbu * Vus * getPar("B_Bsjpsikst_perp");
-amp = amp_0 + amp_perp + amp_paral;
-amplitudes[channel] = amp;
-amplitudes[channel + "_0"] = amp_0;
-amplitudes[channel + "_paral"] = amp_paral;
-amplitudes[channel + "_perp"] = amp_perp;
-} else if (channel == "Bsdpsdms") {
-      // Bs→Ds⁺Ds⁻ channel: BASE amplitudes (s→c transitions)
-      amp = Vcs * Vbc * (getPar("E1_scc_Bsdpsdms") + getPar("A2_csc_Bsdmsdps"))
-          - Vus * Vbu * (getPar("P1_GIM_sc_Bsdpsdms") + getPar("P3_GIM_sc_Bsdpsdms"));
-      amplitudes[channel] = amp;
-} else if (channel == "Bddpdm") {
-      // Bd→D⁺D⁻ channel: DOUBLE s→d exchange
-      // Applies SU(3)-breaking corrections to s→c base amplitudes
-      std::complex<double> E1_Bddpdm = std::complex<double>(
-          getParameterValue("E1_scc_Bsdpsdms_re") * (1 + getParameterValue("su3_double_E1_re")),
-          getParameterValue("E1_scc_Bsdpsdms_re") * getParameterValue("su3_double_E1_im")
-      );
-      
-      std::complex<double> A2_Bddpdm = std::complex<double>(
-          getParameterValue("A2_csc_Bsdmsdps_re") * (1 + getParameterValue("su3_double_A2_re")),
-          getParameterValue("A2_csc_Bsdmsdps_im") * (1 + getParameterValue("su3_double_A2_im"))
-      );
-      
-      std::complex<double> P1_GIM_Bddpdm = std::complex<double>(
-          getParameterValue("P1_GIM_sc_Bsdpsdms_re") * (1 + getParameterValue("su3_double_P1_GIM_re")),
-          getParameterValue("P1_GIM_sc_Bsdpsdms_im") * (1 + getParameterValue("su3_double_P1_GIM_im"))
-      );
-      
-      std::complex<double> P3_GIM_Bddpdm = std::complex<double>(
-          getParameterValue("P3_GIM_sc_Bsdpsdms_re") * (1 + getParameterValue("su3_double_P3_GIM_re")),
-          getParameterValue("P3_GIM_sc_Bsdpsdms_im") * (1 + getParameterValue("su3_double_P3_GIM_im"))
-      );
-      
-      amp = Vcd * Vbc * (E1_Bddpdm + A2_Bddpdm)
-          - Vud * Vbu * (P1_GIM_Bddpdm + P3_GIM_Bddpdm);
-      amplitudes[channel] = amp;
-} else if (channel == "Bpdpsd0b") {
-      // B⁺→D⁺D̄⁰ₛ channel: Uses BASE s→c amplitudes (no corrections for A1)
-      // Shares base E1 and P1_GIM from Bsdpsdms (no corrections needed)
-      amp = Vcs * Vbc * getPar("E1_scc_Bsdpsdms")
-          + Vus * Vbu * (getPar("A1_scu_Bpdpsd0b") - getPar("P1_GIM_sc_Bsdpsdms"));
-      amplitudes[channel] = amp;
-} else if (channel == "Bpdpd0b") {
-      // B⁺→D⁺D̄⁰ channel: SINGLE s→d exchange
-      // Applies SU(3)-breaking corrections to convert s→c base to d→c
-      std::complex<double> E1_Bpdpd0b = std::complex<double>(
-          getParameterValue("E1_scc_Bsdpsdms_re") * (1 + getParameterValue("su3_single_E1_re")),
-          getParameterValue("E1_scc_Bsdpsdms_re") * getParameterValue("su3_single_E1_im")
-      );
-      
-      std::complex<double> A1_Bpdpd0b = std::complex<double>(
-          getParameterValue("A1_scu_Bpdpsd0b_re") * (1 + getParameterValue("su3_single_A1_re")),
-          getParameterValue("A1_scu_Bpdpsd0b_im") * (1 + getParameterValue("su3_single_A1_im"))
-      );
-      
-      std::complex<double> P1_GIM_Bpdpd0b = std::complex<double>(
-          getParameterValue("P1_GIM_sc_Bsdpsdms_re") * (1 + getParameterValue("su3_single_P1_GIM_re")),
-          getParameterValue("P1_GIM_sc_Bsdpsdms_im") * (1 + getParameterValue("su3_single_P1_GIM_im"))
-      );
-      
-      amp = Vcd * Vbc * E1_Bpdpd0b
-          + Vud * Vbu * (A1_Bpdpd0b - P1_GIM_Bpdpd0b);
-      amplitudes[channel] = amp;
-} else {
-      cout << "WARNING: amplitude for channel " << channel << " not found" << endl;
     }
- }
+    else if (channel == "Bsjpsiom")
+    {
+        // Bs→J/ψ ω: b→c(c̄s), spectator s
+        amp_0 = (lam_bs_c * (2. * getPar("EA2t_ccds_BsJPSIOM_0") + getPar("dP4EW_ucs_BsOMJPSI_0")) + 
+            lam_bs_u * (getPar("EA2_ddcs_BsOMJPSI_0") + getPar("dP4EW_ucs_BsOMJPSI_0") - 2. * getPar("G4t_cds_BsJPSIOM_0")))/ sqrt(2.);
+        amp_paral = (lam_bs_c * (2. * getPar("EA2t_ccds_BsJPSIOM_paral") + getPar("dP4EW_ucs_BsOMJPSI_paral")) + 
+            lam_bs_u * (getPar("EA2_ddcs_BsOMJPSI_paral") + getPar("dP4EW_ucs_BsOMJPSI_paral") - 2. * getPar("G4t_cds_BsJPSIOM_paral")))/ sqrt(2.);
+        amp_perp = (lam_bs_c * (2. * getPar("EA2t_ccds_BsJPSIOM_perp") + getPar("dP4EW_ucs_BsOMJPSI_perp")) + 
+            lam_bs_u * (getPar("EA2_ddcs_BsOMJPSI_perp") + getPar("dP4EW_ucs_BsOMJPSI_perp") - 2. * getPar("G4t_cds_BsJPSIOM_perp")))/ sqrt(2.);
+        amplitudes[channel + "_0"] = amp_0;
+        amplitudes[channel + "_paral"] = amp_paral;
+        amplitudes[channel + "_perp"] = amp_perp;
+    }
+    else if (channel == "Bsjpsikbst")
+    {
+        // Bs→J/ψ \bar{K}*: b→c(c̄d), spectator s
+        amp_0 = - lam_bd_c * getPar("E2t_ccds_BsJPSIKbst_0") - lam_bd_u * getPar("G2t_dcs_BsJPSIKbst_0");
+        amp_paral = - lam_bd_c * getPar("E2t_ccds_BsJPSIKbst_paral") - lam_bd_u * getPar("G2t_dcs_BsJPSIKbst_paral");
+        amp_perp = - lam_bd_c * getPar("E2t_ccds_BsJPSIKbst_perp") - lam_bd_u * getPar("G2t_dcs_BsJPSIKbst_perp");
+        amplitudes[channel + "_0"] = amp_0;
+        amplitudes[channel + "_paral"] = amp_paral;
+        amplitudes[channel + "_perp"] = amp_perp;
+    }
+    else if (channel == "Bsjpsirho0")
+    {
+        // Bs→J/ψ \rho⁰: b→c(c̄s), spectator s
+        amp_0 = - (lam_bs_c * getPar("dP4EW_ucs_BsR0JPSI_0")  + lam_bs_u * (getPar("EA2_ddcs_BsRJPSI_0") + getPar("dP4EW_ucs_BsR0JPSI_0")) )/ sqrt(2.);
+        amps_paral = - (lam_bs_c * getPar("dP4EW_ucs_BsR0JPSI_paral")  + lam_bs_u * (getPar("EA2_ddcs_BsRJPSI_paral") + getPar("dP4EW_ucs_BsR0JPSI_paral")) )/ sqrt(2.);
+        amp_perp = - (lam_bs_c * getPar("dP4EW_ucs_BsR0JPSI_perp")  + lam_bs_u * (getPar("EA2_ddcs_BsRJPSI_perp") + getPar("dP4EW_ucs_BsR0JPSI_perp")) )/ sqrt(2.);
+        amplitudes[channel + "_0"] = amp_0;
+        amplitudes[channel + "_paral"] = amp_paral;
+        amplitudes[channel + "_perp"] = amp_perp;
+    }
+    else if (channel == "Bdjpsiom")
+    {
+        // Bd→J/ψ ω: b→c(c̄d), spectator d
+        amp_0 = (lam_bd_c * (getPar("E2t_ccdd_BJPSIOM_0") + 2. * getPar("EA2t_ccdd_BJPSIOM_0") + getPar("dP4EW_ucd_BdOMJPSI_0")) + 
+            lam_bd_u * (getPar("EA2_ddcd_BOMJPSI_0") + getPar("dP4EW_ucd_BdOMJPSI_0") - getPar("G2t_dcd_BJPSIOM_0") - 2. * getPar("G4t_cdd_BJPSIOM_0")))/sqrt(2.);
+        amp_paral = (lam_bd_c * (getPar("E2t_ccdd_BJPSIOM_paral") + 2. * getPar("EA2t_ccdd_BJPSIOM_paral") + getPar("dP4EW_ucd_BdOMJPSI_paral")) + 
+            lam_bd_u * (getPar("EA2_ddcd_BOMJPSI_paral") + getPar("dP4EW_ucd_BdOMJPSI_paral") - getPar("G2t_dcd_BJPSIOM_paral") - 2. * getPar("G4t_cdd_BJPSIOM_paral")))/sqrt(2.);
+        amp_perp = (lam_bd_c * (getPar("E2t_ccdd_BJPSIOM_perp") + 2. * getPar("EA2t_ccdd_BJPSIOM_perp") + getPar("dP4EW_ucd_BdOMJPSI_perp")) + 
+            lam_bd_u * (getPar("EA2_ddcd_BOMJPSI_perp") + getPar("dP4EW_ucd_BdOMJPSI_perp") - getPar("G2t_dcd_BJPSIOM_perp") - 2. * getPar("G4t_cdd_BJPSIOM_perp")))/sqrt(2.);
+        amplitudes[channel + "_0"] = amp_0;
+        amplitudes[channel + "_paral"] = amp_paral;
+        amplitudes[channel + "_perp"] = amp_perp;
+    }
+    else if (channel == "Bdjpsikst")
+    {
+        // Bd→J/ψ K*: b→c(c̄s), spectator d
+        amp_0 = lam_bs_c * getPar("E2t_ccsd_BJPSIKst_0") - lam_bs_u * getPar("G2t_scd_BJPSIKst_0");
+        amp_paral = lam_bs_c * getPar("E2t_ccsd_BJPSIKst_paral") - lam_bs_u * getPar("G2t_scd_BJPSIKst_paral");
+        amp_perp = lam_bs_c * getPar("E2t_ccsd_BJPSIKst_perp") - lam_bs_u * getPar("G2t_scd_BJPSIKst_perp");
+        amplitudes[channel + "_0"] = amp_0;
+        amplitudes[channel + "_paral"] = amp_paral;
+        amplitudes[channel + "_perp"] = amp_perp;
+    }
+    else if (channel == "Bdjpsirho0")
+    {
+        // Bd→J/ψ ρ: b→c(c̄d), spectator d
+        amp_0 = (lam_bd_c * (getPar("E2t_ccdd_BJPSIR_0") + getPar("dP4EW_ucd_BdR0JPSI_0")) - 
+            lam_bd_u * (getPar("EA2_ddcd_BRJPSI_0") + getPar("dP4EW_ucd_BdR0JPSI_0") + getPar("G2t_dcd_BJPSIR_0"))) / sqrt(2.);
+        amp_paral = (lam_bd_c * (getPar("E2t_ccdd_BJPSIR_paral") + getPar("dP4EW_ucd_BdR0JPSI_paral")) - 
+            lam_bd_u * (getPar("EA2_ddcd_BRJPSI_paral") + getPar("dP4EW_ucd_BdR0JPSI_paral") + getPar("G2t_dcd_BJPSIR_paral"))) / sqrt(2.);
+        amp_perp = (lam_bd_c * (getPar("E2t_ccdd_BJPSIR_perp") + getPar("dP4EW_ucd_BdR0JPSI_perp")) - 
+            lam_bd_u * (getPar("EA2_ddcd_BRJPSI_perp") + getPar("dP4EW_ucd_BdR0JPSI_perp") + getPar("G2t_dcd_BJPSIR_perp"))) / sqrt(2.);
+        amplitudes[channel + "_0"] = amp_0;
+        amplitudes[channel + "_paral"] = amp_paral;
+        amplitudes[channel + "_perp"] = amp_perp;
+    }
+    else if (channel == "Bdjpsiph")
+    {
+        // Bd→J/ψ \phi: b→c(c̄d), spectator d
+        amp_0 = - lam_bd_c * getPar("EA2t_ccsd_BJPSIPH_0")  - lam_bd_u * getPar("G4t_csd_BJPSIPH_0");
+        amp_paral = - lam_bd_c * getPar("A2t_ccsd_BJPSIPH_paral")  - lam_bd_u * getPar("G4t_csd_BJPSIPH_paral");
+        amp_perp = - lam_bd_c * getPar("A2t_ccsd_BJPSIPH_perp")  - lam_bd_u * getPar("G4t_csd_BJPSIPH_perp");
+        amplitudes[channel + "_0"] = amp_0;
+        amplitudes[channel + "_paral"] = amp_paral;
+        amplitudes[channel + "_perp"] = amp_perp;
+    }
+    else if (channel == "Bpjpsirhop")
+    {
+        // B⁺→J/ψ ρ⁺: b→c(c̄d), spectator u
+        amp_0 = lam_bd_c * (getPar("E2t_ccdd_BJPSIR_0") + getPar("dP2EW_dcu_BPJPSIRP_0")) + 
+            lam_bd_u * (getPar("EA1_ddcd_BRJPSI_0") + getPar("dP2EW_dcu_BPJPSIRP_0") - getPar("G2t_dcd_BJPSIR_0"));
+        amp_paral = lam_bd_c * (getPar("E2t_ccdd_BJPSIR_paral") + getPar("dP2EW_dcu_BPJPSIRP_paral")) + 
+            lam_bd_u * (getPar("EA1_ddcd_BRJPSI_paral") + getPar("dP2EW_dcu_BPJPSIRP_paral") - getPar("G2t_dcd_BJPSIR_paral"));
+        amp_perp = lam_bd_c * (getPar("E2t_ccdd_BJPSIR_perp") + getPar("dP2EW_dcu_BPJPSIRP_perp")) + 
+            lam_bd_u * (getPar("EA1_ddcd_BRJPSI_perp") + getPar("dP2EW_dcu_BPJPSIRP_perp") - getPar("G2t_dcd_BJPSIR_perp"));
+        amplitudes[channel + "_0"] = amp_0;
+        amplitudes[channel + "_paral"] = amp_paral;
+        amplitudes[channel + "_perp"] = amp_perp;
+    }
+    else if (channel == "Bpjpsikstp")
+    {
+        // B⁺→J/ψ K*⁺: b→c(c̄s), spectator u
+        amp_0 = lam_bs_c * (getPar("E2t_ccsd_BJPSIKst_0") + getPar("dP2EW_scu_BPJPSIKstP_0")) + 
+            lam_bs_u * (getPar("EA1_sdcd_BKstJPSI_0") + getPar("dP2EW_scu_BPJPSIKstP_0") - getPar("G2t_scd_BJPSIKst_0"));
+        amp_paral = lam_bs_c * (getPar("E2t_ccsd_BJPSIKst_paral") + getPar("dP2EW_scu_BPJPSIKstP_paral")) + 
+            lam_bs_u * (getPar("EA1_sdcd_BKstJPSI_paral") + getPar("dP2EW_scu_BPJPSIKstP_paral") - getPar("G2t_scd_BJPSIKst_paral"));
+        amp_perp = lam_bs_c * (getPar("E2t_ccsd_BJPSIKst_perp") + getPar("dP2EW_scu_BPJPSIKstP_perp")) + 
+            lam_bs_u * (getPar("EA1_sdcd_BKstJPSI_perp") + getPar("dP2EW_scu_BPJPSIKstP_perp") - getPar("G2t_scd_BJPSIKst_perp"));
+        amplitudes[channel + "_0"] = amp_0;
+        amplitudes[channel + "_paral"] = amp_paral;
+        amplitudes[channel + "_perp"] = amp_perp;
+    }
+    else if (channel == "Bsdpsdms")
+    {
+        // b → c(c̄s), spectator s
+        amp = lam_bs_c * (getPar("E1t_sccs_Bsdpsdms") + getPar("A2t_cscs_Bsdmsdps")) - lam_bs_u * (getPar("G1t_scs_Bsdpsdms") + getPar("G3t_css_Bsdpsdms"));
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bsdpdms")
+    {
+        // b → c(c̄d), spectator s
+        amp = lam_bd_c * (getPar("E1t_dccs_Bsddms")) - lam_bs_u * (getPar("G1t_dcs_Bsddms"));
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bsdpdm")
+    {
+        // b → c(c̄s), spectator s
+        amp = lam_bs_c * (getPar("A2t_cdcs_Bsdbd")) - lam_bs_u * (getPar("G3t_dcs_Bsdbd"));
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bsd0d0b")
+    {
+        // b → c(c̄s), spectator s
+        amp = - lam_bs_c * (getPar("A2t_cdcs_Bsdbd") + getPar("dP3EW_ucs_Bsd0bd0")) - 
+            lam_bs_u * (getPar("A2_dcds_Bsddb") + getPar("dP3EW_ucs_Bsd0bd0") - getPar("G3t_dcs_Bsdbd"));
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bddpsdms")
+    {
+        // b → c(c̄d), spectator d
+        amp = lam_bd_c * (getPar("A2t_cscd_Bdmsdps")) - lam_bd_u * (getPar("G3t_csd_Bdpsdms"));
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bddpsdm")
+    {
+        // b → c(c̄s), spectator d
+        amp = lam_bs_c * (getPar("E1t_sccd_Bdpsdb")) - lam_bs_u * (getPar("G1t_scd_Bdpsdb"));
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bddpdm")
+    {
+        // b → c(c̄d), spectator d
+        amp =  lam_bd_c * (getPar("E1t_dccd_Bddb") + getPar("A2t_cdcd_Bdbd")) - 
+            lam_bd_u * (getPar("G1t_dcd_Bddb") + getPar("G3t_dcd_Bdbd"));
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bdd0d0b")
+    {
+        // b → c(c̄d), spectator d
+        amp = - lam_bd_c * (getPar("A2t_cdcd_Bdbd") + getPar("dP3EW_ucd_Bdd0bd0")) - 
+            lam_bd_u * (getPar("A2_dcdd_Bddb") + getPar("dP3EW_ucd_Bdd0bd0") - getPar("G3t_dcd_Bdbd"));
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bpdpd0b")
+    {
+        // b → c(c̄d), spectator u
+        amp = + lam_bd_c * (getPar("E1t_dccd_Bddb") + getPar("dP1EW_dcu_Bpdpd0b")) + 
+            lam_bd_u * (getPar("A1_dcdd_Bddb") + getPar("dP1EW_dcu_Bpdpd0b") - getPar("G1t_dcd_Bddb"));
+        amplitudes[channel] = amp;
+    }
+    else if (channel == "Bpdspd0b")
+    {
+        // b → c(c̄s), spectator u
+        amp = + lam_bs_c * (getPar("E1t_sccd_Bdspdb") + getPar("dP1EW_scu_Bpdspd0b")) + 
+            lam_bs_u * (getPar("A1_scdd_Bdspdb") + getPar("dP1EW_scu_Bpdspd0b") - getPar("G1t_scd_Bdspdb"));
+        amplitudes[channel] = amp;
+    }
+    else
+    {
+        cout << "WARNING: amplitude for channel " << channel << " not found" << endl;
+    }
+}
 
- // Getter for amplitudes
- Parameter goldenmodes::get_amplitude(const std::string& channel) {
-     // First, check if the amplitude is already computed
-     auto it = amplitudes.find(channel);
-     if (it != amplitudes.end()) {
-         return it->second;
-     }
-
-     // Extract the base channel name (if it's a polarized component)
-     std::string base_channel = channel;
-     if (channel.find("_0") != std::string::npos) {
-         base_channel = channel.substr(0, channel.find("_0"));
-     } else if (channel.find("_paral") != std::string::npos) {
-         base_channel = channel.substr(0, channel.find("_paral"));
-     } else if (channel.find("_perp") != std::string::npos) {
-         base_channel = channel.substr(0, channel.find("_perp"));
-     }
-
-     // Compute the decay amplitude for the base channel if not already computed
-     if (amplitudes.find(base_channel) == amplitudes.end()) {
-         compute_decay_amplitudes(base_channel, false);
-     }
-
-     // Check if the specific requested amplitude exists
-     it = amplitudes.find(channel);
-     if (it == amplitudes.end()) {
-         std::cerr << "ERROR: Amplitude not found for channel: " << channel << std::endl;
-         std::cerr << "Available amplitudes: ";
-         for (const auto& pair : amplitudes) {
-             std::cerr << pair.first << " ";
-         }
-         std::cerr << std::endl;
-         throw std::runtime_error("Amplitude not found for channel: " + channel);
-     }
-
-     return it->second;
- }
-
-
-
-
-
- // Getter for conjugated amplitudes
-Parameter goldenmodes::get_conjugate_amplitude(const std::string& channel) {
-    // First, check if the conjugate amplitude already exists
+// Getter for amplitudes
+Parameter goldenmodes::get_amplitude(const std::string &channel)
+{
+    // First, check if the amplitude is already computed
     auto it = amplitudes.find(channel);
-    if (it != amplitudes.end()) {
+    if (it != amplitudes.end())
+    {
         return it->second;
     }
 
     // Extract the base channel name (if it's a polarized component)
     std::string base_channel = channel;
-    if (channel.find("_0") != std::string::npos) {
+    if (channel.find("_0") != std::string::npos)
+    {
         base_channel = channel.substr(0, channel.find("_0"));
-    } else if (channel.find("_paral") != std::string::npos) {
+    }
+    else if (channel.find("_paral") != std::string::npos)
+    {
         base_channel = channel.substr(0, channel.find("_paral"));
-    } else if (channel.find("_perp") != std::string::npos) {
+    }
+    else if (channel.find("_perp") != std::string::npos)
+    {
+        base_channel = channel.substr(0, channel.find("_perp"));
+    }
+
+    // Compute the decay amplitude for the base channel if not already computed
+    if (amplitudes.find(base_channel) == amplitudes.end())
+    {
+        compute_decay_amplitudes(base_channel, false);
+    }
+
+    // Check if the specific requested amplitude exists
+    it = amplitudes.find(channel);
+    if (it == amplitudes.end())
+    {
+        std::cerr << "ERROR: Amplitude not found for channel: " << channel << std::endl;
+        std::cerr << "Available amplitudes: ";
+        for (const auto &pair : amplitudes)
+        {
+            std::cerr << pair.first << " ";
+        }
+        std::cerr << std::endl;
+        throw std::runtime_error("Amplitude not found for channel: " + channel);
+    }
+
+    return it->second;
+}
+
+// Getter for conjugated amplitudes
+Parameter goldenmodes::get_conjugate_amplitude(const std::string &channel)
+{
+    // First, check if the conjugate amplitude already exists
+    auto it = amplitudes.find(channel);
+    if (it != amplitudes.end())
+    {
+        return it->second;
+    }
+
+    // Extract the base channel name (if it's a polarized component)
+    std::string base_channel = channel;
+    if (channel.find("_0") != std::string::npos)
+    {
+        base_channel = channel.substr(0, channel.find("_0"));
+    }
+    else if (channel.find("_paral") != std::string::npos)
+    {
+        base_channel = channel.substr(0, channel.find("_paral"));
+    }
+    else if (channel.find("_perp") != std::string::npos)
+    {
         base_channel = channel.substr(0, channel.find("_perp"));
     }
 
     // Compute the conjugate decay amplitude for the base channel if not already computed
-    if (amplitudes.find(base_channel) == amplitudes.end()) {
+    if (amplitudes.find(base_channel) == amplitudes.end())
+    {
         compute_decay_amplitudes(base_channel, true);
     }
 
     // Check if the specific conjugate amplitude exists
     it = amplitudes.find(channel);
-    if (it == amplitudes.end()) {
+    if (it == amplitudes.end())
+    {
         std::cerr << "ERROR: Conjugate amplitude not found for channel: " << channel << std::endl;
         std::cerr << "Available amplitudes: ";
-        for (const auto& pair : amplitudes) {
+        for (const auto &pair : amplitudes)
+        {
             std::cerr << pair.first << " ";
         }
         std::cerr << std::endl;
@@ -2181,10 +2330,9 @@ Parameter goldenmodes::get_conjugate_amplitude(const std::string& channel) {
     return it->second;
 }
 
-
-
 // Destructor
-goldenmodes::~goldenmodes() {
+goldenmodes::~goldenmodes()
+{
     // Ensure any dynamically allocated resources are properly cleaned
     // delete histos;  // Uncomment if histos is dynamically allocated
 }
@@ -2192,85 +2340,113 @@ goldenmodes::~goldenmodes() {
 //-----------------------------------------------------------
 // Helper function to parse a decay channel name
 std::pair<std::string, std::pair<std::string, std::string>>
-goldenmodes::parseChannel(const std::string& channel) const {
+goldenmodes::parseChannel(const std::string &channel) const
+{
     // Identify the B meson part
     std::string bMeson;
-    if (channel.rfind("Bp", 0) == 0) {
+    if (channel.rfind("Bp", 0) == 0)
+    {
         bMeson = "Bp";
-    } else if (channel.rfind("Bd", 0) == 0) {
+    }
+    else if (channel.rfind("Bd", 0) == 0)
+    {
         bMeson = "Bd";
-    } else if (channel.rfind("Bs", 0) == 0) {
+    }
+    else if (channel.rfind("Bs", 0) == 0)
+    {
         bMeson = "Bs";
-    } else {
+    }
+    else
+    {
         throw std::runtime_error("Error in parseChannel: Unknown B meson in channel: " + channel);
     }
 
     std::string remaining = channel.substr(bMeson.length());
-    
+
     // Check if it's a J/psi channel or a DD channel
     const std::string jpsiIdentifier = "jpsi";
-    if (remaining.rfind(jpsiIdentifier, 0) == 0) {
+    if (remaining.rfind(jpsiIdentifier, 0) == 0)
+    {
         // J/psi channel: B→J/ψ X
         // Extract the second final-state meson
         remaining = remaining.substr(jpsiIdentifier.length());
         std::string meson2;
 
         // Look for a valid meson name in mesonMasses
-        for (const auto& meson : mesonMasses) {
-            if (remaining.rfind(meson.first, 0) == 0) {
+        for (const auto &meson : mesonMasses)
+        {
+            if (remaining.rfind(meson.first, 0) == 0)
+            {
                 meson2 = meson.first;
                 break;
             }
         }
 
-        if (meson2.empty()) {
+        if (meson2.empty())
+        {
             throw std::runtime_error("Error in parseChannel: Unable to parse second final-state meson in channel: " + channel);
         }
 
         return {bMeson, {jpsiIdentifier, meson2}};
-    } else {
+    }
+    else
+    {
         // DD channel: B→D X or B→Ds X
         // Parse the two D mesons from the remaining string
         std::string meson1, meson2;
-        
+
         // Try to match known D meson patterns (order matters - check longer patterns first)
-        if (remaining.rfind("dpsdms", 0) == 0) {
+        if (remaining.rfind("dpsdms", 0) == 0)
+        {
             meson1 = "dps";
             meson2 = "dms";
-        } else if (remaining.rfind("dpsd0b", 0) == 0) {
+        }
+        else if (remaining.rfind("dpsd0b", 0) == 0)
+        {
             meson1 = "dps";
             meson2 = "d0b";
-        } else if (remaining.rfind("dpsdm", 0) == 0) {
+        }
+        else if (remaining.rfind("dpsdm", 0) == 0)
+        {
             meson1 = "dps";
             meson2 = "dm";
-        } else if (remaining.rfind("dpdms", 0) == 0) {
+        }
+        else if (remaining.rfind("dpdms", 0) == 0)
+        {
             meson1 = "dp";
             meson2 = "dms";
-        } else if (remaining.rfind("dpd0b", 0) == 0) {
+        }
+        else if (remaining.rfind("dpd0b", 0) == 0)
+        {
             meson1 = "dp";
             meson2 = "d0b";
-        } else if (remaining.rfind("dpdm", 0) == 0) {
+        }
+        else if (remaining.rfind("dpdm", 0) == 0)
+        {
             meson1 = "dp";
             meson2 = "dm";
-        } else {
+        }
+        else
+        {
             throw std::runtime_error("Error in parseChannel: Unable to parse DD channel: " + channel);
         }
-        
+
         return {bMeson, {meson1, meson2}};
     }
 }
 
 //----------------------------------------------------------
 // Getter for B meson lifetime
-double goldenmodes::getBMesonLifetime(const std::string& bMeson) const {
+double goldenmodes::getBMesonLifetime(const std::string &bMeson) const
+{
     static const std::unordered_map<std::string, double> lifetimes = {
         {"Bp", tau_Bp},
         {"Bd", tau_Bd},
-        {"Bs", tau_Bs}
-    };
+        {"Bs", tau_Bs}};
 
     auto it = lifetimes.find(bMeson);
-    if (it != lifetimes.end()) {
+    if (it != lifetimes.end())
+    {
         return it->second;
     }
 
@@ -2279,39 +2455,41 @@ double goldenmodes::getBMesonLifetime(const std::string& bMeson) const {
 
 //----------------------------------------------------------
 // Getter for B meson mass
-double goldenmodes::getBMesonMass(const std::string& bMeson) const {
+double goldenmodes::getBMesonMass(const std::string &bMeson) const
+{
     static const std::unordered_map<std::string, double> masses = {
         {"Bp", m_Bp},
         {"Bd", m_Bd},
-        {"Bs", m_Bs}
-    };
+        {"Bs", m_Bs}};
 
     auto it = masses.find(bMeson);
-    if (it != masses.end()) {
+    if (it != masses.end())
+    {
         return it->second;
     }
 
     throw std::runtime_error("Error in getBMesonMass: Unknown B meson '" + bMeson + "'");
 }
 
-
-double goldenmodes::CalculateBR(Parameter amplitude, const std::string& channel) const {
+double goldenmodes::CalculateBR(Parameter amplitude, const std::string &channel) const
+{
     // Parse the channel to extract meson components
     auto parsed = parseChannel(channel);
-    const std::string& bMeson = parsed.first;
-    const std::string& meson1 = parsed.second.first;
-    const std::string& meson2 = parsed.second.second;
+    const std::string &bMeson = parsed.first;
+    const std::string &meson1 = parsed.second.first;
+    const std::string &meson2 = parsed.second.second;
 
     // Get the masses of the decaying B meson and final-state mesons
-    double m_B  = getBMesonMass(bMeson);
-    double m1   = mesonMasses.at(meson1);
-    double m2   = mesonMasses.at(meson2);
+    double m_B = getBMesonMass(bMeson);
+    double m1 = mesonMasses.at(meson1);
+    double m2 = mesonMasses.at(meson2);
 
     // Ensure physical kinematics: prevent sqrt of a negative number
     double mass_term1 = (m_B * m_B - (m1 + m2) * (m1 + m2));
     double mass_term2 = (m_B * m_B - (m1 - m2) * (m1 - m2));
 
-    if (mass_term1 < 0 || mass_term2 < 0) {
+    if (mass_term1 < 0 || mass_term2 < 0)
+    {
         throw std::runtime_error("Error in CalculateBR: Kinematically forbidden decay for channel " + channel);
     }
 
@@ -2326,7 +2504,8 @@ double goldenmodes::CalculateBR(Parameter amplitude, const std::string& channel)
     double BR = decay_width * lifetime;
 
     // Apply symmetry factor for identical particles in the final state
-    if (meson1 == meson2) {
+    if (meson1 == meson2)
+    {
         BR *= 0.5;
     }
 
@@ -2335,12 +2514,14 @@ double goldenmodes::CalculateBR(Parameter amplitude, const std::string& channel)
 
 // -----------------------------------------------------------------------
 // Function to calculate A_CP asymmetry
-double goldenmodes::CalculateAcp(const Parameter& amplitude, const Parameter& conjugate_amplitude) const {
+double goldenmodes::CalculateAcp(const Parameter &amplitude, const Parameter &conjugate_amplitude) const
+{
     // Ensure amplitudes are non-zero to avoid division errors
     double A2 = std::norm(amplitude);
     double Abar2 = std::norm(conjugate_amplitude);
 
-    if (A2 + Abar2 == 0) {
+    if (A2 + Abar2 == 0)
+    {
         throw std::runtime_error("Error: CalculateAcp - Both amplitudes are zero, division by zero detected.");
     }
 
@@ -2350,7 +2531,8 @@ double goldenmodes::CalculateAcp(const Parameter& amplitude, const Parameter& co
 
 // ---------------------------------------------------------------------
 // Function to calculate direct CP violation parameter C
-double goldenmodes::CalculateC(const Parameter& amplitude, const Parameter& conjugate_amplitude, const std::string& channel) {
+double goldenmodes::CalculateC(const Parameter &amplitude, const Parameter &conjugate_amplitude, const std::string &channel)
+{
     // Parse the channel to determine the B meson type
     auto parsed = parseChannel(channel);
     std::string bMeson = parsed.first;
@@ -2359,18 +2541,21 @@ double goldenmodes::CalculateC(const Parameter& amplitude, const Parameter& conj
     std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
 
     // Special case for K0s and K0l channels (apply q/p_KS)
-    if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l" || channel == "Bsjpsik0s") {
-        q_p *= ckm.get_q_p_KS();  // Multiply by q/p for K0 mixing
+    if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l" || channel == "Bsjpsik0s")
+    {
+        q_p *= ckm.get_q_p_KS(); // Multiply by q/p for K0 mixing
     }
 
     // Get CP eigenvalue for the channel (ensure it exists)
-    if (cpEigenvalue.find(channel) == cpEigenvalue.end()) {
+    if (cpEigenvalue.find(channel) == cpEigenvalue.end())
+    {
         throw std::runtime_error("Error: CalculateC - CP eigenvalue missing for channel: " + channel);
     }
     double eta = cpEigenvalue.at(channel);
 
     // Compute λ (lambda) = η * (q/p) * (A_conjugate / A)
-    if (std::abs(amplitude) == 0) {
+    if (std::abs(amplitude) == 0)
+    {
         std::cerr << "Error: CalculateC - Zero amplitude for " << channel << ", division by zero detected." << std::endl;
         return 0.0; // Return safe value instead of crashing
     }
@@ -2382,10 +2567,10 @@ double goldenmodes::CalculateC(const Parameter& amplitude, const Parameter& conj
     return (1.0 - mod_lambda_squared) / (1.0 + mod_lambda_squared);
 }
 
-
 // ---------------------------------------------------------------------
 // Function to calculate CP violation parameter S
-double goldenmodes::CalculateS(const Parameter& amplitude, const Parameter& conjugate_amplitude, const std::string& channel) {
+double goldenmodes::CalculateS(const Parameter &amplitude, const Parameter &conjugate_amplitude, const std::string &channel)
+{
     // Parse the channel to determine the B meson type
     auto parsed = parseChannel(channel);
     std::string bMeson = parsed.first;
@@ -2394,18 +2579,21 @@ double goldenmodes::CalculateS(const Parameter& amplitude, const Parameter& conj
     std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
 
     // Special case for K0s and K0l channels (apply q/p_KS)
-    if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l" || channel == "Bsjpsik0s") {
-        q_p *= ckm.get_q_p_KS();  // Multiply by q/p for K0 mixing
+    if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l" || channel == "Bsjpsik0s")
+    {
+        q_p *= ckm.get_q_p_KS(); // Multiply by q/p for K0 mixing
     }
 
     // Get CP eigenvalue for the channel (ensure it exists)
-    if (cpEigenvalue.find(channel) == cpEigenvalue.end()) {
+    if (cpEigenvalue.find(channel) == cpEigenvalue.end())
+    {
         throw std::runtime_error("Error: CalculateS - CP eigenvalue missing for channel: " + channel);
     }
     double eta = cpEigenvalue.at(channel);
 
     // Compute λ (lambda) = η * (q/p) * (A_conjugate / A)
-    if (std::abs(amplitude) == 0) {
+    if (std::abs(amplitude) == 0)
+    {
         std::cerr << "Error: CalculateS - Zero amplitude for " << channel << ", division by zero detected." << std::endl;
         return 0.0; // Return safe value instead of crashing
     }
@@ -2417,78 +2605,88 @@ double goldenmodes::CalculateS(const Parameter& amplitude, const Parameter& conj
     return (2.0 * std::imag(lambda)) / (1.0 + mod_lambda_squared);
 }
 
+std::pair<double, double> goldenmodes::CalculatePhiAndLambda(const Parameter &amplitude, const Parameter &conjugate_amplitude, const std::string &channel)
+{
+    // Ensure the amplitude is nonzero to avoid division by zero
+    if (std::abs(amplitude) == 0)
+    {
+        throw std::runtime_error("Error: CalculatePhiAndLambda - Zero amplitude detected for channel: " + channel);
+    }
 
+    // Get q/p for the Bs meson
+    std::complex<double> q_p = ckm.get_q_p_Bs();
 
-    std::pair<double, double> goldenmodes::CalculatePhiAndLambda(const Parameter& amplitude, const Parameter& conjugate_amplitude, const std::string& channel) {
-       // Ensure the amplitude is nonzero to avoid division by zero
-       if (std::abs(amplitude) == 0) {
-           throw std::runtime_error("Error: CalculatePhiAndLambda - Zero amplitude detected for channel: " + channel);
-       }
+    // Compute lambda = (q/p) * (A_cp / A_conj)
+    std::complex<double> lambda = q_p * (conjugate_amplitude / amplitude);
 
-       // Get q/p for the Bs meson
-       std::complex<double> q_p = ckm.get_q_p_Bs();
+    // Compute |lambda|
+    double mod_lambda = std::abs(lambda);
 
-       // Compute lambda = (q/p) * (A_cp / A_conj)
-       std::complex<double> lambda = q_p * (conjugate_amplitude / amplitude);
+    // Compute phi_s = -arg(lambda)
+    double phi_s = -std::arg(lambda);
 
-       // Compute |lambda|
-       double mod_lambda = std::abs(lambda);
+    return {phi_s, mod_lambda};
+}
 
-       // Compute phi_s = -arg(lambda)
-       double phi_s = -std::arg(lambda);
-
-       return {phi_s, mod_lambda};
-   }
-
-
-
-std::pair<std::vector<std::string>, std::string> goldenmodes::extractChannelFromCorrKey(const std::string& corr_key) {
+std::pair<std::vector<std::string>, std::string> goldenmodes::extractChannelFromCorrKey(const std::string &corr_key)
+{
     std::vector<std::string> channels;
     std::string experiment;
 
-    if (corr_key.rfind("CS_", 0) == 0) {
+    if (corr_key.rfind("CS_", 0) == 0)
+    {
         // Format: "CS_channel_exp"
         size_t underscore = corr_key.find("_", 3);
-        if (underscore != std::string::npos) {
-            channels.push_back(corr_key.substr(3, underscore - 3));  // Extract channel
-            experiment = corr_key.substr(underscore + 1);  // Extract experiment
+        if (underscore != std::string::npos)
+        {
+            channels.push_back(corr_key.substr(3, underscore - 3)); // Extract channel
+            experiment = corr_key.substr(underscore + 1);           // Extract experiment
         }
     }
-    else if (corr_key.rfind("ACP_", 0) == 0) {
+    else if (corr_key.rfind("ACP_", 0) == 0)
+    {
         // Format: "ACP_channel1_channel2_exp"
         size_t first_underscore = corr_key.find("_", 4);
         size_t second_underscore = corr_key.find("_", first_underscore + 1);
-        if (first_underscore != std::string::npos && second_underscore != std::string::npos) {
+        if (first_underscore != std::string::npos && second_underscore != std::string::npos)
+        {
             channels.push_back(corr_key.substr(4, first_underscore - 4));
             channels.push_back(corr_key.substr(first_underscore + 1, second_underscore - first_underscore - 1));
             experiment = corr_key.substr(second_underscore + 1);
         }
     }
-    else if (corr_key.rfind("phi_lambda_", 0) == 0) {
+    else if (corr_key.rfind("phi_lambda_", 0) == 0)
+    {
         // Format: "phi_lambda_channel_exp"
         size_t underscore = corr_key.find("_", 11);
-        if (underscore != std::string::npos) {
+        if (underscore != std::string::npos)
+        {
             channels.push_back(corr_key.substr(11, underscore - 11));
             experiment = corr_key.substr(underscore + 1);
         }
     }
-    else if (corr_key.rfind("phi_", 0) == 0) {
+    else if (corr_key.rfind("phi_", 0) == 0)
+    {
         // Format: "phi_channel_exp"
         size_t underscore = corr_key.find("_", 4);
-        if (underscore != std::string::npos) {
+        if (underscore != std::string::npos)
+        {
             channels.push_back(corr_key.substr(4, underscore - 4));
             experiment = corr_key.substr(underscore + 1);
         }
     }
-    else if (corr_key.rfind("polarization_", 0) == 0) {
+    else if (corr_key.rfind("polarization_", 0) == 0)
+    {
         // Format: "polarization_channel_exp"
         size_t underscore = corr_key.find("_", 13);
-        if (underscore != std::string::npos) {
+        if (underscore != std::string::npos)
+        {
             channels.push_back(corr_key.substr(13, underscore - 13));
             experiment = corr_key.substr(underscore + 1);
         }
     }
-    else {
+    else
+    {
         std::cerr << "Warning!! Unknown key format: " << corr_key << std::endl;
     }
 
@@ -2496,92 +2694,99 @@ std::pair<std::vector<std::string>, std::string> goldenmodes::extractChannelFrom
 }
 
 std::map<std::string, double> goldenmodes::getPolarizationParams(
-    const std::string& channel,
-    const std::map<std::string, std::pair<Parameter, Parameter>>& amplitude_map)
+    const std::string &channel,
+    const std::map<std::string, std::pair<Parameter, Parameter>> &amplitude_map)
 {
     std::map<std::string, double> polarization_pars;
 
-    try {
+    try
+    {
         // Get parameters for phases
-        std::complex<double> B0    = getPar("B_" + channel + "_0");
+        std::complex<double> B0 = getPar("B_" + channel + "_0");
         std::complex<double> Bperp = getPar("B_" + channel + "_perp");
-        std::complex<double> Bparal= getPar("B_" + channel + "_paral");
+        std::complex<double> Bparal = getPar("B_" + channel + "_paral");
 
-        double delta_0      = std::arg(B0);
-        double deltaparal   = std::arg(Bparal);
-        double deltaperp    = std::arg(Bperp);
-        double delta_paral  = deltaparal - delta_0;
-        double delta_perp   = deltaperp - delta_0;
+        double delta_0 = std::arg(B0);
+        double deltaparal = std::arg(Bparal);
+        double deltaperp = std::arg(Bperp);
+        double delta_paral = deltaparal - delta_0;
+        double delta_perp = deltaperp - delta_0;
 
         // Get amplitude information
         auto amp_it = amplitude_map.find(channel);
-        if (amp_it == amplitude_map.end()) {
+        if (amp_it == amplitude_map.end())
+        {
             throw std::runtime_error("Amplitude map does not contain channel: " + channel);
         }
 
-        std::complex<double> amp       = amp_it->second.first;
-        std::complex<double> conj_amp  = amp_it->second.second;
-        std::complex<double> avg_amp   = (amp + conj_amp) * 0.5;
-        double norm_amp           = std::norm(avg_amp);
+        std::complex<double> amp = amp_it->second.first;
+        std::complex<double> conj_amp = amp_it->second.second;
+        std::complex<double> avg_amp = (amp + conj_amp) * 0.5;
+        double norm_amp = std::norm(avg_amp);
 
-        if (norm_amp == 0) {
+        if (norm_amp == 0)
+        {
             throw std::runtime_error("Normalization factor is zero for channel: " + channel);
         }
 
         // Get decay amplitudes
-        std::complex<double> amp_0      = get_amplitude(channel + "_0");
-        std::complex<double> amp_paral  = get_amplitude(channel + "_paral");
-        std::complex<double> amp_perp   = get_amplitude(channel + "_perp");
-        std::complex<double> conj_amp_0     = get_conjugate_amplitude(channel + "_0");
+        std::complex<double> amp_0 = get_amplitude(channel + "_0");
+        std::complex<double> amp_paral = get_amplitude(channel + "_paral");
+        std::complex<double> amp_perp = get_amplitude(channel + "_perp");
+        std::complex<double> conj_amp_0 = get_conjugate_amplitude(channel + "_0");
         std::complex<double> conj_amp_paral = get_conjugate_amplitude(channel + "_paral");
-        std::complex<double> conj_amp_perp  = get_conjugate_amplitude(channel + "_perp");
+        std::complex<double> conj_amp_perp = get_conjugate_amplitude(channel + "_perp");
 
-        std::complex<double> avg_A0      = (amp_0 + conj_amp_0) * 0.5;
-        std::complex<double> avg_Aparal  = (amp_paral + conj_amp_paral) * 0.5;
-        std::complex<double> avg_Aperp   = (amp_perp + conj_amp_perp) * 0.5;
+        std::complex<double> avg_A0 = (amp_0 + conj_amp_0) * 0.5;
+        std::complex<double> avg_Aparal = (amp_paral + conj_amp_paral) * 0.5;
+        std::complex<double> avg_Aperp = (amp_perp + conj_amp_perp) * 0.5;
 
-        double norm_A0      = std::norm(avg_A0);
-        double norm_Aparal  = std::norm(avg_Aparal);
-        double norm_Aperp   = std::norm(avg_Aperp);
+        double norm_A0 = std::norm(avg_A0);
+        double norm_Aparal = std::norm(avg_Aparal);
+        double norm_Aperp = std::norm(avg_Aperp);
 
         // Calculate polarization fractions
-        double f_0      = norm_A0 / norm_amp;
-        double f_perp   = norm_Aperp / norm_amp;
-        double f_paral  = norm_Aparal / norm_amp;
+        double f_0 = norm_A0 / norm_amp;
+        double f_perp = norm_Aperp / norm_amp;
+        double f_paral = norm_Aparal / norm_amp;
 
         // Store the results in the map
-        polarization_pars["f_0_" + channel]      = f_0;
-        polarization_pars["f_perp_" + channel]   = f_perp;
-        polarization_pars["f_paral_" + channel]  = f_paral;
+        polarization_pars["f_0_" + channel] = f_0;
+        polarization_pars["f_perp_" + channel] = f_perp;
+        polarization_pars["f_paral_" + channel] = f_paral;
         polarization_pars["delta_paral_" + channel] = delta_paral;
-        polarization_pars["delta_perp_" + channel]  = delta_perp;
-
-    } catch (const std::exception& e) {
+        polarization_pars["delta_perp_" + channel] = delta_perp;
+    }
+    catch (const std::exception &e)
+    {
         std::cerr << "Error in getPolarizationParams for channel " << channel << ": " << e.what() << std::endl;
     }
 
     return polarization_pars;
 }
 
-
-double goldenmodes::Calculate_UncorrelatedObservables(const std::map<std::string, std::pair<Parameter, Parameter>>& amplitude_map) {
-    double ll_uncorr = 0.0;  // Initialize log-likelihood contribution
+double goldenmodes::Calculate_UncorrelatedObservables(const std::map<std::string, std::pair<Parameter, Parameter>> &amplitude_map)
+{
+    double ll_uncorr = 0.0; // Initialize log-likelihood contribution
 
     std::vector<std::string> channels = {
-        "Bpjpsikp", "Bpjpsipp", "Bdjpsip0", "Bdjpsik0s", "Bdjpsik0l", "Bdjpsikst", "Bsjpsiph"
-    };
+        "Bpjpsikp", "Bpjpsipp", "Bdjpsip0", "Bdjpsik0s", "Bdjpsik0l", "Bdjpsikst", "Bsjpsiph"};
 
-    for (const auto& channel : channels) {
-        try {
+    for (const auto &channel : channels)
+    {
+        try
+        {
             auto it = amplitude_map.find(channel);
-            if (it == amplitude_map.end()) {
+            if (it == amplitude_map.end())
+            {
                 std::cerr << "Warning: Amplitude not found for " << channel << std::endl;
                 continue;
             }
-            const auto& amp_pair = it->second;
+            const auto &amp_pair = it->second;
 
             // **Compute ACP, C, and S only if they exist in meas**
-            if (meas.find("ACP" + channel) != meas.end()) {
+            if (meas.find("ACP" + channel) != meas.end())
+            {
                 double acp = CalculateAcp(amp_pair.first, amp_pair.second);
                 obs["ACP_" + channel] = acp;
 
@@ -2591,7 +2796,8 @@ double goldenmodes::Calculate_UncorrelatedObservables(const std::map<std::string
                 ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
             }
 
-            if (meas.find("C" + channel) != meas.end()) {
+            if (meas.find("C" + channel) != meas.end())
+            {
                 double c = CalculateC(amp_pair.first, amp_pair.second, channel);
                 obs["C_" + channel] = c;
 
@@ -2601,7 +2807,8 @@ double goldenmodes::Calculate_UncorrelatedObservables(const std::map<std::string
                 ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
             }
 
-            if (meas.find("S" + channel) != meas.end()) {
+            if (meas.find("S" + channel) != meas.end())
+            {
                 double s = CalculateS(amp_pair.first, amp_pair.second, channel);
                 obs["S_" + channel] = s;
 
@@ -2614,7 +2821,8 @@ double goldenmodes::Calculate_UncorrelatedObservables(const std::map<std::string
             // **Compute and store branching ratios if they exist in meas**
             std::string br_obsKey = "BR_" + channel;
             std::string br_measKey = "BR" + channel;
-            if (meas.find(br_measKey) != meas.end()) {
+            if (meas.find(br_measKey) != meas.end())
+            {
                 double br_predicted = CalculateBR(amp_pair.first, channel);
                 obs[br_obsKey] = br_predicted;
 
@@ -2623,8 +2831,9 @@ double goldenmodes::Calculate_UncorrelatedObservables(const std::map<std::string
                 double diff = br_predicted - observed;
                 ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
             }
-
-        } catch (const std::exception& e) {
+        }
+        catch (const std::exception &e)
+        {
             std::cerr << "Error in Calculate_UncorrelatedObservables for " << channel << ": " << e.what() << std::endl;
         }
     }
@@ -2633,48 +2842,56 @@ double goldenmodes::Calculate_UncorrelatedObservables(const std::map<std::string
     std::vector<std::pair<std::string, std::pair<std::string, std::string>>> br_ratios = {
         {"R_Bpjpsipp_Bpjpsikp", {"Bpjpsipp", "Bpjpsikp"}},
         {"R_Bdjpsiom_Bdjpsirh", {"Bdjpsiom", "Bdjpsirh"}},
-        {"R_Bdjpsikst_Bdjpsik0", {"Bdjpsikst", "Bdjpsik0"}}
-    };
+        {"R_Bdjpsikst_Bdjpsik0", {"Bdjpsikst", "Bdjpsik0"}}};
 
-    for (const auto& [ratioKey, channels] : br_ratios) {
-        if (obs.find("BR_" + channels.first) != obs.end() && obs.find("BR_" + channels.second) != obs.end()) {
+    for (const auto &[ratioKey, channels] : br_ratios)
+    {
+        if (obs.find("BR_" + channels.first) != obs.end() && obs.find("BR_" + channels.second) != obs.end())
+        {
             double BR1 = obs["BR_" + channels.first];
             double BR2 = obs["BR_" + channels.second];
 
             double R_predicted = BR1 / BR2;
             obs[ratioKey] = R_predicted;
 
-            if (meas.find(ratioKey) != meas.end()) {
+            if (meas.find(ratioKey) != meas.end())
+            {
                 double observed = meas.at(ratioKey).getMean();
                 double uncertainty = meas.at(ratioKey).getSigma();
                 double diff = R_predicted - observed;
                 ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
             }
-        } else {
+        }
+        else
+        {
             std::cerr << "Warning: BR missing for " << ratioKey << std::endl;
         }
     }
 
     // **Handle Delta A (`deltaA_`)**
     std::vector<std::pair<std::string, std::pair<std::string, std::string>>> deltaA_ratios = {
-        {"deltaA_Bpjpsipp_Bpjpsikp", {"ACP_Bpjpsipp", "ACP_Bpjpsikp"}}
-    };
+        {"deltaA_Bpjpsipp_Bpjpsikp", {"ACP_Bpjpsipp", "ACP_Bpjpsikp"}}};
 
-    for (const auto& [deltaAKey, channels] : deltaA_ratios) {
-        if (obs.find(channels.first) != obs.end() && obs.find(channels.second) != obs.end()) {
+    for (const auto &[deltaAKey, channels] : deltaA_ratios)
+    {
+        if (obs.find(channels.first) != obs.end() && obs.find(channels.second) != obs.end())
+        {
             double ACP1 = obs[channels.first];
             double ACP2 = obs[channels.second];
 
             double deltaA_predicted = ACP1 - ACP2;
             obs[deltaAKey] = deltaA_predicted;
 
-            if (meas.find(deltaAKey) != meas.end()) {
+            if (meas.find(deltaAKey) != meas.end())
+            {
                 double observed = meas.at(deltaAKey).getMean();
                 double uncertainty = meas.at(deltaAKey).getSigma();
                 double diff = deltaA_predicted - observed;
                 ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
             }
-        } else {
+        }
+        else
+        {
             std::cerr << "Warning: ACP missing for " << deltaAKey << std::endl;
         }
     }
@@ -2682,247 +2899,268 @@ double goldenmodes::Calculate_UncorrelatedObservables(const std::map<std::string
     return ll_uncorr;
 }
 
+//----------------------------------------------------------------------------------
 
-
- //----------------------------------------------------------------------------------
-
-double goldenmodes::Calculate_CorrelatedObservables(const std::map<std::string, std::pair<Parameter, Parameter>>& amplitude_map) {
-    double ll_corr = 0.0;  // Initialize the log-likelihood contribution
-    TVectorD corr(2);  // For correlated observables (e.g., C and S)
+double goldenmodes::Calculate_CorrelatedObservables(const std::map<std::string, std::pair<Parameter, Parameter>> &amplitude_map)
+{
+    double ll_corr = 0.0; // Initialize the log-likelihood contribution
+    TVectorD corr(2);     // For correlated observables (e.g., C and S)
     TVectorD corr4(4);
     TVectorD corr5(5);
     TVectorD corr6(6);
 
-
     // **Correlated observables for Bdjpsik0s**
     {
-        const auto& amp_pair_Bdjpsik0s = amplitude_map.at("Bdjpsik0s");
-        if (obs.find("C_Bdjpsik0s") != obs.end() && obs.find("S_Bdjpsik0s") != obs.end()) {
-          corr(0) = obs["C_Bdjpsik0s"];
-          corr(1) = obs["S_Bdjpsik0s"];
+        const auto &amp_pair_Bdjpsik0s = amplitude_map.at("Bdjpsik0s");
+        if (obs.find("C_Bdjpsik0s") != obs.end() && obs.find("S_Bdjpsik0s") != obs.end())
+        {
+            corr(0) = obs["C_Bdjpsik0s"];
+            corr(1) = obs["S_Bdjpsik0s"];
 
-          ll_corr += corrmeas.at("CS_Bdjpsik0s_LHCb2023").logweight(corr);
-          ll_corr += corrmeas.at("CS_Bdjpsik0s_BelleII2024").logweight(corr);
-        } else {
-          std::cerr << "Error: C and S values for Bdjpsik0s not found in obs map!" << std::endl;
+            ll_corr += corrmeas.at("CS_Bdjpsik0s_LHCb2023").logweight(corr);
+            ll_corr += corrmeas.at("CS_Bdjpsik0s_BelleII2024").logweight(corr);
         }
-
+        else
+        {
+            std::cerr << "Error: C and S values for Bdjpsik0s not found in obs map!" << std::endl;
+        }
     }
 
     // **Correlated observables for Bdjpsip0**
     {
-        const auto& amp_pair_Bdjpsip0 = amplitude_map.at("Bdjpsip0");
-        if (obs.find("C_Bdjpsip0") != obs.end() && obs.find("S_Bdjpsip0") != obs.end()) {
-          corr(0) = obs["C_Bdjpsip0"];
-          corr(1) = obs["S_Bdjpsip0"];
-          ll_corr += corrmeas.at("CS_Bdjpsip0_BaBar2008").logweight(corr);
-        } else {
-          std::cerr << "Error: C and S values for Bdjpsip0 not found in obs map!" << std::endl;
+        const auto &amp_pair_Bdjpsip0 = amplitude_map.at("Bdjpsip0");
+        if (obs.find("C_Bdjpsip0") != obs.end() && obs.find("S_Bdjpsip0") != obs.end())
+        {
+            corr(0) = obs["C_Bdjpsip0"];
+            corr(1) = obs["S_Bdjpsip0"];
+            ll_corr += corrmeas.at("CS_Bdjpsip0_BaBar2008").logweight(corr);
+        }
+        else
+        {
+            std::cerr << "Error: C and S values for Bdjpsip0 not found in obs map!" << std::endl;
         }
     }
 
     // **Correlated observables for Bdjpsirh**
     {
-      try {
-        const auto& amp_pair_Bdjpsirh = amplitude_map.at("Bdjpsirh");
-        double c_predicted = CalculateC(amp_pair_Bdjpsirh.first, amp_pair_Bdjpsirh.second, "Bdjpsirh");
-        double s_predicted = CalculateS(amp_pair_Bdjpsirh.first, amp_pair_Bdjpsirh.second, "Bdjpsirh");
-        obs["C_Bdjpsirh"] = c_predicted;
-        obs["S_Bdjpsirh"] = s_predicted;
-        corr(0) = c_predicted;
-        corr(1) = s_predicted;
-        ll_corr += corrmeas.at("CS_Bdjpsirh_LHCb2014").logweight(corr);
-      } catch (const std::out_of_range& e) { // Catch exception for missing key
-        std::cerr << "Error: Bdjpsirh not found in amplitude_map! " << e.what() << std::endl;
-      } catch (const std::exception& e) {
-         std::cerr << "Unexpected error in correlated observables for Bdjpsirh: " << e.what() << std::endl;
+        try
+        {
+            const auto &amp_pair_Bdjpsirh = amplitude_map.at("Bdjpsirh");
+            double c_predicted = CalculateC(amp_pair_Bdjpsirh.first, amp_pair_Bdjpsirh.second, "Bdjpsirh");
+            double s_predicted = CalculateS(amp_pair_Bdjpsirh.first, amp_pair_Bdjpsirh.second, "Bdjpsirh");
+            obs["C_Bdjpsirh"] = c_predicted;
+            obs["S_Bdjpsirh"] = s_predicted;
+            corr(0) = c_predicted;
+            corr(1) = s_predicted;
+            ll_corr += corrmeas.at("CS_Bdjpsirh_LHCb2014").logweight(corr);
         }
-      }
-
+        catch (const std::out_of_range &e)
+        { // Catch exception for missing key
+            std::cerr << "Error: Bdjpsirh not found in amplitude_map! " << e.what() << std::endl;
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Unexpected error in correlated observables for Bdjpsirh: " << e.what() << std::endl;
+        }
+    }
 
     // **Correlated observables for Bsjpsiph**
     {
-      auto pol_params = getPolarizationParams("Bsjpsiph", amplitude_map);
+        auto pol_params = getPolarizationParams("Bsjpsiph", amplitude_map);
 
         // Extract the polarization fractions and phases:
-        double f_0       = pol_params.at("f_0_Bsjpsiph");
-        double f_paral   = pol_params.at("f_paral_Bsjpsiph");
-        double f_perp    = pol_params.at("f_perp_Bsjpsiph");
+        double f_0 = pol_params.at("f_0_Bsjpsiph");
+        double f_paral = pol_params.at("f_paral_Bsjpsiph");
+        double f_perp = pol_params.at("f_perp_Bsjpsiph");
         double delta_paral = pol_params.at("delta_paral_Bsjpsiph");
-        double delta_perp  = pol_params.at("delta_perp_Bsjpsiph");
+        double delta_perp = pol_params.at("delta_perp_Bsjpsiph");
 
-        obs["f_0_Bsjpsiph"]       = f_0;
-        obs["f_paral_Bsjpsiph"]   = f_paral;
-        obs["f_perp_Bsjpsiph"]    = f_perp;
+        obs["f_0_Bsjpsiph"] = f_0;
+        obs["f_paral_Bsjpsiph"] = f_paral;
+        obs["f_perp_Bsjpsiph"] = f_perp;
         obs["delta_paral_Bsjpsiph"] = delta_paral;
-        obs["delta_perp_Bsjpsiph"]  = delta_perp;
+        obs["delta_perp_Bsjpsiph"] = delta_perp;
 
         // --- Retrieve additional parameters (e.g. weak phase and |lambda|) ---
-        double phi_Bsjpsiph    = obs["phi_Bsjpsiph"];
+        double phi_Bsjpsiph = obs["phi_Bsjpsiph"];
         double lambda_Bsjpsiph = obs["lambda_Bsjpsiph"];
 
-
-    // Loop over the correlated measurements
-    for (auto& [key, corrObs] : corrmeas) {
-        if (key.find("Bsjpsiph") != std::string::npos) {
-            // Compute phi and lambda
-            const auto& amp_pair_Bsjpsiph = amplitude_map.at("Bsjpsiph");
-            //auto phi_lambda_result = CalculatePhiAndLambda(amp_pair_Bsjpsiph.first, amp_pair_Bsjpsiph.second, "Bsjpsiph");
-            double phi_Bsjpsiph = obs["phi_Bsjpsiph"];
-            double lambda_Bsjpsiph = obs["lambda_Bsjpsiph"];
-            // Handle each correlated measurement key
-            if (key == "phi_lambda_Bsjpsiph_LHCb2023") {
-                TVectorD corr6(6);  // 6 correlated observables
-                corr6(0) = phi_Bsjpsiph;      // Weak phase
-                corr6(1) = lambda_Bsjpsiph;   // |lambda|
-                corr6(2) = f_perp;            // Polarization fraction
-                corr6(3) = f_0;               // Polarization fraction
-                corr6(4) = delta_perp;        // Strong phase
-                corr6(5) = delta_paral;       // Strong phase
-                ll_corr += corrObs.logweight(corr6);
-            } else if (key == "phi_Bsjpsiph_ATLAS2020B") {
-                TVectorD corr5(5);  // 5 correlated observables
-                corr5(0) = phi_Bsjpsiph;
-                corr5(1) = f_paral;
-                corr5(2) = f_0;
-                corr5(3) = delta_perp;
-                corr5(4) = delta_paral;
-                ll_corr += corrObs.logweight(corr5);
-            } else if (key == "phi_lambda_Bsjpsiph_LHCb2021") {
-                TVectorD corr6(6);  // 6 correlated observables
-                corr6(0) = phi_Bsjpsiph;
-                corr6(1) = lambda_Bsjpsiph;
-                corr6(2) = f_perp;
-                corr6(3) = f_0;
-                corr6(4) = delta_perp;
-                corr6(5) = delta_paral;
-                ll_corr += corrObs.logweight(corr6);
-            } else if (key == "phi_Bsjpsiph_CMS2020") {
-                TVectorD corr5(5);  // 5 correlated observables
-                corr5(0) = phi_Bsjpsiph;
-                corr5(1) = f_perp;
-                corr5(2) = f_0;
-                corr5(3) = delta_perp;
-                corr5(4) = delta_paral;
-                ll_corr += corrObs.logweight(corr5);
-            } else if (key == "phi_lambda_Bsjpsiph_LHCb2019" || key == "phi_lambda_Bsjpsiph_LHCb2017") {
-                TVectorD corr2(2);  // Only phi and lambda
-                corr2(0) = phi_Bsjpsiph;
-                corr2(1) = lambda_Bsjpsiph;
-                ll_corr += corrObs.logweight(corr2);
-            } else if (key == "phi_Bsjpsiph_ATLAS2016") {
-                TVectorD corr5(5);  // 5 correlated observables
-                corr5(0) = phi_Bsjpsiph;
-                corr5(1) = f_paral;
-                corr5(2) = f_0;
-                corr5(3) = delta_perp;
-                corr5(4) = delta_paral;
-                ll_corr += corrObs.logweight(corr5);
-            } else if (key == "phi_Bsjpsiph_ATLAS2014") {
-                TVectorD corr5(5);  // 5 correlated observables
-                corr5(0) = phi_Bsjpsiph;
-                corr5(1) = f_paral;
-                corr5(2) = f_0;
-                corr5(3) = delta_perp;
-                corr5(4) = delta_paral;
-                ll_corr += corrObs.logweight(corr5);
+        // Loop over the correlated measurements
+        for (auto &[key, corrObs] : corrmeas)
+        {
+            if (key.find("Bsjpsiph") != std::string::npos)
+            {
+                // Compute phi and lambda
+                const auto &amp_pair_Bsjpsiph = amplitude_map.at("Bsjpsiph");
+                // auto phi_lambda_result = CalculatePhiAndLambda(amp_pair_Bsjpsiph.first, amp_pair_Bsjpsiph.second, "Bsjpsiph");
+                double phi_Bsjpsiph = obs["phi_Bsjpsiph"];
+                double lambda_Bsjpsiph = obs["lambda_Bsjpsiph"];
+                // Handle each correlated measurement key
+                if (key == "phi_lambda_Bsjpsiph_LHCb2023")
+                {
+                    TVectorD corr6(6);          // 6 correlated observables
+                    corr6(0) = phi_Bsjpsiph;    // Weak phase
+                    corr6(1) = lambda_Bsjpsiph; // |lambda|
+                    corr6(2) = f_perp;          // Polarization fraction
+                    corr6(3) = f_0;             // Polarization fraction
+                    corr6(4) = delta_perp;      // Strong phase
+                    corr6(5) = delta_paral;     // Strong phase
+                    ll_corr += corrObs.logweight(corr6);
+                }
+                else if (key == "phi_Bsjpsiph_ATLAS2020B")
+                {
+                    TVectorD corr5(5); // 5 correlated observables
+                    corr5(0) = phi_Bsjpsiph;
+                    corr5(1) = f_paral;
+                    corr5(2) = f_0;
+                    corr5(3) = delta_perp;
+                    corr5(4) = delta_paral;
+                    ll_corr += corrObs.logweight(corr5);
+                }
+                else if (key == "phi_lambda_Bsjpsiph_LHCb2021")
+                {
+                    TVectorD corr6(6); // 6 correlated observables
+                    corr6(0) = phi_Bsjpsiph;
+                    corr6(1) = lambda_Bsjpsiph;
+                    corr6(2) = f_perp;
+                    corr6(3) = f_0;
+                    corr6(4) = delta_perp;
+                    corr6(5) = delta_paral;
+                    ll_corr += corrObs.logweight(corr6);
+                }
+                else if (key == "phi_Bsjpsiph_CMS2020")
+                {
+                    TVectorD corr5(5); // 5 correlated observables
+                    corr5(0) = phi_Bsjpsiph;
+                    corr5(1) = f_perp;
+                    corr5(2) = f_0;
+                    corr5(3) = delta_perp;
+                    corr5(4) = delta_paral;
+                    ll_corr += corrObs.logweight(corr5);
+                }
+                else if (key == "phi_lambda_Bsjpsiph_LHCb2019" || key == "phi_lambda_Bsjpsiph_LHCb2017")
+                {
+                    TVectorD corr2(2); // Only phi and lambda
+                    corr2(0) = phi_Bsjpsiph;
+                    corr2(1) = lambda_Bsjpsiph;
+                    ll_corr += corrObs.logweight(corr2);
+                }
+                else if (key == "phi_Bsjpsiph_ATLAS2016")
+                {
+                    TVectorD corr5(5); // 5 correlated observables
+                    corr5(0) = phi_Bsjpsiph;
+                    corr5(1) = f_paral;
+                    corr5(2) = f_0;
+                    corr5(3) = delta_perp;
+                    corr5(4) = delta_paral;
+                    ll_corr += corrObs.logweight(corr5);
+                }
+                else if (key == "phi_Bsjpsiph_ATLAS2014")
+                {
+                    TVectorD corr5(5); // 5 correlated observables
+                    corr5(0) = phi_Bsjpsiph;
+                    corr5(1) = f_paral;
+                    corr5(2) = f_0;
+                    corr5(3) = delta_perp;
+                    corr5(4) = delta_paral;
+                    ll_corr += corrObs.logweight(corr5);
+                }
             }
         }
     }
-  }
 
-  //correlated polarization measurments for C_Bdjpsikst
-{
-    auto pol_params = getPolarizationParams("Bdjpsikst", amplitude_map);
+    // correlated polarization measurments for C_Bdjpsikst
+    {
+        auto pol_params = getPolarizationParams("Bdjpsikst", amplitude_map);
 
-      // Extract the polarization fractions and phases:
-      double f_0       = pol_params.at("f_0_Bdjpsikst");
-      double f_paral   = pol_params.at("f_paral_Bdjpsikst");
-      double f_perp    = pol_params.at("f_perp_Bdjpsikst");
-      double delta_paral = pol_params.at("delta_paral_Bdjpsikst");
-      double delta_perp  = pol_params.at("delta_perp_Bdjpsikst");
+        // Extract the polarization fractions and phases:
+        double f_0 = pol_params.at("f_0_Bdjpsikst");
+        double f_paral = pol_params.at("f_paral_Bdjpsikst");
+        double f_perp = pol_params.at("f_perp_Bdjpsikst");
+        double delta_paral = pol_params.at("delta_paral_Bdjpsikst");
+        double delta_perp = pol_params.at("delta_perp_Bdjpsikst");
 
-      obs["f_0_Bdjpsikst"]       = f_0;
-      obs["f_paral_Bdjpsikst"]   = f_paral;
-      obs["f_perp_Bdjpsikst"]    = f_perp;
-      obs["delta_paral_Bdjpsikst"] = delta_paral;
-      obs["delta_perp_Bdjpsikst"]  = delta_perp;
+        obs["f_0_Bdjpsikst"] = f_0;
+        obs["f_paral_Bdjpsikst"] = f_paral;
+        obs["f_perp_Bdjpsikst"] = f_perp;
+        obs["delta_paral_Bdjpsikst"] = delta_paral;
+        obs["delta_perp_Bdjpsikst"] = delta_perp;
 
-      TVectorD corr4(4);  // 4 correlated observables
-      corr4(0) = f_paral;            // Polarization fraction
-      corr4(1) = f_perp;               // Polarization fraction
-      corr4(2) = delta_paral;        // Strong phase
-      corr4(3) = delta_perp;       // Strong phase
-      ll_corr += corrmeas.at("polarization_Bdjpsikst_LHCb2013").logweight(corr4);
+        TVectorD corr4(4);      // 4 correlated observables
+        corr4(0) = f_paral;     // Polarization fraction
+        corr4(1) = f_perp;      // Polarization fraction
+        corr4(2) = delta_paral; // Strong phase
+        corr4(3) = delta_perp;  // Strong phase
+        ll_corr += corrmeas.at("polarization_Bdjpsikst_LHCb2013").logweight(corr4);
     }
 
+    {
+        auto pol_params = getPolarizationParams("Bsjpsikst", amplitude_map);
 
-{
-  auto pol_params = getPolarizationParams("Bsjpsikst", amplitude_map);
+        // Extract the polarization fractions and phases:
+        double f_0 = pol_params.at("f_0_Bsjpsikst");
+        double f_paral = pol_params.at("f_paral_Bsjpsikst");
+        double delta_paral = pol_params.at("delta_paral_Bsjpsikst");
+        double delta_perp = pol_params.at("delta_perp_Bsjpsikst");
 
-    // Extract the polarization fractions and phases:
-    double f_0       = pol_params.at("f_0_Bsjpsikst");
-    double f_paral   = pol_params.at("f_paral_Bsjpsikst");
-    double delta_paral = pol_params.at("delta_paral_Bsjpsikst");
-    double delta_perp  = pol_params.at("delta_perp_Bsjpsikst");
+        obs["f_0_Bsjpsikst"] = f_0;
+        obs["f_paral_Bsjpsikst"] = f_paral;
+        obs["delta_paral_Bsjpsikst"] = delta_paral;
+        obs["delta_perp_Bsjpsikst"] = delta_perp;
+        // --- Retrieve additional parameters  ---
+        complex<double> amp_0 = get_amplitude("Bsjpsikst_0");
+        complex<double> amp_paral = get_amplitude("Bsjpsikst_paral");
+        complex<double> amp_perp = get_amplitude("Bsjpsikst_perp");
+        complex<double> conj_amp_0 = get_conjugate_amplitude("Bsjpsikst_0");
+        complex<double> conj_amp_paral = get_conjugate_amplitude("Bsjpsikst_paral");
+        complex<double> conj_amp_perp = get_conjugate_amplitude("Bsjpsikst_perp");
 
-    obs["f_0_Bsjpsikst"]       = f_0;
-    obs["f_paral_Bsjpsikst"]   = f_paral;
-    obs["delta_paral_Bsjpsikst"] = delta_paral;
-    obs["delta_perp_Bsjpsikst"]  = delta_perp;
-  // --- Retrieve additional parameters  ---
-  complex<double> amp_0      = get_amplitude("Bsjpsikst_0");
-  complex<double> amp_paral  = get_amplitude("Bsjpsikst_paral");
-  complex<double> amp_perp   = get_amplitude("Bsjpsikst_perp");
-  complex<double> conj_amp_0     = get_conjugate_amplitude("Bsjpsikst_0");
-  complex<double> conj_amp_paral = get_conjugate_amplitude("Bsjpsikst_paral");
-  complex<double> conj_amp_perp  = get_conjugate_amplitude("Bsjpsikst_perp");
+        obs["A0_CP_Bsjpsikst"] = CalculateAcp(amp_0, conj_amp_0);
+        obs["Aparal_CP_Bsjpsikst"] = CalculateAcp(amp_paral, conj_amp_paral);
+        obs["Aperp_CP_Bsjpsikst"] = CalculateAcp(amp_perp, conj_amp_perp);
 
-
-  obs["A0_CP_Bsjpsikst"] = CalculateAcp(amp_0, conj_amp_0);
-  obs["Aparal_CP_Bsjpsikst"] = CalculateAcp(amp_paral, conj_amp_paral);
-  obs["Aperp_CP_Bsjpsikst"] = CalculateAcp(amp_perp, conj_amp_perp);
-
-  TVectorD corr7(7);
-  corr7(0) = obs["A0_CP_Bsjpsikst"];
-  corr7(1) = obs["Aparal_CP_Bsjpsikst"];
-  corr7(2) = obs["Aperp_CP_Bsjpsikst"];
-  corr7(3) = f_0;
-  corr7(4) = f_paral;
-  corr7(5) = delta_paral;
-  corr7(6) = delta_perp;
-  ll_corr += corrmeas.at("polarization_Bsjpsikst_LHCb2015").logweight(corr7);
-}
+        TVectorD corr7(7);
+        corr7(0) = obs["A0_CP_Bsjpsikst"];
+        corr7(1) = obs["Aparal_CP_Bsjpsikst"];
+        corr7(2) = obs["Aperp_CP_Bsjpsikst"];
+        corr7(3) = f_0;
+        corr7(4) = f_paral;
+        corr7(5) = delta_paral;
+        corr7(6) = delta_perp;
+        ll_corr += corrmeas.at("polarization_Bsjpsikst_LHCb2015").logweight(corr7);
+    }
     return ll_corr;
 }
 
-
 //------------------------------------------------------------
 
-
-double goldenmodes::LogLikelihood(const std::vector<double>& parameters) {
+double goldenmodes::LogLikelihood(const std::vector<double> &parameters)
+{
     static int iteration_counter = 0;
     ++iteration_counter;
 
-    obs.clear();  // Clear obs map for each iteration
-    double ll = 0.0;  // Log-likelihood accumulator
-
+    obs.clear();     // Clear obs map for each iteration
+    double ll = 0.0; // Log-likelihood accumulator
 
     // Check that the parameter vector has the expected size
     int expectedSize = 0;
-    for (const auto& channel : channelNamesSU3) {
+    for (const auto &channel : channelNamesSU3)
+    {
         auto it = channelParameters.find(channel);
-        if (it != channelParameters.end()) {
+        if (it != channelParameters.end())
+        {
             expectedSize += it->second.size();
         }
     }
     // Last 4 parameters are for CKM
-    if (parameters.size() != expectedSize + 4) {
+    if (parameters.size() != expectedSize + 4)
+    {
         std::cerr << "Error: parameters.size() = " << parameters.size()
                   << ", but expected size = " << expectedSize + 4 << std::endl;
         return -1e30;
     }
-    if (parameters.empty()) {
+    if (parameters.empty())
+    {
         std::cerr << "Error: Empty parameters vector!" << std::endl;
         return -1e30;
     }
@@ -2933,43 +3171,51 @@ double goldenmodes::LogLikelihood(const std::vector<double>& parameters) {
 
     // Unpack the parameters for each channel (from channelNamesSU3)
     int index = 0;
-    for (const auto& channel : channelNamesSU3) {
+    for (const auto &channel : channelNamesSU3)
+    {
         auto it = channelParameters.find(channel);
-        if (it != channelParameters.end()) {
+        if (it != channelParameters.end())
+        {
             // Loop over parameter pairs (real and imaginary)
-            for (size_t j = 0; j < it->second.size(); j += 2) {
-                if (index + 1 >= expectedSize) { // Only loop over channel parameters
+            for (size_t j = 0; j < it->second.size(); j += 2)
+            {
+                if (index + 1 >= expectedSize)
+                { // Only loop over channel parameters
                     break;
                 }
 
                 double realPart = parameters[index];
                 double imagPart = parameters[index + 1];
-                const std::string& realParamName = it->second[j];
-                const std::string& imagParamName = it->second[j + 1];
+                const std::string &realParamName = it->second[j];
+                const std::string &imagParamName = it->second[j + 1];
 
                 SetParameterValue(realParamName, realPart);
                 SetParameterValue(imagParamName, imagPart);
 
                 index += 2;
             }
-        } else {
+        }
+        else
+        {
             std::cerr << "Channel " << channel << " not found in channelParameters." << std::endl;
             return -1e30;
         }
     }
     // Print parameters every 1000 iterations
-/*if (iteration_counter % 1000 == 0) {
-    std::cout << "Iteration " << iteration_counter << " - Parameter Values:" << std::endl;
-    for (const auto& param : parameterValues) {
-        std::cout << param.first << " = " << param.second << std::endl;
-    }
-}*/
+    /*if (iteration_counter % 1000 == 0) {
+        std::cout << "Iteration " << iteration_counter << " - Parameter Values:" << std::endl;
+        for (const auto& param : parameterValues) {
+            std::cout << param.first << " = " << param.second << std::endl;
+        }
+    }*/
     // Build the amplitude map using physical amplitudes
     std::map<std::string, std::pair<Parameter, Parameter>> amplitude_map;
     amplitude_map.clear();
 
-    for (const std::string& channel : channelNamesSU3) {
-        if (std::find(vectorMesonChannels.begin(), vectorMesonChannels.end(), channel) != vectorMesonChannels.end()) {
+    for (const std::string &channel : channelNamesSU3)
+    {
+        if (std::find(vectorMesonChannels.begin(), vectorMesonChannels.end(), channel) != vectorMesonChannels.end())
+        {
             // Vector meson channels: handle polarized parameters
             Parameter A_0 = getPar("A_" + channel + "_0");
             Parameter B_0 = getPar("B_" + channel + "_0");
@@ -2993,7 +3239,9 @@ double goldenmodes::LogLikelihood(const std::vector<double>& parameters) {
             obs["A_paral_im_" + channel] = A_paral.imag();
             obs["B_paral_re_" + channel] = B_paral.real();
             obs["B_paral_im_" + channel] = B_paral.imag();
-        } else {
+        }
+        else
+        {
             // Pseudoscalar channels: handle A and B
             Parameter A = getPar("A_" + channel);
             Parameter B = getPar("B_" + channel);
@@ -3004,48 +3252,60 @@ double goldenmodes::LogLikelihood(const std::vector<double>& parameters) {
         }
 
         // Directly store original amplitudes
-    amplitude_map[channel] = {get_amplitude(channel), get_conjugate_amplitude(channel)};
+        amplitude_map[channel] = {get_amplitude(channel), get_conjugate_amplitude(channel)};
 
-    // For CP observables, add K0s and K0l cases with the same amplitudes as Bdjpsik0
-    if (channel == "Bdjpsik0") {
-        amplitude_map["Bdjpsik0s"] = amplitude_map["Bdjpsik0"];
-        amplitude_map["Bdjpsik0l"] = amplitude_map["Bdjpsik0"];
-    } else if (channel == "Bsjpsik0") {
-        amplitude_map["Bsjpsik0s"] = amplitude_map["Bsjpsik0"];
+        // For CP observables, add K0s and K0l cases with the same amplitudes as Bdjpsik0
+        if (channel == "Bdjpsik0")
+        {
+            amplitude_map["Bdjpsik0s"] = amplitude_map["Bdjpsik0"];
+            amplitude_map["Bdjpsik0l"] = amplitude_map["Bdjpsik0"];
+        }
+        else if (channel == "Bsjpsik0")
+        {
+            amplitude_map["Bsjpsik0s"] = amplitude_map["Bsjpsik0"];
+        }
     }
-}
 
     // Check NaN/Inf values in amplitudes
-    for (const auto& [chan, amp_pair] : amplitude_map) {
+    for (const auto &[chan, amp_pair] : amplitude_map)
+    {
         if (std::isnan(abs(amp_pair.first)) || std::isinf(abs(amp_pair.first)) ||
-            std::isnan(abs(amp_pair.second)) || std::isinf(abs(amp_pair.second))) {
+            std::isnan(abs(amp_pair.second)) || std::isinf(abs(amp_pair.second)))
+        {
             std::cerr << "Invalid amplitude (NaN or Inf) for channel: " << chan << std::endl;
             return -100;
         }
     }
 
     // Compute Branching Ratios and Likelihood Contribution
-    for (const std::string& channel : channelNames) {
-        const auto& amp_pair = amplitude_map[channel];
+    for (const std::string &channel : channelNames)
+    {
+        const auto &amp_pair = amplitude_map[channel];
 
-        if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l") {
-            const auto& amp_pair = amplitude_map["Bdjpsik0"];  // Use the non-rotated state
-            double br_A = CalculateBR(amp_pair.first, "Bdjpsik0");  // Compute BR with non-rotated states
+        if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l")
+        {
+            const auto &amp_pair = amplitude_map["Bdjpsik0"];      // Use the non-rotated state
+            double br_A = CalculateBR(amp_pair.first, "Bdjpsik0"); // Compute BR with non-rotated states
             double br_conj_A = CalculateBR(amp_pair.second, "Bdjpsik0");
             double br_predicted = 0.5 * (br_A + br_conj_A);
             obs["BR_Bdjpsik0"] = br_predicted;
 
-            try {
+            try
+            {
                 std::string br_key = "BRBdjpsik0";
                 double br_observed = meas.at(br_key).getMean();
                 double br_uncertainty = meas.at(br_key).getSigma();
                 double diff = br_predicted - br_observed;
                 ll += -0.5 * (diff * diff / (br_uncertainty * br_uncertainty));
-            } catch (const std::out_of_range&) {
+            }
+            catch (const std::out_of_range &)
+            {
                 std::cerr << "Error: Branching ratio for Bdjpsik0 not found in meas map." << std::endl;
                 return -1e30;
             }
-        } else {
+        }
+        else
+        {
             // Calculate BR for each channel
             double br_A = CalculateBR(amp_pair.first, channel);
             double br_conj_A = CalculateBR(amp_pair.second, channel);
@@ -3053,21 +3313,23 @@ double goldenmodes::LogLikelihood(const std::vector<double>& parameters) {
             obs["BR_" + channel] = br_predicted;
 
             // Compute log-likelihood for BR
-            try {
+            try
+            {
                 std::string br_key = "BR" + channel;
                 double br_observed = meas.at(br_key).getMean();
                 double br_uncertainty = meas.at(br_key).getSigma();
                 double diff = br_predicted - br_observed;
                 ll += -0.5 * (diff * diff / (br_uncertainty * br_uncertainty));
-            } catch (const std::out_of_range&) {
+            }
+            catch (const std::out_of_range &)
+            {
                 std::cerr << "Error: Branching ratio for " << channel << " not found in meas map." << std::endl;
                 return -1e30;
             }
         }
     }
 
-
-    //Add contributions from uncorrelated and correlated observables
+    // Add contributions from uncorrelated and correlated observables
     ll += Calculate_UncorrelatedObservables(amplitude_map);
     ll += Calculate_CorrelatedObservables(amplitude_map);
 
@@ -3076,20 +3338,24 @@ double goldenmodes::LogLikelihood(const std::vector<double>& parameters) {
 
 //---------------------------------------------------------
 
-
-void goldenmodes::MCMCUserIterationInterface() {
+void goldenmodes::MCMCUserIterationInterface()
+{
     // Loop over all MCMC chains
-  const unsigned int log_interval = 1000;  // Log every 1000 iterations
-  std::vector<double> pars;
+    const unsigned int log_interval = 1000; // Log every 1000 iterations
+    std::vector<double> pars;
 
-    for (unsigned int i = 0; i < fMCMCNChains; ++i) {
+    for (unsigned int i = 0; i < fMCMCNChains; ++i)
+    {
         pars = fMCMCStates.at(i).parameters;
-	try {
-	  LogLikelihood(pars);
-	} catch (const std::exception& e) {
-	  std::cerr << "Error in LogLikelihood: " << e.what() << std::endl;
-	  return;
-	}
+        try
+        {
+            LogLikelihood(pars);
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Error in LogLikelihood: " << e.what() << std::endl;
+            return;
+        }
 
         // Directly fill histograms
         histos.fillh1d();
@@ -3097,18 +3363,19 @@ void goldenmodes::MCMCUserIterationInterface() {
     }
 }
 
-
-
-void goldenmodes::SaveHistograms(const std::string& filename) {
+void goldenmodes::SaveHistograms(const std::string &filename)
+{
     TFile file(filename.c_str(), "RECREATE");
 
     // Write all histograms to the file
-    for (const auto& histPair : histos.h1d) {
+    for (const auto &histPair : histos.h1d)
+    {
         histPair.second->Write();
     }
 
     // Write all 2D histograms
-    for (const auto& histPair : histos.h2d) {
+    for (const auto &histPair : histos.h2d)
+    {
         histPair.second->Write();
     }
 
@@ -3118,10 +3385,12 @@ void goldenmodes::SaveHistograms(const std::string& filename) {
 
 // ---------------------------------------------------------
 
-void goldenmodes::PrintObservablePulls(const std::string& filename) {
+void goldenmodes::PrintObservablePulls(const std::string &filename)
+{
     std::ofstream outfile(filename);
 
-    if (!outfile.is_open()) {
+    if (!outfile.is_open())
+    {
         std::cerr << "Error: Unable to open file " << filename << std::endl;
         return;
     }
@@ -3131,32 +3400,14 @@ void goldenmodes::PrintObservablePulls(const std::string& filename) {
 
     // Define mappings for observable names and measurement keys
     std::map<std::string, std::string> measMap = {
-        {"BR_Bdjpsik0", "BRBdjpsik0"}, {"BR_Bdjpsip0", "BRBdjpsip0"}, {"BR_Bdjpsiom", "BRBdjpsiom"},
-        {"BR_Bpjpsikp", "BRBpjpsikp"}, {"BR_Bpjpsipp", "BRBpjpsipp"}, {"BR_Bsjpsiph", "BRBsjpsiph"},
-        {"BR_Bsjpsik0s", "BRBsjpsik0s"}, {"BR_Bdjpsirh", "BRBdjpsirh"}, {"BR_Bdjpsikst", "BRBdjpsikst"},
-        {"BR_Bsjpsikst", "BRBsjpsikst"}, {"C_Bdjpsik0s", "CBdjpsik0s"}, {"C_Bdjpsik0l", "CBdjpsik0l"},
-        {"S_Bdjpsik0s", "SBdjpsik0s"}, {"S_Bdjpsik0l", "SBdjpsik0l"}, {"C_Bdjpsip0", "CBdjpsip0"},
-        {"S_Bdjpsip0", "SBdjpsip0"}, {"ACP_Bpjpsikp", "ACPBpjpsikp"}, {"ACP_Bpjpsipp", "ACPBpjpsipp"},
-        {"deltaA_Bpjpsipp_Bpjpsikp", "deltaA_Bpjpsipp_Bpjpsikp"}, {"R_Bpjpsipp_Bpjpsikp", "R_Bpjpsipp_Bpjpsikp"},
-        {"lambda_Bsjpsiph", "lambda_Bsjpsiph"}, {"phi_Bsjpsiph", "phi_Bsjpsiph"}, {"f_perp_Bsjpsiph", "f_perp_Bsjpsiph"},
-        {"f_paral_Bsjpsiph", "f_paral_Bsjpsiph"}, {"f_0_Bsjpsiph", "f_0_Bsjpsiph"}, {"delta_perp_Bsjpsiph", "delta_perp_Bsjpsiph"},
-        {"delta_paral_Bsjpsiph", "delta_paral_Bsjpsiph"}, {"R_Bdjpsiom_Bdjpsirh", "R_Bdjpsiom_Bdjpsirh"},
-        {"R_Bdjpsikst_Bdjpsik0", "R_Bdjpsikst_Bdjpsik0"}, {"C_Bdjpsikst", "CBdjpsikst"}, {"S_Bdjpsikst", "SBdjpsikst"},
-        {"f_0_Bdjpsikst", "f_0_Bdjpsikst"}, {"f_paral_Bdjpsikst", "f_paral_Bdjpsikst"}, {"f_perp_Bdjpsikst", "f_perp_Bdjpsikst"},
-        {"delta_paral_Bdjpsikst", "delta_paral_Bdjpsikst"}, {"delta_perp_Bdjpsikst", "delta_perp_Bdjpsikst"},
-        {"f_0_Bsjpsikst", "f_0_Bsjpsikst"}, {"f_paral_Bsjpsikst", "f_paral_Bsjpsikst"},
-        {"delta_paral_Bsjpsikst", "delta_paral_Bsjpsikst"}, {"delta_perp_Bsjpsikst", "delta_perp_Bsjpsikst"},
-        {"A0_CP_Bsjpsikst", "A0_CP_Bsjpsikst"}, {"Aparal_CP_Bsjpsikst", "Aparal_CP_Bsjpsikst"}, {"Aperp_CP_Bsjpsikst", "Aperp_CP_Bsjpsikst"},
-        {"BR_Bddpdm", "BRBddpdm"}, {"C_Bddpdm", "CBddpdm"}, {"S_Bddpdm", "SBddpdm"},
-        {"BR_Bsdpsdms", "BRBsdpsdms"}, {"C_Bsdpsdms", "CBsdpsdms"}, {"S_Bsdpsdms", "SBsdpsdms"},
-        {"BR_Bpdpd0b", "BRBpdpd0b"}, {"ACP_Bpdpd0b", "ACPBpdpd0b"},
-        {"BR_Bpdpsd0b", "BRBpdpsd0b"}, {"ACP_Bpdpsd0b", "ACPBpdpsd0b"}
+        {"BR_Bdjpsik0", "BRBdjpsik0"}, {"BR_Bdjpsip0", "BRBdjpsip0"}, {"BR_Bdjpsiom", "BRBdjpsiom"}, {"BR_Bpjpsikp", "BRBpjpsikp"}, {"BR_Bpjpsipp", "BRBpjpsipp"}, {"BR_Bsjpsiph", "BRBsjpsiph"}, {"BR_Bsjpsik0s", "BRBsjpsik0s"}, {"BR_Bdjpsirh", "BRBdjpsirh"}, {"BR_Bdjpsikst", "BRBdjpsikst"}, {"BR_Bsjpsikst", "BRBsjpsikst"}, {"C_Bdjpsik0s", "CBdjpsik0s"}, {"C_Bdjpsik0l", "CBdjpsik0l"}, {"S_Bdjpsik0s", "SBdjpsik0s"}, {"S_Bdjpsik0l", "SBdjpsik0l"}, {"C_Bdjpsip0", "CBdjpsip0"}, {"S_Bdjpsip0", "SBdjpsip0"}, {"ACP_Bpjpsikp", "ACPBpjpsikp"}, {"ACP_Bpjpsipp", "ACPBpjpsipp"}, {"deltaA_Bpjpsipp_Bpjpsikp", "deltaA_Bpjpsipp_Bpjpsikp"}, {"R_Bpjpsipp_Bpjpsikp", "R_Bpjpsipp_Bpjpsikp"}, {"lambda_Bsjpsiph", "lambda_Bsjpsiph"}, {"phi_Bsjpsiph", "phi_Bsjpsiph"}, {"f_perp_Bsjpsiph", "f_perp_Bsjpsiph"}, {"f_paral_Bsjpsiph", "f_paral_Bsjpsiph"}, {"f_0_Bsjpsiph", "f_0_Bsjpsiph"}, {"delta_perp_Bsjpsiph", "delta_perp_Bsjpsiph"}, {"delta_paral_Bsjpsiph", "delta_paral_Bsjpsiph"}, {"R_Bdjpsiom_Bdjpsirh", "R_Bdjpsiom_Bdjpsirh"}, {"R_Bdjpsikst_Bdjpsik0", "R_Bdjpsikst_Bdjpsik0"}, {"C_Bdjpsikst", "CBdjpsikst"}, {"S_Bdjpsikst", "SBdjpsikst"}, {"f_0_Bdjpsikst", "f_0_Bdjpsikst"}, {"f_paral_Bdjpsikst", "f_paral_Bdjpsikst"}, {"f_perp_Bdjpsikst", "f_perp_Bdjpsikst"}, {"delta_paral_Bdjpsikst", "delta_paral_Bdjpsikst"}, {"delta_perp_Bdjpsikst", "delta_perp_Bdjpsikst"}, {"f_0_Bsjpsikst", "f_0_Bsjpsikst"}, {"f_paral_Bsjpsikst", "f_paral_Bsjpsikst"}, {"delta_paral_Bsjpsikst", "delta_paral_Bsjpsikst"}, {"delta_perp_Bsjpsikst", "delta_perp_Bsjpsikst"}, {"A0_CP_Bsjpsikst", "A0_CP_Bsjpsikst"}, {"Aparal_CP_Bsjpsikst", "Aparal_CP_Bsjpsikst"}, {"Aperp_CP_Bsjpsikst", "Aperp_CP_Bsjpsikst"}, {"BR_Bddpdm", "BRBddpdm"}, {"C_Bddpdm", "CBddpdm"}, {"S_Bddpdm", "SBddpdm"}, {"BR_Bsdpsdms", "BRBsdpsdms"}, {"C_Bsdpsdms", "CBsdpsdms"}, {"S_Bsdpsdms", "SBsdpsdms"}, {"BR_Bpdpd0b", "BRBpdpd0b"}, {"ACP_Bpdpd0b", "ACPBpdpd0b"}, {"BR_Bpdpsd0b", "BRBpdpsd0b"}, {"ACP_Bpdpsd0b", "ACPBpdpsd0b"}
 
     };
 
-    for (const auto& histPair : histos.h1d) {
-        const std::string& obs_name = histPair.first;
-        TH1D* hist = histPair.second;
+    for (const auto &histPair : histos.h1d)
+    {
+        const std::string &obs_name = histPair.first;
+        TH1D *hist = histPair.second;
 
         double obs_mean = hist->GetMean();
         double obs_measurement = 0.0;
@@ -3164,14 +3415,18 @@ void goldenmodes::PrintObservablePulls(const std::string& filename) {
         bool found_measurement = false;
 
         // Check if the observable exists in `newmeas` first
-        if (measMap.find(obs_name) != measMap.end()) {
-            const std::string& key = measMap[obs_name];
+        if (measMap.find(obs_name) != measMap.end())
+        {
+            const std::string &key = measMap[obs_name];
 
-            if (newmeas.find(key) != newmeas.end()) {
+            if (newmeas.find(key) != newmeas.end())
+            {
                 obs_measurement = newmeas.at(key).getMean();
                 sigma_measurement = newmeas.at(key).getSigma();
                 found_measurement = true;
-            } else if (meas.find(key) != meas.end()) {
+            }
+            else if (meas.find(key) != meas.end())
+            {
                 // Use `meas` only if it is not found in `newmeas`
                 obs_measurement = meas.at(key).getMean();
                 sigma_measurement = meas.at(key).getSigma();
@@ -3179,10 +3434,11 @@ void goldenmodes::PrintObservablePulls(const std::string& filename) {
             }
         }
 
-        if (found_measurement) {
+        if (found_measurement)
+        {
             // Calculate the pull value: (predicted - observed) / uncertainty
             double pull = (obs_mean - obs_measurement) / sigma_measurement;
-            
+
             outfile << obs_name << "\t"
                     << obs_measurement << "\t"
                     << obs_mean << "\t"

@@ -8,7 +8,7 @@
 #include <map>
 #include <random>
 #include <unordered_map>
-#include <complex>
+#include <TComplex.h>
 #include <string>
 #include <tuple>
 #include <algorithm>
@@ -50,10 +50,10 @@ public:
   void PrintHistogram();
 
   //vector with all the channel names:
-  std::vector<std::string> channelNames = {"Bdjpsik0s", "Bdjpsik0l", "Bdjpsik0" ,"Bdjpsip0", "Bdjpsiom", "Bpjpsikp", "Bpjpsipp", "Bsjpsiph", "Bsjpsik0s", "Bdjpsikst", "Bdjpsirh", "Bsjpsikst", "Bddpdm", "Bsdpsdms", "Bpdpd0b", "Bpdpsd0b"};
-  std::vector<std::string> channelNamesSU3 = {"Bdjpsik0", "Bdjpsip0", "Bdjpsiom", "Bpjpsikp", "Bpjpsipp", "Bsjpsiph", "Bsjpsik0", "Bdjpsikst", "Bdjpsirh", "Bsjpsikst", "Bddpdm", "Bsdpsdms", "Bpdpd0b", "Bpdpsd0b"};
+  std::vector<std::string> channelNames = {"Bpjpsipp", "Bpjpsikp", "Bdjpsip0", "Bdjpsik0s", "Bdjpsik0l", "Bdjpsik0", "Bdjpsiet", "Bdjpsietp", "Bsjpsip0", "Bsjpsik0s", "Bsjpsik0l", "Bsjpsik0b", "Bsjpsiet", "Bsjpsietp", "Bpjpsirp", "Bpjpsikstp", "Bdjpsir0", "Bdjpsikst0", "Bdjpsiph", "Bdjpsiom", "Bsjpsir0", "Bsjpsikst0", "Bsjpsiph", "Bsjpsiom", "Bpdpd0b", "Bpdspd0b", "Bddpdm", "Bddpsdm", "Bddpsdms", "Bdd0d0b", "Bsdpdm", "Bsdpdms", "Bsdpsdms", "Bsd0d0b"};
+  std::vector<std::string> channelNamesSU3 = {"Bpjpsipp", "Bpjpsikp", "Bdjpsip0", "Bdjpsik0", "Bdjpset1", "Bdjpsiet8", "Bsjpsip0", "Bsjpsik0b", "Bsjpsiet1", "Bsjpsiet8", "Bpjpsirp", "Bpjpsikstp", "Bdjpsir0", "Bdjpsikst0", "Bdjpsiph", "Bdjpsiom", "Bsjpsir0", "Bsjpsikst0", "Bsjpsiph", "Bsjpsiom", "Bpdpd0b", "Bpdspd0b", "Bddpdm", "Bddpsdm", "Bddpsdms", "Bdd0d0b", "Bsdpdm", "Bsdpdms", "Bsdpsdms", "Bsd0d0b"};
   std::vector<std::string> vectorMesonChannels = {
-    "Bdjpsiom", "Bsjpsiph", "Bdjpsikst", "Bdjpsirh", "Bsjpsikst"
+   "Bpjpsirp", "Bpjpsikstp", "Bdjpsir0", "Bdjpsikst0", "Bdjpsiph", "Bdjpsiom", "Bsjpsir0", "Bsjpsikst0", "Bsjpsiph", "Bsjpsiom"
 };
 
 
