@@ -556,8 +556,9 @@ Parameter BqDqDqbar::getPar(const std::string& baseName) const {
 
     if (it_real != parameterValues.end() && it_imag != parameterValues.end()) {
         // Construct a complex number from the real and imaginary parts
-        return std::complex<double>(it_real->second, it_imag->second);
-	cout << "get par called correctly for par " << complex<double>(it_real->second, it_imag->second) << endl;
+        TComplex value(it_real->second, it_imag->second);
+        cout << "get par called correctly for par " << value << endl;
+        return value;
     } else {
         throw std::runtime_error("Error: Real or imaginary part for parameter " + baseName + " not found.");
     }
@@ -595,19 +596,19 @@ double BqDqDqbar::getParameterValue(const std::string& paramName) const {
  //compute decay amplitude for each channel
  void BqDqDqbar::compute_decay_amplitudes(const std::string& channel, bool conjugate) {
    //cout << "computing decay amplitude for channel " << channel << endl;
-   amplitudes[channel] = std::complex<double>(0.0, 0.0);
+   amplitudes[channel] = TComplex(0.0, 0.0);
 
     Parameter amp;
    // Get the CKM elements for the current channel, apply conjugation based on the 'conjugate' flag
-    std::complex<double> Vcd = conjugate ? ckm.getVdc() : ckm.getVcd();
-    std::complex<double> Vcs = conjugate ? ckm.getVsc() : ckm.getVcs();
-    std::complex<double> Vbc = conjugate ? ckm.getVcb() : ckm.getVbc();
-    std::complex<double> Vtd = conjugate ? ckm.getVdt() : ckm.getVtd();
-    std::complex<double> Vbt = conjugate ? ckm.getVtb() : ckm.getVbt();
-    std::complex<double> Vud = conjugate ? ckm.getVdu() : ckm.getVud();
-    std::complex<double> Vbu = conjugate ? ckm.getVub() : ckm.getVbu();
-    std::complex<double> Vts = conjugate ? ckm.getVst() : ckm.getVts();
-    std::complex<double> Vus = conjugate ? ckm.getVsu() : ckm.getVus();
+    TComplex Vcd = conjugate ? ckm.getVdc() : ckm.getVcd();
+    TComplex Vcs = conjugate ? ckm.getVsc() : ckm.getVcs();
+    TComplex Vbc = conjugate ? ckm.getVcb() : ckm.getVbc();
+    TComplex Vtd = conjugate ? ckm.getVdt() : ckm.getVtd();
+    TComplex Vbt = conjugate ? ckm.getVtb() : ckm.getVbt();
+    TComplex Vud = conjugate ? ckm.getVdu() : ckm.getVud();
+    TComplex Vbu = conjugate ? ckm.getVub() : ckm.getVbu();
+    TComplex Vts = conjugate ? ckm.getVst() : ckm.getVts();
+    TComplex Vus = conjugate ? ckm.getVsu() : ckm.getVus();
 
     
     if (channel == "Bddpdm") {
@@ -804,11 +805,11 @@ double BqDqDqbar::CalculateC(const Parameter& amplitude, const Parameter& conjug
     auto parsed = parseChannel(channel);
     std::string bMeson = parsed.first;
 
-    std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
     
     // Calculate the ratio lambda = eta * (q/p) * (A_cp / A_conj)
     double eta = cpEigenvalue[channel];  // Assume cpEigenvalue map has eta for each channel
-    std::complex<double> lambda = eta * q_p * (conjugate_amplitude / amplitude);
+    TComplex lambda = eta * q_p * (conjugate_amplitude / amplitude);
 
     // Calculate C observable: C = (1 - |lambda|^2) / (1 + |lambda|^2)
     double mod_lambda_squared = std::norm(lambda);
@@ -822,11 +823,11 @@ double BqDqDqbar::CalculateC(const Parameter& amplitude, const Parameter& conjug
     auto parsed = parseChannel(channel);
     std::string bMeson = parsed.first;
 
-    std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
     
     // Calculate the ratio lambda = eta * (q/p) * (A_cp / A_conj)
     double eta = cpEigenvalue[channel];  // Assume cpEigenvalue map has eta for each channel
-    std::complex<double> lambda = eta * q_p * (conjugate_amplitude / amplitude);
+    TComplex lambda = eta * q_p * (conjugate_amplitude / amplitude);
 
     // Calculate S observable: S = 2 Im(lambda) / (1 + |lambda|^2)
     double mod_lambda_squared = std::norm(lambda);
@@ -839,10 +840,10 @@ double BqDqDqbar::CalculateC(const Parameter& amplitude, const Parameter& conjug
 
  std::pair<double, double> BqDqDqbar::CalculatePhiAndLambda(const Parameter& amplitude, const Parameter& conjugate_amplitude, const std::string& channel) {
     // Get q/p based on the B meson (Bs in this case)
-    std::complex<double> q_p = ckm.get_q_p_Bs();
+    TComplex q_p = ckm.get_q_p_Bs();
 
     // Compute lambda = (q/p) * (A_cp / A_conj)
-    std::complex<double> lambda = q_p * (conjugate_amplitude / amplitude);
+    TComplex lambda = q_p * (conjugate_amplitude / amplitude);
 
     // Compute |lambda|
     double mod_lambda = std::abs(lambda);
@@ -1086,9 +1087,9 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
    
     for (const std::string& channel : channelNames) {
      // Compute and store amplitudes for each channel
-      double B_re = getPar("B_" + channel).real();
-      double B_im = getPar("B_" + channel).imag();
-      double A = getPar("A_" + channel).real();
+      double B_re = getPar("B_" + channel).Re();
+      double B_im = getPar("B_" + channel).Im();
+      double A = getPar("A_" + channel).Re();
       obs["A_" + channel] = A;
       obs["B_re_" + channel] = B_re;
       obs["B_im_" + channel] = B_im;
@@ -1106,10 +1107,10 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
       
         const auto& amp_pair = amplitude_map[channel];  // Get precomputed amplitude and conjugate amplitude
 
-        if (std::isnan(amp_pair.first.real()) || std::isnan(amp_pair.first.imag()) ||
-            std::isinf(amp_pair.first.real()) || std::isinf(amp_pair.first.imag()) ||
-            std::isnan(amp_pair.second.real()) || std::isnan(amp_pair.second.imag()) ||
-            std::isinf(amp_pair.second.real()) || std::isinf(amp_pair.second.imag())) {
+        if (std::isnan(amp_pair.first.Re()) || std::isnan(amp_pair.first.Im()) ||
+            std::isinf(amp_pair.first.Re()) || std::isinf(amp_pair.first.Im()) ||
+            std::isnan(amp_pair.second.Re()) || std::isnan(amp_pair.second.Im()) ||
+            std::isinf(amp_pair.second.Re()) || std::isinf(amp_pair.second.Im())) {
             std::cerr << "Invalid amplitude (NaN or Inf) for channel: " << channel << std::endl;
             return -100;
         }

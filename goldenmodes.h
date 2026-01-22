@@ -19,7 +19,7 @@
 #include "CorrelatedGaussianObservables.h"
 
 using namespace std;
-using Parameter = complex<double>;
+using Parameter = TComplex;
 
 
 class goldenmodes : public BCModel {

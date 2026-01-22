@@ -341,7 +341,7 @@ std::map<std::string, Parameter> BqDqDqbar::DeclareParameters() {
         auto it = channelParameters.find(channel);
         if (it != channelParameters.end()) {
             for (const auto& param : it->second) {
-	      parameterValues[param] = std::complex<double>(0.0, 0.0); //initialize 
+	      parameterValues[param] = TComplex(0.0, 0.0); //initialize 
             }
         } else {
             std::cerr << "Channel " << channel << " not found in channelParameters." << std::endl;
@@ -371,19 +371,19 @@ void BqDqDqbar::SetParameterValue(const std::string& paramName, Parameter value)
 
  //compute decay amplitude for each channel
  void BqDqDqbar::compute_decay_amplitudes(const std::string& channel, const CKMParameters& ckm, bool conjugate) {
-   amplitudes[channel] = std::complex<double>(0.0, 0.0);
+   amplitudes[channel] = TComplex(0.0, 0.0);
 
     Parameter amp;
    // Get the CKM elements for the current channel, apply conjugation based on the 'conjugate' flag
-    std::complex<double> Vcd = conjugate ? std::conj(ckm.getVcd()) : ckm.getVcd();
-    std::complex<double> Vcs = conjugate ? std::conj(ckm.getVcs()) : ckm.getVcs();
-    std::complex<double> Vbc = conjugate ? std::conj(ckm.getVcb()) : ckm.getVcb();
-    std::complex<double> Vtd = conjugate ? std::conj(ckm.getVtd()) : ckm.getVtd();
-    std::complex<double> Vbt = conjugate ? std::conj(ckm.getVtb()) : ckm.getVtb();
-    std::complex<double> Vud = conjugate ? std::conj(ckm.getVud()) : ckm.getVud();
-    std::complex<double> Vbu = conjugate ? std::conj(ckm.getVub()) : ckm.getVub();
-    std::complex<double> Vts = conjugate ? std::conj(ckm.getVts()) : ckm.getVts();
-    std::complex<double> Vus = conjugate ? std::conj(ckm.getVus()) : ckm.getVus();
+    TComplex Vcd = conjugate ? TComplex::Conjugate(ckm.getVcd()) : ckm.getVcd();
+    TComplex Vcs = conjugate ? TComplex::Conjugate(ckm.getVcs()) : ckm.getVcs();
+    TComplex Vbc = conjugate ? TComplex::Conjugate(ckm.getVcb()) : ckm.getVcb();
+    TComplex Vtd = conjugate ? TComplex::Conjugate(ckm.getVtd()) : ckm.getVtd();
+    TComplex Vbt = conjugate ? TComplex::Conjugate(ckm.getVtb()) : ckm.getVtb();
+    TComplex Vud = conjugate ? TComplex::Conjugate(ckm.getVud()) : ckm.getVud();
+    TComplex Vbu = conjugate ? TComplex::Conjugate(ckm.getVub()) : ckm.getVub();
+    TComplex Vts = conjugate ? TComplex::Conjugate(ckm.getVts()) : ckm.getVts();
+    TComplex Vus = conjugate ? TComplex::Conjugate(ckm.getVus()) : ckm.getVus();
     if (channel == "Bddpdm") {
       amp = Vcd * Vbc * (getPar("E1_dcc_Bddpdm") + getPar("A2_cdc_Bddmdp"))
 	- Vud*Vbu * (getPar("P1_GIM_dc_Bddpdm") + getPar("P3_GIM_dc_Bddmdp"))
@@ -555,11 +555,11 @@ double BqDqDqbar::CalculateC(const Parameter& amplitude, const Parameter& conjug
     auto parsed = parseChannel(channel);
     std::string bMeson = parsed.first;
 
-    std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
     
     // Calculate the ratio lambda = eta * (q/p) * (A_cp / A_conj)
     double eta = cpEigenvalue[channel];  // Assume cpEigenvalue map has eta for each channel
-    std::complex<double> lambda = eta * q_p * (amplitude / conjugate_amplitude);
+    TComplex lambda = eta * q_p * (amplitude / conjugate_amplitude);
 
     // Calculate C observable: C = (1 - |lambda|^2) / (1 + |lambda|^2)
     double mod_lambda_squared = std::norm(lambda);
@@ -573,11 +573,11 @@ double BqDqDqbar::CalculateC(const Parameter& amplitude, const Parameter& conjug
     auto parsed = parseChannel(channel);
     std::string bMeson = parsed.first;
 
-    std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
     
     // Calculate the ratio lambda = eta * (q/p) * (A_cp / A_conj)
     double eta = cpEigenvalue[channel];  // Assume cpEigenvalue map has eta for each channel
-    std::complex<double> lambda = eta * q_p * (amplitude / conjugate_amplitude);
+    TComplex lambda = eta * q_p * (amplitude / conjugate_amplitude);
 
     // Calculate S observable: S = 2 Im(lambda) / (1 + |lambda|^2)
     double mod_lambda_squared = std::norm(lambda);
@@ -666,7 +666,7 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
             for (const auto& paramName : it->second) {
                 double realPart = parameters[index];
                 double imagPart = parameters[index + 1];
-                parametersValue[paramName] = std::complex<double>(realPart, imagPart);
+                parametersValue[paramName] = TComplex(realPart, imagPart);
                 index += 2;
             }
         }

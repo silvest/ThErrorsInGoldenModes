@@ -1493,7 +1493,7 @@ Parameter goldenmodes::getPar(const std::string& baseName) const {
 
     if (it_real != parameterValues.end() && it_imag != parameterValues.end()) {
         // Construct a complex number from the real and imaginary parts
-        return std::complex<double>(it_real->second, it_imag->second);
+        return TComplex(it_real->second, it_imag->second);
     } else {
         throw std::runtime_error("Error: Real or imaginary part for parameter " + baseName + " not found.");
     }
@@ -1526,22 +1526,22 @@ double goldenmodes::getParameterValue(const std::string& paramName) const {
  //compute decay amplitude for each channel
  void goldenmodes::compute_decay_amplitudes(const std::string& channel, bool conjugate) {
    //cout << "computing decay amplitude for channel " << channel << endl;
-   amplitudes[channel] = std::complex<double>(0.0, 0.0);
+   amplitudes[channel] = TComplex(0.0, 0.0);
 
     Parameter amp;
     Parameter amp_0;
     Parameter amp_paral;
     Parameter amp_perp;
    // Get the CKM elements for the current channel, apply conjugation based on the 'conjugate' flag
-    std::complex<double> Vcd = conjugate ? ckm.getVdc() : ckm.getVcd();
-    std::complex<double> Vcs = conjugate ? ckm.getVsc() : ckm.getVcs();
-    std::complex<double> Vbc = conjugate ? ckm.getVcb() : ckm.getVbc();
-    std::complex<double> Vtd = conjugate ? ckm.getVdt() : ckm.getVtd();
-    std::complex<double> Vbt = conjugate ? ckm.getVtb() : ckm.getVbt();
-    std::complex<double> Vud = conjugate ? ckm.getVdu() : ckm.getVud();
-    std::complex<double> Vbu = conjugate ? ckm.getVub() : ckm.getVbu();
-    std::complex<double> Vts = conjugate ? ckm.getVst() : ckm.getVts();
-    std::complex<double> Vus = conjugate ? ckm.getVsu() : ckm.getVus();
+    TComplex Vcd = conjugate ? ckm.getVdc() : ckm.getVcd();
+    TComplex Vcs = conjugate ? ckm.getVsc() : ckm.getVcs();
+    TComplex Vbc = conjugate ? ckm.getVcb() : ckm.getVbc();
+    TComplex Vtd = conjugate ? ckm.getVdt() : ckm.getVtd();
+    TComplex Vbt = conjugate ? ckm.getVtb() : ckm.getVbt();
+    TComplex Vud = conjugate ? ckm.getVdu() : ckm.getVud();
+    TComplex Vbu = conjugate ? ckm.getVub() : ckm.getVbu();
+    TComplex Vts = conjugate ? ckm.getVst() : ckm.getVts();
+    TComplex Vus = conjugate ? ckm.getVsu() : ckm.getVus();
 
 
     if (channel == "Bdjpsik0") {
@@ -1856,7 +1856,7 @@ double goldenmodes::CalculateC(const Parameter& amplitude, const Parameter& conj
     std::string bMeson = parsed.first;
 
     // Get q/p ratio for Bd or Bs
-    std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
 
     // Special case for K0s and K0l channels (apply q/p_KS)
     if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l" || channel == "Bsjpsik0s") {
@@ -1875,7 +1875,7 @@ double goldenmodes::CalculateC(const Parameter& amplitude, const Parameter& conj
         return 0.0; // Return safe value instead of crashing
     }
 
-    std::complex<double> lambda = eta * q_p * (conjugate_amplitude / amplitude);
+    TComplex lambda = eta * q_p * (conjugate_amplitude / amplitude);
 
     // Compute C observable: C = (1 - |λ|^2) / (1 + |λ|^2)
     double mod_lambda_squared = std::norm(lambda);
@@ -1890,7 +1890,7 @@ double goldenmodes::CalculateAlpha(const Parameter& amplitude, const Parameter& 
     std::string bMeson = parsed.first;
 
     // Get q/p ratio for Bd or Bs
-    std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
 
     // Special case for K0s and K0l channels (apply q/p_KS)
     if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l" || channel == "Bsjpsik0s") {
@@ -1909,7 +1909,7 @@ double goldenmodes::CalculateAlpha(const Parameter& amplitude, const Parameter& 
         return 0.0; // Return safe value instead of crashing
     }
 
-    std::complex<double> lambda = eta * q_p * (conjugate_amplitude / amplitude);
+    TComplex lambda = eta * q_p * (conjugate_amplitude / amplitude);
 
     // Compute Alpha observable: C = (1 - |λ|) / (1 + |λ|) 
     double mod_lambda = std::abs(lambda);
@@ -1926,7 +1926,7 @@ double goldenmodes::CalculateS(const Parameter& amplitude, const Parameter& conj
     std::string bMeson = parsed.first;
 
     // Get q/p ratio for Bd or Bs
-    std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
 
     // Special case for K0s and K0l channels (apply q/p_KS)
     if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l" || channel == "Bsjpsik0s") {
@@ -1945,7 +1945,7 @@ double goldenmodes::CalculateS(const Parameter& amplitude, const Parameter& conj
         return 0.0; // Return safe value instead of crashing
     }
 
-    std::complex<double> lambda = eta * q_p * (conjugate_amplitude / amplitude);
+    TComplex lambda = eta * q_p * (conjugate_amplitude / amplitude);
 
     // Compute S observable: S = 2 Im(λ) / (1 + |λ|^2)
     double mod_lambda_squared = std::norm(lambda);
@@ -1961,10 +1961,10 @@ double goldenmodes::CalculateS(const Parameter& amplitude, const Parameter& conj
        }
 
        // Get q/p for the Bs meson
-       std::complex<double> q_p = ckm.get_q_p_Bs();
+       TComplex q_p = ckm.get_q_p_Bs();
 
        // Compute lambda = (q/p) * (A_cp / A_conj)
-       std::complex<double> lambda = q_p * (conjugate_amplitude / amplitude);
+       TComplex lambda = q_p * (conjugate_amplitude / amplitude);
 
        // Compute |lambda|
        double mod_lambda = std::abs(lambda);
@@ -2038,9 +2038,9 @@ std::map<std::string, double> goldenmodes::getPolarizationParams(
 
     try {
         // Get parameters for phases
-        std::complex<double> B0    = getPar("B_" + channel + "_0");
-        std::complex<double> Bperp = getPar("B_" + channel + "_perp");
-        std::complex<double> Bparal= getPar("B_" + channel + "_paral");
+        TComplex B0    = getPar("B_" + channel + "_0");
+        TComplex Bperp = getPar("B_" + channel + "_perp");
+        TComplex Bparal= getPar("B_" + channel + "_paral");
 
         double delta_0      = std::arg(B0);
         double deltaparal   = std::arg(Bparal);
@@ -2054,9 +2054,9 @@ std::map<std::string, double> goldenmodes::getPolarizationParams(
             throw std::runtime_error("Amplitude map does not contain channel: " + channel);
         }
 
-        std::complex<double> amp       = amp_it->second.first;
-        std::complex<double> conj_amp  = amp_it->second.second;
-        std::complex<double> avg_amp   = (amp + conj_amp) * 0.5;
+        TComplex amp       = amp_it->second.first;
+        TComplex conj_amp  = amp_it->second.second;
+        TComplex avg_amp   = (amp + conj_amp) * 0.5;
         double norm_amp           = std::norm(avg_amp);
 
         if (norm_amp == 0) {
@@ -2064,16 +2064,16 @@ std::map<std::string, double> goldenmodes::getPolarizationParams(
         }
 
         // Get decay amplitudes
-        std::complex<double> amp_0      = get_amplitude(channel + "_0");
-        std::complex<double> amp_paral  = get_amplitude(channel + "_paral");
-        std::complex<double> amp_perp   = get_amplitude(channel + "_perp");
-        std::complex<double> conj_amp_0     = get_conjugate_amplitude(channel + "_0");
-        std::complex<double> conj_amp_paral = get_conjugate_amplitude(channel + "_paral");
-        std::complex<double> conj_amp_perp  = get_conjugate_amplitude(channel + "_perp");
+        TComplex amp_0      = get_amplitude(channel + "_0");
+        TComplex amp_paral  = get_amplitude(channel + "_paral");
+        TComplex amp_perp   = get_amplitude(channel + "_perp");
+        TComplex conj_amp_0     = get_conjugate_amplitude(channel + "_0");
+        TComplex conj_amp_paral = get_conjugate_amplitude(channel + "_paral");
+        TComplex conj_amp_perp  = get_conjugate_amplitude(channel + "_perp");
 
-        std::complex<double> avg_A0      = (amp_0 + conj_amp_0) * 0.5;
-        std::complex<double> avg_Aparal  = (amp_paral + conj_amp_paral) * 0.5;
-        std::complex<double> avg_Aperp   = (amp_perp + conj_amp_perp) * 0.5;
+        TComplex avg_A0      = (amp_0 + conj_amp_0) * 0.5;
+        TComplex avg_Aparal  = (amp_paral + conj_amp_paral) * 0.5;
+        TComplex avg_Aperp   = (amp_perp + conj_amp_perp) * 0.5;
 
         double norm_A0      = std::norm(avg_A0);
         double norm_Aparal  = std::norm(avg_Aparal);
@@ -2406,12 +2406,12 @@ double goldenmodes::Calculate_CorrelatedObservables(const std::map<std::string, 
     obs["delta_paral_Bsjpsikst"] = delta_paral;
     obs["delta_perp_Bsjpsikst"]  = delta_perp;
   // --- Retrieve additional parameters  ---
-  complex<double> amp_0      = get_amplitude("Bsjpsikst_0");
-  complex<double> amp_paral  = get_amplitude("Bsjpsikst_paral");
-  complex<double> amp_perp   = get_amplitude("Bsjpsikst_perp");
-  complex<double> conj_amp_0     = get_conjugate_amplitude("Bsjpsikst_0");
-  complex<double> conj_amp_paral = get_conjugate_amplitude("Bsjpsikst_paral");
-  complex<double> conj_amp_perp  = get_conjugate_amplitude("Bsjpsikst_perp");
+    Parameter amp_0      = get_amplitude("Bsjpsikst_0");
+    Parameter amp_paral  = get_amplitude("Bsjpsikst_paral");
+    Parameter amp_perp   = get_amplitude("Bsjpsikst_perp");
+    Parameter conj_amp_0     = get_conjugate_amplitude("Bsjpsikst_0");
+    Parameter conj_amp_paral = get_conjugate_amplitude("Bsjpsikst_paral");
+    Parameter conj_amp_perp  = get_conjugate_amplitude("Bsjpsikst_perp");
 
 
   obs["A0_CP_Bsjpsikst"] = CalculateAcp(amp_0, conj_amp_0);
@@ -2573,28 +2573,28 @@ double goldenmodes::LogLikelihood(const std::vector<double>& parameters) {
             Parameter B_paral = getPar("B_" + channel + "_paral");
 
             // Store real and imaginary parts
-            obs["A_0_re_" + channel] = A_0.real();
-            obs["A_0_im_" + channel] = A_0.imag();
-            obs["B_0_re_" + channel] = B_0.real();
-            obs["B_0_im_" + channel] = B_0.imag();
+            obs["A_0_re_" + channel] = A_0.Re();
+            obs["A_0_im_" + channel] = A_0.Im();
+            obs["B_0_re_" + channel] = B_0.Re();
+            obs["B_0_im_" + channel] = B_0.Im();
 
-            obs["A_perp_re_" + channel] = A_perp.real();
-            obs["A_perp_im_" + channel] = A_perp.imag();
-            obs["B_perp_re_" + channel] = B_perp.real();
-            obs["B_perp_im_" + channel] = B_perp.imag();
+            obs["A_perp_re_" + channel] = A_perp.Re();
+            obs["A_perp_im_" + channel] = A_perp.Im();
+            obs["B_perp_re_" + channel] = B_perp.Re();
+            obs["B_perp_im_" + channel] = B_perp.Im();
 
-            obs["A_paral_re_" + channel] = A_paral.real();
-            obs["A_paral_im_" + channel] = A_paral.imag();
-            obs["B_paral_re_" + channel] = B_paral.real();
-            obs["B_paral_im_" + channel] = B_paral.imag();
+            obs["A_paral_re_" + channel] = A_paral.Re();
+            obs["A_paral_im_" + channel] = A_paral.Im();
+            obs["B_paral_re_" + channel] = B_paral.Re();
+            obs["B_paral_im_" + channel] = B_paral.Im();
         } else {
             // Pseudoscalar channels: handle A and B
             Parameter A = getPar("A_" + channel);
             Parameter B = getPar("B_" + channel);
-            obs["A_re_" + channel] = A.real();
-            obs["A_im_" + channel] = A.imag();
-            obs["B_re_" + channel] = B.real();
-            obs["B_im_" + channel] = B.imag();
+            obs["A_re_" + channel] = A.Re();
+            obs["A_im_" + channel] = A.Im();
+            obs["B_re_" + channel] = B.Re();
+            obs["B_im_" + channel] = B.Im();
         }
 
         // Directly store original amplitudes

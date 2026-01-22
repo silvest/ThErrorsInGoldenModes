@@ -8,7 +8,7 @@
 #include <map>
 #include <random>  
 #include <unordered_map>
-#include <complex>
+#include <TComplex.h>
 #include <string>
 #include <tuple>
 
@@ -17,7 +17,7 @@
 #include "CorrelatedGaussianObservables.h"
 
 using namespace std;
-using Parameter = complex<double>;
+using Parameter = TComplex;
 
 
 class BqDqDqbar : public BCModel {

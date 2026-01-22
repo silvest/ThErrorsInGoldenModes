@@ -532,8 +532,9 @@ Parameter BqDqDqbar::getPar(const std::string& baseName) const {
 
     if (it_real != parameterValues.end() && it_imag != parameterValues.end()) {
         // Construct a complex number from the real and imaginary parts
-        return std::complex<double>(it_real->second, it_imag->second);
-	cout << "get par called correctly for par " << complex<double>(it_real->second, it_imag->second) << endl;
+        TComplex value(it_real->second, it_imag->second);
+        cout << "get par called correctly for par " << value << endl;
+        return value;
     } else {
         throw std::runtime_error("Error: Real or imaginary part for parameter " + baseName + " not found.");
     }
@@ -569,19 +570,19 @@ double BqDqDqbar::getParameterValue(const std::string& paramName) const {
  //compute decay amplitude for each channel
  void BqDqDqbar::compute_decay_amplitudes(const std::string& channel, bool conjugate) {
    //cout << "computing decay amplitude for channel " << channel << endl;
-   amplitudes[channel] = std::complex<double>(0.0, 0.0);
+   amplitudes[channel] = TComplex(0.0, 0.0);
 
     Parameter amp;
    // Get the CKM elements for the current channel, apply conjugation based on the 'conjugate' flag
-    std::complex<double> Vcd = conjugate ? ckm.getVdc() : ckm.getVcd();
-    std::complex<double> Vcs = conjugate ? ckm.getVsc() : ckm.getVcs();
-    std::complex<double> Vbc = conjugate ? ckm.getVcb() : ckm.getVbc();
-    std::complex<double> Vtd = conjugate ? ckm.getVdt() : ckm.getVtd();
-    std::complex<double> Vbt = conjugate ? ckm.getVtb() : ckm.getVbt();
-    std::complex<double> Vud = conjugate ? ckm.getVdu() : ckm.getVud();
-    std::complex<double> Vbu = conjugate ? ckm.getVub() : ckm.getVbu();
-    std::complex<double> Vts = conjugate ? ckm.getVst() : ckm.getVts();
-    std::complex<double> Vus = conjugate ? ckm.getVsu() : ckm.getVus();
+    TComplex Vcd = conjugate ? ckm.getVdc() : ckm.getVcd();
+    TComplex Vcs = conjugate ? ckm.getVsc() : ckm.getVcs();
+    TComplex Vbc = conjugate ? ckm.getVcb() : ckm.getVbc();
+    TComplex Vtd = conjugate ? ckm.getVdt() : ckm.getVtd();
+    TComplex Vbt = conjugate ? ckm.getVtb() : ckm.getVbt();
+    TComplex Vud = conjugate ? ckm.getVdu() : ckm.getVud();
+    TComplex Vbu = conjugate ? ckm.getVub() : ckm.getVbu();
+    TComplex Vts = conjugate ? ckm.getVst() : ckm.getVts();
+    TComplex Vus = conjugate ? ckm.getVsu() : ckm.getVus();
     if (channel == "Bddpdm") {
       amp = Vcd * Vbc * (getPar("E1_dcc_Bddpdm") + getPar("A2_cdc_Bddmdp"))
 	- Vud*Vbu * (getPar("P1_GIM_dc_Bddpdm") + getPar("P3_GIM_dc_Bddmdp"));
@@ -764,11 +765,11 @@ double BqDqDqbar::CalculateC(const Parameter& amplitude, const Parameter& conjug
     auto parsed = parseChannel(channel);
     std::string bMeson = parsed.first;
 
-    std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
     
     // Calculate the ratio lambda = eta * (q/p) * (A_cp / A_conj)
     double eta = cpEigenvalue[channel];  // Assume cpEigenvalue map has eta for each channel
-    std::complex<double> lambda = eta * q_p * (conjugate_amplitude / amplitude);
+    TComplex lambda = eta * q_p * (conjugate_amplitude / amplitude);
 
     // Calculate C observable: C = (1 - |lambda|^2) / (1 + |lambda|^2)
     double mod_lambda_squared = std::norm(lambda);
@@ -782,11 +783,11 @@ double BqDqDqbar::CalculateC(const Parameter& amplitude, const Parameter& conjug
     auto parsed = parseChannel(channel);
     std::string bMeson = parsed.first;
 
-    std::complex<double> q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
     
     // Calculate the ratio lambda = eta * (q/p) * (A_cp / A_conj)
     double eta = cpEigenvalue[channel];  // Assume cpEigenvalue map has eta for each channel
-    std::complex<double> lambda = eta * q_p * (conjugate_amplitude / amplitude);
+    TComplex lambda = eta * q_p * (conjugate_amplitude / amplitude);
 
     // Calculate S observable: S = 2 Im(lambda) / (1 + |lambda|^2)
     double mod_lambda_squared = std::norm(lambda);
@@ -801,10 +802,10 @@ double BqDqDqbar::CalculateC(const Parameter& amplitude, const Parameter& conjug
 
    
     // Get q/p based on the B meson (Bs in this case)
-    std::complex<double> q_p = ckm.get_q_p_Bs();
+    TComplex q_p = ckm.get_q_p_Bs();
 
     // Compute lambda = (q/p) * (A_cp / A_conj)
-    std::complex<double> lambda = q_p * (conjugate_amplitude / amplitude);
+    TComplex lambda = q_p * (conjugate_amplitude / amplitude);
 
     // Compute |lambda|
     double mod_lambda = std::abs(lambda);
@@ -1057,78 +1058,78 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
 
     // Construct A for SU(2) case by adding real parts of E1 and A2 terms
     if (channel == "Bddpdm") {
-        A_real = getPar("E1_dcc_Bddpdm").real() + getPar("A2_cdc_Bddmdp").real();
-	A_imag = getPar("A2_cdc_Bddmdp").imag();
-	complex<double> A = getPar("E1_dcc_Bddpdm") + getPar("A2_cdc_Bddmdp");
-	complex<double> B = getPar("P1_GIM_dc_Bddpdm") + getPar("P3_GIM_dc_Bddmdp");
-	modA = abs(A);
-	phaseA = arg(A);
+        A_real = getPar("E1_dcc_Bddpdm").Re() + getPar("A2_cdc_Bddmdp").Re();
+	A_imag = getPar("A2_cdc_Bddmdp").Im();
+    Parameter A = getPar("E1_dcc_Bddpdm") + getPar("A2_cdc_Bddmdp");
+    Parameter B = getPar("P1_GIM_dc_Bddpdm") + getPar("P3_GIM_dc_Bddmdp");
+    modA = TComplex::Abs(A);
+    phaseA = TComplex::Arg(A);
 	
-	B_real = getPar("P1_GIM_dc_Bddpdm").real() + getPar("P3_GIM_dc_Bddmdp").real();
-        B_imag = getPar("P1_GIM_dc_Bddpdm").imag() + getPar("P3_GIM_dc_Bddmdp").imag();
-	modB = abs(B);
-	phaseB = arg(B);
+	B_real = getPar("P1_GIM_dc_Bddpdm").Re() + getPar("P3_GIM_dc_Bddmdp").Re();
+        B_imag = getPar("P1_GIM_dc_Bddpdm").Im() + getPar("P3_GIM_dc_Bddmdp").Im();
+    modB = TComplex::Abs(B);
+    phaseB = TComplex::Arg(B);
     }
     else if (channel == "Bddpsdm") {
-        A_real = getPar("E1_scc_Bddpsdm").real();
+        A_real = getPar("E1_scc_Bddpsdm").Re();
 	A_imag = 0.;
-	B_real = getPar("P1_GIM_sc_Bddpsdm").real();
-	B_imag = getPar("P1_GIM_sc_Bddpsdm").imag();
-	complex<double> B = getPar("P1_GIM_sc_Bddpsdm");
-        complex<double> A = getPar("E1_scc_Bddpsdm");
-	modA = abs(A);
-	phaseA = arg(A);
-	modB = abs(B);
-	phaseB = arg(B);
+	B_real = getPar("P1_GIM_sc_Bddpsdm").Re();
+	B_imag = getPar("P1_GIM_sc_Bddpsdm").Im();
+    Parameter B = getPar("P1_GIM_sc_Bddpsdm");
+        Parameter A = getPar("E1_scc_Bddpsdm");
+    modA = TComplex::Abs(A);
+    phaseA = TComplex::Arg(A);
+    modB = TComplex::Abs(B);
+    phaseB = TComplex::Arg(B);
 	
     }
     else if (channel == "Bpdpd0b") {
-        A_real = getPar("E1_dcc_Bddpdm").real();
+        A_real = getPar("E1_dcc_Bddpdm").Re();
 	A_imag = 0.;
-	B_real = getPar("A1_dcu_Bpdpd0b").real() - getPar("P1_GIM_dc_Bddpdm").real();
-	B_imag = getPar("A1_dcu_Bpdpd0b").imag() - getPar("P1_GIM_dc_Bddpdm").imag();
-	complex<double> B = getPar("A1_dcu_Bpdpd0b") - getPar("P1_GIM_dc_Bddpdm");
-	complex<double> A = getPar("E1_dcc_Bddpdm");
-	modA = abs(A);
-	phaseA = arg(A);
-	modB = abs(B);
-	phaseB = arg(B);
+	B_real = getPar("A1_dcu_Bpdpd0b").Re() - getPar("P1_GIM_dc_Bddpdm").Re();
+	B_imag = getPar("A1_dcu_Bpdpd0b").Im() - getPar("P1_GIM_dc_Bddpdm").Im();
+    Parameter B = getPar("A1_dcu_Bpdpd0b") - getPar("P1_GIM_dc_Bddpdm");
+    Parameter A = getPar("E1_dcc_Bddpdm");
+    modA = TComplex::Abs(A);
+    phaseA = TComplex::Arg(A);
+    modB = TComplex::Abs(B);
+    phaseB = TComplex::Arg(B);
     }
     else if (channel == "Bpdpsd0b") {
-        A_real = getPar("E1_scc_Bddpsdm").real();
+        A_real = getPar("E1_scc_Bddpsdm").Re();
 	A_imag = 0;
-	B_real = getPar("A1_scu_Bpdpsd0b").real() - getPar("P1_GIM_sc_Bddpsdm").real();
-	B_imag = getPar("A1_scu_Bpdpsd0b").imag() - getPar("P1_GIM_sc_Bddpsdm").imag();
-	complex<double> B = getPar("A1_scu_Bpdpsd0b") - getPar("P1_GIM_sc_Bddpsdm");
-	complex<double> A = getPar("E1_scc_Bddpsdm");
-	modA = abs(A);
-	phaseA = arg(A);
-	modB = abs(B);
-	phaseB = arg(B);
+	B_real = getPar("A1_scu_Bpdpsd0b").Re() - getPar("P1_GIM_sc_Bddpsdm").Re();
+	B_imag = getPar("A1_scu_Bpdpsd0b").Im() - getPar("P1_GIM_sc_Bddpsdm").Im();
+    Parameter B = getPar("A1_scu_Bpdpsd0b") - getPar("P1_GIM_sc_Bddpsdm");
+    Parameter A = getPar("E1_scc_Bddpsdm");
+    modA = TComplex::Abs(A);
+    phaseA = TComplex::Arg(A);
+    modB = TComplex::Abs(B);
+    phaseB = TComplex::Arg(B);
     }
     else if (channel == "Bsdpsdms") {
-        A_real = getPar("E1_scc_Bsdpsdms").real() + getPar("A2_csc_Bsdmsdps").real();
-	A_imag = getPar("A2_csc_Bsdmsdps").imag();
-	B_real = getPar("P1_GIM_sc_Bsdpsdms").real() + getPar("P3_GIM_sc_Bsdpsdms").real();
-	B_imag = getPar("P1_GIM_sc_Bsdpsdms").imag() + getPar("P3_GIM_sc_Bsdpsdms").imag();
-	complex<double> B = getPar("P1_GIM_sc_Bsdpsdms") + getPar("P3_GIM_sc_Bsdpsdms");
-	complex<double> A = getPar("E1_scc_Bsdpsdms") + getPar("A2_csc_Bsdmsdps");
-	modA = abs(A);
-	phaseA = arg(A);
-	modB = abs(B);
-	phaseB = arg(B);
+        A_real = getPar("E1_scc_Bsdpsdms").Re() + getPar("A2_csc_Bsdmsdps").Re();
+	A_imag = getPar("A2_csc_Bsdmsdps").Im();
+	B_real = getPar("P1_GIM_sc_Bsdpsdms").Re() + getPar("P3_GIM_sc_Bsdpsdms").Re();
+	B_imag = getPar("P1_GIM_sc_Bsdpsdms").Im() + getPar("P3_GIM_sc_Bsdpsdms").Im();
+    Parameter B = getPar("P1_GIM_sc_Bsdpsdms") + getPar("P3_GIM_sc_Bsdpsdms");
+    Parameter A = getPar("E1_scc_Bsdpsdms") + getPar("A2_csc_Bsdmsdps");
+    modA = TComplex::Abs(A);
+    phaseA = TComplex::Arg(A);
+    modB = TComplex::Abs(B);
+    phaseB = TComplex::Arg(B);
     }
     else if (channel == "Bsdpdms") {
-        A_real = getPar("E1_dcc_Bsdpdms").real();
+        A_real = getPar("E1_dcc_Bsdpdms").Re();
 	A_imag = 0.;
-	B_real = getPar("P1_GIM_dc_Bsdpdms").real();
-	B_imag = getPar("P1_GIM_dc_Bsdpdms").imag();
-	complex<double> B = getPar("P1_GIM_dc_Bsdpdms");
-	complex<double> A = getPar("P1_GIM_dc_Bsdpdms");
-	modA = abs(A);
-	phaseA = arg(A);
-	modB = abs(B);
-	phaseB = arg(B);
+	B_real = getPar("P1_GIM_dc_Bsdpdms").Re();
+	B_imag = getPar("P1_GIM_dc_Bsdpdms").Im();
+    Parameter B = getPar("P1_GIM_dc_Bsdpdms");
+    Parameter A = getPar("P1_GIM_dc_Bsdpdms");
+    modA = TComplex::Abs(A);
+    phaseA = TComplex::Arg(A);
+    modB = TComplex::Abs(B);
+    phaseB = TComplex::Arg(B);
     }
 
     obs["A_" + channel + "_re"] = A_real;
@@ -1154,10 +1155,10 @@ double BqDqDqbar::LogLikelihood(const std::vector<double>& parameters) {
       
         const auto& amp_pair = amplitude_map[channel];  // Get precomputed amplitude and conjugate amplitude
 
-        if (std::isnan(amp_pair.first.real()) || std::isnan(amp_pair.first.imag()) ||
-            std::isinf(amp_pair.first.real()) || std::isinf(amp_pair.first.imag()) ||
-            std::isnan(amp_pair.second.real()) || std::isnan(amp_pair.second.imag()) ||
-            std::isinf(amp_pair.second.real()) || std::isinf(amp_pair.second.imag())) {
+        if (std::isnan(amp_pair.first.Re()) || std::isnan(amp_pair.first.Im()) ||
+            std::isinf(amp_pair.first.Re()) || std::isinf(amp_pair.first.Im()) ||
+            std::isnan(amp_pair.second.Re()) || std::isnan(amp_pair.second.Im()) ||
+            std::isinf(amp_pair.second.Re()) || std::isinf(amp_pair.second.Im())) {
             std::cerr << "Invalid amplitude (NaN or Inf) for channel: " << channel << std::endl;
             return -100;
         }
