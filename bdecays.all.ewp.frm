@@ -638,6 +638,8 @@ Id,gim2(u?,c,f?,B?,JPSI,P?)=g2t(u,c,f,B,JPSI,P)+p2(u,c,f,B,JPSI,P);
 Id,ea2(c,c,s?,f?,B?,JPSI,ET1?)=ea2t(c,c,s,f,B,JPSI,ET1) - p4(c,s,f,B,JPSI,ET1);
 Id,a2(c,s?,c,f?,B?,D?,Db?)=a2t(c,s,c,f,B,D,Db)-p3(s,c,f,B,D,Db);
 
+.sort
+
 * p3, p4, gim3 and gim4 are symmetric under the interchange of q1<->q2 and M1<->M2
 Id,p3(u?,c,s?,B?,ET1?,ET8?)=p3(c,u,s,B,ET8,ET1);
 Id,gim3(u?,c,s?,B?,ET1?,ET8?)=gim3(c,u,s,B,ET8,ET1);

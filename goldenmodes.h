@@ -1,5 +1,5 @@
-#ifndef GOLDENMODES_H
-#define GOLDENMODES_H
+#ifndef GOLDENMODESB_H
+#define GOLDENMODESB_H
 
 #include <BAT/BCModel.h>
 #include "CKM.h"
@@ -22,11 +22,11 @@ using namespace std;
 using Parameter = TComplex;
 
 
-class goldenmodes : public BCModel {
+class goldenmodesB : public BCModel {
 public:
     // Constructors and destructor
-    goldenmodes();
-    ~goldenmodes();
+    goldenmodesB(double & dsu3_limit);
+    ~goldenmodesB();
    //map to store all the parameters used in amplitudes
   std::map<std::string, std::vector<std::string>> channelParameters;
 

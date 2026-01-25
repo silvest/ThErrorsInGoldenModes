@@ -23,6 +23,10 @@ struct Histos {
     }
 
     void createH1D(const std::string& name, int nbins, double xmin, double xmax) {
+        if (h1d.count(name) > 0) {
+            // Histogram already exists
+            return;
+        }
         h1d[name] = new TH1D(name.c_str(), name.c_str(), nbins, xmin, xmax);
     }
 
@@ -30,6 +34,10 @@ struct Histos {
                    int nbinsx, double xmin, double xmax,
                    int nbinsy, double ymin, double ymax) {
         std::string name = name_x + "_vs_" + name_y;
+        if (h2d.count(name) > 0) {
+            // Histogram already exists
+            return;
+        }
         h2d[name] = new TH2D(name.c_str(), name.c_str(), 
                              nbinsx, xmin, xmax, nbinsy, ymin, ymax);
     }
