@@ -55,7 +55,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     // measurements
 
-    // BRBdjpsik0
+    //Bdjpsik0
+
+    // BR measurements
     data.push_back(dato(9.02e-4, 0.10e-4, 0.26e-4)); // Belle:2019xld
     data.push_back(dato(8.1e-4, 0.9e-4, 0.6e-4));    // Belle:2019avj
     data.push_back(dato(8.85e-4, 1.35e-4, 0.1e-4));  // BaBar:2007esv
@@ -72,7 +74,90 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    // BRBdjpsip0
+    // CP asymmetries
+
+    //uncorrelated data first
+
+    //CBdjpsik0s
+    meas.insert(pair<string, dato>("CBdjpsik0s", dato(0.005, 0.021, 0.037))); //Belle:2012paq
+
+    //SBdjpsik0s
+    data.push_back(dato(0.670, 0.029, 0.013));  ////Belle:2012paq
+    data.push_back(dato(0.57, 0.58, 0.06)); //Belle:2012teq
+    data.push_back(dato(0.775, 0.425)); //CDF:1999ijp
+    data.push_back(dato(0.73, 0.93, 0.16)); //ALEPH:2000jem
+    data.push_back(dato(3.1, 1.9, 0.5)); //OPAL:1998mtm
+
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("SBdjpsik0s");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //Correlated Measurements
+    std::vector<dato> CorrData;
+    TMatrixDSym CorrStat(2);
+    TMatrixDSym CorrSyst(2);
+    std::vector<std::string> names;
+
+
+    //Bdjpsik0s : C and S observables from LHCb:2023zcp
+    CorrData.push_back(dato(0.010, 0.012));  // C observable
+    names.push_back("CBdjpsik0s");
+    CorrData.push_back(dato(0.726, 0.014)); // S observable
+    names.push_back("SBdjpsik0s");
+
+
+// Populate the correlation matrix
+    CorrStat(0, 0) = 1.;       // Variance for C
+    CorrStat(1, 1) = 1.;       // Variance for S
+    CorrStat(0, 1) = 0.41;      // Correlation between C and S
+    CorrStat(1, 0) = 0.41;      // Symmetric part (same as Corr(0, 1))
+
+
+// Insert correlated data into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsik0s_LHCb2023",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bdjpsik0s_LHCb2023", names));
+    CorrData.clear();
+    names.clear();
+
+    //Bdjpsik0s : C and S observables from Belle-II:2024lwr
+    CorrData.push_back(dato(-0.035, 0.026, 0.029));  // C observable
+    names.push_back("CBdjpsik0s");
+    CorrData.push_back(dato(0.724, 0.035, 0.009)); // S observable
+    names.push_back("SBdjpsik0s");
+
+
+// Populate the correlation matrix
+    CorrStat(0, 0) = 1.;       //
+    CorrStat(1, 1) = 1.;
+    CorrStat(0, 1) = -0.09;      // Correlation between C and S
+    CorrStat(1, 0) = -0.09;      // Symmetric part (same as Corr(0, 1))
+
+
+    // Populate the correlation matrix
+    CorrSyst(0, 0) = 1.;       //
+    CorrSyst(1, 1) = 1.;
+    CorrSyst(0, 1) = 0.;      // Correlation between C and S
+    CorrSyst(1, 0) = 0.;      // Symmetric part (same as Corr(0, 1))
+
+
+// Insert correlated data into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsik0s_BelleII2024",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bdjpsik0s_BelleII2024", names));
+    CorrData.clear();
+    names.clear();
+
+    //CBdjpsik0l
+    meas.insert(pair<string, dato>("CBdjpsik0l", dato(-0.031, 0.026, 0.029))); //Belle:2012paq
+    //SBdjpsik0l
+    meas.insert(pair<string, dato>("SBdjpsik0l", dato(0.642, 0.047, 0.021))); //Belle:2012paq
+
+    // Bdjpsip0
+
+    // BR measurements
     data.push_back(dato(2.00e-5, 0.12e-5, 0.09e-5));              // Belle-II:2024hqw
     data.push_back(dato(1.670e-5, 0.077e-5, 0.069e-5, 0.095e-5)); // LHCb:2024ier
     data.push_back(dato(1.62e-5, 0.11e-5, 0.06e-5));              // Belle:2018nxw
@@ -85,6 +170,77 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
+
+    // CBdjpsip0
+
+    data.push_back(dato(0.155, 0.14, 0.035));  ////Belle:2018nxw
+    data.push_back(dato(0.13, 0.12, 0.03)); //Belle-II:2024hqw
+
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("CBdjpsip0");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //SBdjpsip0
+    data.push_back(dato(-0.59, 0.19, 0.03));  ////Belle:2018nxw
+    data.push_back(dato(-0.88, 0.17, 0.03)); //Belle-II:2024hqw
+
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("SBdjpsip0");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //Bdjpsip0 : C and S observables from BaBar:2008kfx
+    CorrData.push_back(dato(-0.20, 0.19, 0.03));  // C observable
+    names.push_back("CBdjpsip0");
+    CorrData.push_back(dato(-1.23, 0.21, 0.04)); // S observable
+    names.push_back("SBdjpsip0");
+
+
+// Populate the correlation matrix
+    CorrStat(0, 0) = 1.;       //
+    CorrStat(1, 1) = 1.;
+    CorrStat(0, 1) = 0.197;      // Correlation between C and S
+    CorrStat(1, 0) = 0.197;      // Symmetric part (same as Corr(0, 1))
+
+
+    // Populate the correlation matrix
+    CorrSyst(0, 0) = 1.;       //
+    CorrSyst(1, 1) = 1.;
+    CorrSyst(0, 1) = 0.;      // Correlation between C and S
+    CorrSyst(1, 0) = 0.;      // Symmetric part (same as Corr(0, 1))
+
+
+// Insert correlated data for BaBar:2008kfx into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsip0_BaBar2008",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bdjpsip0_BaBar2008", names));
+    CorrData.clear();
+    names.clear();
+
+    // Bdjpsieta 
+
+    // BR measurements
+    data.push_back(dato(1.23e-6, 0.27e-6, 0.11e-6)); // Belle:2008ekf
+    data.push_back(dato(1.27e-6, 0.41e-6, 0.23e-6)); // BaBar:2008mso
+
+    pdgaverage.setData(data);
+    pdgaverage.setName("BRBdjpsieta");
+    pdgaverage.CalculateAverage();
+
+    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+    data.clear();
+
+    //ACPBdjpsieta - Direct CP asymmetry for Bd->J/psi eta
+    meas.insert(pair<string, dato>("ACPBdjpsieta", dato(0.03, 0.11, 0.02))); //Belle:2008ekf
+
+
 
     // BRBdjpsiom
     data.push_back(dato(1.9e-5, 0.6e-5, 0.1e-5));    // LHCb:2014vbo
@@ -162,17 +318,6 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBdjpsirh");
-    pdgaverage.CalculateAverage();
-
-    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
-    data.clear();
-
-    // BRBdjpsieta - SU(3) partner to K0 and pi0 channels
-    data.push_back(dato(1.23e-6, 0.27e-6, 0.11e-6)); // Belle:2008ekf
-    data.push_back(dato(1.27e-6, 0.41e-6, 0.23e-6)); // BaBar:2008mso
-
-    pdgaverage.setData(data);
-    pdgaverage.setName("BRBdjpsieta");
     pdgaverage.CalculateAverage();
 
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
@@ -290,59 +435,12 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     // ACP measurments
 
-    // CBdjpsip0
-
-    data.push_back(dato(0.13
-    data.push_back(dato(0.155, 0.14, 0.035));  ////Belle:2018nxw
-    data.push_back(dato(0.13, 0.12, 0.03)); //Belle-II:2024hqw
-
-
-    pdgaverage.setData(data);
-    pdgaverage.setName("CBdjpsip0");
-    pdgaverage.CalculateAverage();
-
-    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
-    data.clear();
-
-    //SBdjpsip0
-    data.push_back(dato(-0.59, 0.19, 0.03));  ////Belle:2018nxw
-    data.push_back(dato(-0.88, 0.17, 0.03)); //Belle-II:2024hqw
-
-
-    pdgaverage.setData(data);
-    pdgaverage.setName("SBdjpsip0");
-    pdgaverage.CalculateAverage();
-
-    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
-    data.clear();
-
-    meas.insert(pair<string, dato>("CBdjpsik0s", dato(0.005, 0.021, 0.037))); //Belle:2012paq
-
-
-    //SBdjpsik0s
-    data.push_back(dato(0.670, 0.029, 0.013));  ////Belle:2012paq
-    data.push_back(dato(0.57, 0.58, 0.06)); //Belle:2012teq
-    data.push_back(dato(0.775, 0.425)); //CDF:1999ijp
-    data.push_back(dato(0.73, 0.93, 0.16)); //ALEPH:2000jem
-    data.push_back(dato(3.1, 1.9, 0.5)); //OPAL:1998mtm
-
-
-    pdgaverage.setData(data);
-    pdgaverage.setName("SBdjpsik0s");
-    pdgaverage.CalculateAverage();
-
-    meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
-    data.clear();
-
-
-
-    meas.insert(pair<string, dato>("CBdjpsik0l", dato(-0.031, 0.026, 0.029))); //Belle:2012paq
-    meas.insert(pair<string, dato>("SBdjpsik0l", dato(0.642, 0.047, 0.021))); //Belle:2012paq
-
 
     //SBsjpsik0s
     meas.insert(pair<string, dato>("SBsjpsik0s", dato(-0.08, 0.40, 0.08))); //LHCb:2015brj
     meas.insert(pair<string, dato>("CBsjpsik0s", dato(-0.28, 0.41, 0.08))); //LHCb:2015brj
+
+
 
     //CBsjpsieta - Time-dependent CP asymmetry for Bs->J/psi eta
     meas.insert(pair<string, dato>("CBsjpsieta", dato(-0.19, 0.16, 0.03))); //LHCb:2012fcs
@@ -407,9 +505,6 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     //ACPBdjpsirh - Direct CP asymmetry for Bd->J/psi rho
     meas.insert(pair<string, dato>("ACPBdjpsirh", dato(0.01, 0.08, 0.02))); //LHCb:2014vbo
-
-    //ACPBdjpsieta - Direct CP asymmetry for Bd->J/psi eta
-    meas.insert(pair<string, dato>("ACPBdjpsieta", dato(0.03, 0.11, 0.02))); //Belle:2008ekf
 
     //ACPBsjpsiph - Direct CP asymmetry for Bs->J/psi phi
     data.push_back(dato(0.0039, 0.0030, 0.0010)); //LHCb:2017hbp
@@ -562,83 +657,14 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     //------------------------------------------------
 
-    //Correlated Measurements
-    std::vector<dato> CorrData;
-    TMatrixDSym CorrStat(2);
-    TMatrixDSym CorrSyst(2);
 
-
-    //Bdjpsik0s : C and S observables from LHCb:2023zcp
-    CorrData.push_back(dato(0.010, 0.012));  // C observable
-    CorrData.push_back(dato(0.726, 0.014)); // S observable
-
-
-// Populate the correlation matrix
-    CorrStat(0, 0) = 1.;       // Variance for C
-    CorrStat(1, 1) = 1.;       // Variance for S
-    CorrStat(0, 1) = 0.41;      // Correlation between C and S
-    CorrStat(1, 0) = 0.41;      // Symmetric part (same as Corr(0, 1))
-
-
-// Insert correlated data into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsik0s_LHCb2023",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
-
-    CorrData.clear();
-
-
-    //Bdjpsik0 : C and S observables from Belle-II:2024lwr
-    CorrData.push_back(dato(-0.035, 0.026, 0.029));  // C observable
-    CorrData.push_back(dato(0.724, 0.035, 0.009)); // S observable
-
-
-// Populate the correlation matrix
-    CorrStat(0, 0) = 1.;       //
-    CorrStat(1, 1) = 1.;
-    CorrStat(0, 1) = -0.09;      // Correlation between C and S
-    CorrStat(1, 0) = -0.09;      // Symmetric part (same as Corr(0, 1))
-
-
-    // Populate the correlation matrix
-    CorrSyst(0, 0) = 1.;       //
-    CorrSyst(1, 1) = 1.;
-    CorrSyst(0, 1) = 0.;      // Correlation between C and S
-    CorrSyst(1, 0) = 0.;      // Symmetric part (same as Corr(0, 1))
-
-
-// Insert correlated data into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsik0s_BelleII2024",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
-
-    CorrData.clear();
-
-
-    //Bdjpsip0 : C and S observables from BaBar:2008kfx
-    CorrData.push_back(dato(-0.20, 0.19, 0.03));  // C observable
-    CorrData.push_back(dato(-1.23, 0.21, 0.04)); // S observable
-
-
-// Populate the correlation matrix
-    CorrStat(0, 0) = 1.;       //
-    CorrStat(1, 1) = 1.;
-    CorrStat(0, 1) = 0.197;      // Correlation between C and S
-    CorrStat(1, 0) = 0.197;      // Symmetric part (same as Corr(0, 1))
-
-
-    // Populate the correlation matrix
-    CorrSyst(0, 0) = 1.;       //
-    CorrSyst(1, 1) = 1.;
-    CorrSyst(0, 1) = 0.;      // Correlation between C and S
-    CorrSyst(1, 0) = 0.;      // Symmetric part (same as Corr(0, 1))
-
-
-// Insert correlated data for BaBar:2008kfx into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsip0_BaBar2008",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
-
-    CorrData.clear();
 
     //C and S for Bdjpsirh from LHCb:2014xpr
 
     CorrData.push_back(dato(-0.0605, 0.056, 0.0165));  // C observable
+    names.push_back("CBdjpsirh");
     CorrData.push_back(dato(-0.652, 0.125, 0.06)); // S observable
+    names.push_back("SBdjpsirh");
 
 
 // Populate the correlation matrix
@@ -650,12 +676,15 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
 // Insert correlated data into corrmeas
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsirh_LHCb2014",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
-
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bdjpsirh_LHCb2014", names));
     CorrData.clear();
+    names.clear();
 
     //C and S for Bdjpsiom from Belle:2007hnp
     CorrData.push_back(dato(-0.19, 0.17, 0.03));  // C observable
+    names.push_back("CBdjpsiom");
     CorrData.push_back(dato(0.76, 0.24, 0.04)); // S observable
+    names.push_back("SBdjpsiom");
 
 // Populate the correlation matrix
     CorrStat(0, 0) = 1.;       //
@@ -671,12 +700,15 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
 // Insert correlated data into corrmeas
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsiom_Belle2007",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
-
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bdjpsiom_Belle2007", names));
     CorrData.clear();
+    names.clear();
 
     //C and S for Bdjpsieta from Belle:2008ekf
     CorrData.push_back(dato(-0.09, 0.18, 0.02));  // C observable
+    names.push_back("CBdjpsieta");
     CorrData.push_back(dato(0.65, 0.21, 0.03)); // S observable
+    names.push_back("SBdjpsieta");
 
 // Populate the correlation matrix
     CorrStat(0, 0) = 1.;       //
@@ -692,12 +724,15 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
 // Insert correlated data into corrmeas
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsieta_Belle2008",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
-
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bdjpsieta_Belle2008", names));
     CorrData.clear();
+    names.clear();
 
     //C and S for Bdjpsietap from Belle:2008ekf
     CorrData.push_back(dato(0.08, 0.21, 0.03));  // C observable
+    names.push_back("CBdjpsietap");
     CorrData.push_back(dato(0.62, 0.23, 0.04)); // S observable
+    names.push_back("SBdjpsietap");
 
 // Populate the correlation matrix
     CorrStat(0, 0) = 1.;       //
@@ -713,12 +748,15 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
 // Insert correlated data into corrmeas
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsietap_Belle2008",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
-
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bdjpsietap_Belle2008", names));
     CorrData.clear();
+    names.clear();
 
     //C and S for Bsjpsieta from LHCb:2012fcs
     CorrData.push_back(dato(-0.19, 0.16, 0.03));  // C observable
+    names.push_back("CBsjpsieta");
     CorrData.push_back(dato(0.82, 0.21, 0.04)); // S observable
+    names.push_back("SBsjpsieta");
 
 // Populate the correlation matrix
     CorrStat(0, 0) = 1.;       //
@@ -734,18 +772,24 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
 // Insert correlated data into corrmeas
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bsjpsieta_LHCb2012",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
-
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bsjpsieta_LHCb2012", names));
     CorrData.clear();
-
+    names.clear();
 
     //CP violating observables Bsjpsiph from LHCb:2023sim
     TMatrixDSym Corr(6);
     CorrData.push_back(dato(-0.031, 0.018)); //phi_s
+    names.push_back("phis_Bsjpsiph");
     CorrData.push_back(dato(0.990, 0.010)); //lambda
+    names.push_back("lambda_Bsjpsiph");
     CorrData.push_back(dato(0.2471, 0.0031)); //f_perp
+    names.push_back("f_perp_Bsjpsiph");
     CorrData.push_back(dato(0.5175, 0.0035)); //f0
+    names.push_back("f0_Bsjpsiph");
     CorrData.push_back(dato(2.94, 0.07)); //g_perp - g_0
+    names.push_back("g_perp_minus_g_0_Bsjpsiph");
     CorrData.push_back(dato(3.150, 0.062)); //g_par - g_0
+    names.push_back("g_par_minus_g_0_Bsjpsiph");
 
     Corr(1,1) = Corr(0,0) = Corr(2,2) = Corr(3,3) = Corr(4,4) = Corr(5,5) = 1.;
     Corr(1,0) = Corr(0,1) = -0.01;
@@ -765,16 +809,23 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     Corr(4,5) = Corr(5,4) = 0.2;
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("phi_lambda_Bsjpsiph_LHCb2023",CorrelatedGaussianObservables(CorrData, Corr)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("phi_lambda_Bsjpsiph_LHCb2023", names));
+    names.clear();
     CorrData.clear();
 
     //phi and lambda for ATLAS:2020lbz solution B
     TMatrixDSym Corr5(5);
 
     CorrData.push_back(dato(-0.081, 0.041, 0.022)); //phi_s
+    names.push_back("phis_Bsjpsiph");
     CorrData.push_back(dato(0.2213, 0.0019, 0.0023)); //f_paral
+    names.push_back("f_paral_Bsjpsiph");
     CorrData.push_back(dato(0.5131, 0.0013, 0.0038)); //f0
+    names.push_back("f0_Bsjpsiph");
     CorrData.push_back(dato(2.91, 0.11, 0.06)); //g_perp - g_0
+    names.push_back("g_perp_minus_g_0_Bsjpsiph");
     CorrData.push_back(dato(2.94, 0.05, 0.09)); //g_par - g_0
+    names.push_back("g_par_minus_g_0_Bsjpsiph");
 
     Corr5(1,1) = Corr5(0,0) = Corr5(2,2) = Corr5(3,3) = Corr5(4,4) = 1.;
     Corr5(1,0) = Corr5(0,1) = -0.003;
@@ -789,17 +840,25 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     Corr5(3,4) = Corr5(4,3) = 0.254;
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("phi_Bsjpsiph_ATLAS2020B",CorrelatedGaussianObservables(CorrData, Corr5)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("phi_Bsjpsiph_ATLAS2020B", names));
+    names.clear();
     CorrData.clear();
 
 
     //CP violating observables Bsjpsiph from LHCb:2021wte
 
     CorrData.push_back(dato(0.00, 0.28, 0.07)); //phi_s
+    names.push_back("phis_Bsjpsiph");
     CorrData.push_back(dato(0.885, 0.014, 0.031)); //lambda
+    names.push_back("lambda_Bsjpsiph");
     CorrData.push_back(dato(0.234, 0.034, 0.008)); //f_perp
+    names.push_back("f_perp_Bsjpsiph");
     CorrData.push_back(dato(0.530, 0.029, 0.013)); //f0
+    names.push_back("f0_Bsjpsiph");
     CorrData.push_back(dato(2.415, 0.425, 0.100)); //g_perp - g_0
+    names.push_back("g_perp_minus_g_0_Bsjpsiph");
     CorrData.push_back(dato(3.115, 0.075, 0.060)); //g_par - g_0
+    names.push_back("g_par_minus_g_0_Bsjpsiph");
 
     Corr(1,1) = Corr(0,0) = Corr(2,2) = Corr(3,3) = Corr(4,4) = Corr(5,5) = 1.;
     Corr(1,0) = Corr(0,1) = 0.15;
@@ -819,16 +878,23 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     Corr(4,5) = Corr(5,4) = -0.03;
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("phi_lambda_Bsjpsiph_LHCb2021",CorrelatedGaussianObservables(CorrData, Corr)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("phi_lambda_Bsjpsiph_LHCb2021", names));
+    names.clear();
     CorrData.clear();
 
     //CP violating observables Bsjpsiph from CMS:2020efq
     //TMatrixDSym Corr5(5,5);
 
     CorrData.push_back(dato(-0.021, 0.044, 0.010)); //phi_s
+    names.push_back("phis_Bsjpsiph");
     CorrData.push_back(dato(0.2393, 0.0050, 0.0037)); //f_perp
+    names.push_back("f_perp_Bsjpsiph");
     CorrData.push_back(dato(0.5289, 0.0038, 0.0041)); //f0
+    names.push_back("f0_Bsjpsiph");
     CorrData.push_back(dato(2.78, 0.15, 0.06)); //g_perp - g_0
+    names.push_back("g_perp_minus_g_0_Bsjpsiph");
     CorrData.push_back(dato(3.19, 0.12, 0.04)); //g_par - g_0
+    names.push_back("g_par_minus_g_0_Bsjpsiph");
 
     Corr5(1,1) = Corr5(0,0) = Corr5(2,2) = Corr5(3,3) = Corr5(4,4) = 1.;
     Corr5(1,0) = Corr5(0,1) = -0.01;
@@ -844,12 +910,16 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("phi_Bsjpsiph_CMS2020",CorrelatedGaussianObservables(CorrData, Corr5)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("phi_Bsjpsiph_CMS2020", names));
+    names.clear();
     CorrData.clear();
 
 
     //phi and lambda for Bsjpsiph from LHCb:2019sgv
     CorrData.push_back(dato(0.002, 0.044, 0.012));  // phi
+    names.push_back("phis_Bsjpsiph");
     CorrData.push_back(dato(0.949, 0.036, 0.019)); // lambda
+    names.push_back("lambda_Bsjpsiph");
 
 
 // Populate the correlation matrix
@@ -866,12 +936,16 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     CorrSyst(1, 0) = 0.;      // Symmetric part (same as Corr(0, 1))
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("phi_lambda_Bsjpsiph_LHCb2019",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("phi_lambda_Bsjpsiph_LHCb2019", names));
+    names.clear();
 
     CorrData.clear();
 
     //phi and lmbda for Bsjpsiph from LHCb:2017hbp
     CorrData.push_back(dato(-0.025, 0.044, 0.008));  // phi
+    names.push_back("phis_Bsjpsiph");
     CorrData.push_back(dato(0.978, 0.013, 0.003)); // lambda
+    names.push_back("lambda_Bsjpsiph");
 
 
 // Populate the correlation matrix
@@ -888,16 +962,23 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     CorrSyst(1, 0) = 0.;      // Symmetric part (same as Corr(0, 1))
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("phi_lambda_Bsjpsiph_LHCb2017",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("phi_lambda_Bsjpsiph_LHCb2017", names));
+    names.clear();
 
     CorrData.clear();
 
     //CP violating observables Bsjpsiph from ATLAS:2016pno
 
     CorrData.push_back(dato(-0.110, 0.082, 0.042)); //phi_s
+    names.push_back("phis_Bsjpsiph");
     CorrData.push_back(dato(0.230, 0.005, 0.006)); //f_paral
+    names.push_back("f_paral_Bsjpsiph");
     CorrData.push_back(dato(0.520, 0.004, 0.007)); //f0
+    names.push_back("f0_Bsjpsiph");
     CorrData.push_back(dato(4.50, 0.45, 0.30)); //g_perp - g_0
+    names.push_back("g_perp_minus_g_0_Bsjpsiph");
     CorrData.push_back(dato(3.15, 0.10, 0.05)); //g_par - g_0
+    names.push_back("g_par_minus_g_0_Bsjpsiph");
 
     Corr5(1,1) = Corr5(0,0) = Corr5(2,2) = Corr5(3,3) = Corr5(4,4) = 1.;
     Corr5(1,0) = Corr5(0,1) = 0.030;
@@ -913,15 +994,22 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("phi_Bsjpsiph_ATLAS2016",CorrelatedGaussianObservables(CorrData, Corr5)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("phi_Bsjpsiph_ATLAS2016", names));
+    names.clear();
     CorrData.clear();
 
     //CP violating observables Bsjpsiph from ATLAS:2014nmm
     //TMatrixDSym Corr4(4);
     CorrData.push_back(dato(0.12, 0.25, 0.05)); //phi_s
+    names.push_back("phis_Bsjpsiph");
     CorrData.push_back(dato(0.220, 0.008, 0.009)); //f_paral
+    names.push_back("f_paral_Bsjpsiph");
     CorrData.push_back(dato(0.529, 0.006, 0.012)); //f0
+    names.push_back("f0_Bsjpsiph");
     CorrData.push_back(dato(3.89, 0.47, 0.11)); //g_perp - g_0
+    names.push_back("g_perp_minus_g_0_Bsjpsiph");
     CorrData.push_back(dato(3.135, 0.095, 0.09)); //g_paral - g_0
+    names.push_back("g_par_minus_g_0_Bsjpsiph");
 
 
     Corr5(1,1) = Corr5(0,0) = Corr5(2,2) = Corr5(3,3) = Corr(5,5) = 1.;
@@ -938,15 +1026,21 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("phi_Bsjpsiph_ATLAS2014",CorrelatedGaussianObservables(CorrData, Corr5)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("phi_Bsjpsiph_ATLAS2014", names));
+    names.clear();
     CorrData.clear();
 
 
     //polarizations in Bdjpsikst from LHCb:2013vga
     TMatrixDSym Corr4(4);
     CorrData.push_back(dato(0.227, 0.004, 0.011)); //f_paral
+    names.push_back("f_paral_Bdjpsikst");
     CorrData.push_back(dato(0.201, 0.004, 0.008)); //f_perp
+    names.push_back("f_perp_Bdjpsikst");
     CorrData.push_back(dato(-2.94, 0.02, 0.03)); //delta_par
+    names.push_back("delta_par_Bdjpsikst");
     CorrData.push_back(dato(2.94, 0.02, 0.02)); //delta_perp
+    names.push_back("delta_perp_Bdjpsikst");
 
     Corr4(1,1) = Corr4(0,0) = Corr4(2,2) = Corr4(3,3) = 1.;
     Corr4(1,0) = Corr4(0,1) = -0.70;
@@ -958,11 +1052,15 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("polarization_Bdjpsikst_LHCb2013",CorrelatedGaussianObservables(CorrData, Corr4)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("polarization_Bdjpsikst_LHCb2013", names));
+    names.clear();
     CorrData.clear();
 
     //C and S for Bdjpsikst from BaBar:2009byl
     CorrData.push_back(dato(0.025, 0.083, 0.054));  // C observable
+    names.push_back("CBdjpsikst");
     CorrData.push_back(dato(0.601, 0.239, 0.087)); // S observable
+    names.push_back("SBdjpsikst");
 
 // Populate the correlation matrix
     CorrStat(0, 0) = 1.;       //
@@ -978,7 +1076,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
 // Insert correlated data into corrmeas
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsikst_BaBar2009",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
-
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bdjpsikst_BaBar2009", names));
+    names.clear();
     CorrData.clear();
 
 
@@ -986,12 +1085,19 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     TMatrixDSym Corr7(7);
     CorrData.push_back(dato(0.021, 0.026, 0.007)); //A0 CP
+    names.push_back("A0_CP_Bsjpsikst");
     CorrData.push_back(dato(-0.073, 0.060, 0.007)); //A_paral CP
+    names.push_back("A_paral_CP_Bsjpsikst");
     CorrData.push_back(dato(0.057, 0.049, 0.014)); //A_perp CP
+    names.push_back("A_perp_CP_Bsjpsikst");
     CorrData.push_back(dato(0.528, 0.011, 0.009)); // f0
+    names.push_back("f0_Bsjpsikst");
     CorrData.push_back(dato(0.205, 0.012, 0.005)); // f_paral
+    names.push_back("f_paral_Bsjpsikst");
     CorrData.push_back(dato(2.879, 0.085, 0.018)); //delta_paral
+    names.push_back("delta_paral_Bsjpsikst");
     CorrData.push_back(dato(0.057, 0.065, 0.018)); //delta_perp
+    names.push_back("delta_perp_Bsjpsikst");
 
     Corr7(1,1) = Corr7(0,0) = Corr7(2,2) = Corr7(3,3) = Corr7(4,4) = Corr7(5,5) = Corr7(6,6) = 1.;
     Corr7(1,0) = Corr7(0,1) = -0.16;
@@ -1017,6 +1123,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     Corr7(5,6) = Corr7(6,5) = -0.44;
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("polarization_Bsjpsikst_LHCb2025",CorrelatedGaussianObservables(CorrData, Corr)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("polarization_Bsjpsikst_LHCb2025", names));
+    names.clear();
     CorrData.clear();
 
     //----------------------------------------------------------------------
@@ -1025,7 +1133,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     //Bddpdm : C and S observables from LHCb:2024gkk (arXiv:2409.03009)
     CorrData.push_back(dato(0.128, 0.103, 0.010));  // C observable
+    names.push_back("C_Bddpdm");
     CorrData.push_back(dato(0.552, 0.100, 0.010)); // S observable
+    names.push_back("S_Bddpdm");
 
     CorrStat(0, 0) = 1.;       
     CorrStat(1, 1) = 1.;       
@@ -1038,6 +1148,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     CorrSyst(1, 0) = 0.;      
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bddpdm_LHCb2024",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bddpdm_LHCb2024", names));
+    names.clear();
     CorrData.clear();
 
     //Bsdpsdms : C and S observables from LHCb Run2 (part of arXiv:2409.03009 combination)
@@ -1045,7 +1157,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     //From LHCb Run2: C = 0.128 ± 0.103(stat) ± 0.010(syst), S = 0.552 ± 0.100(stat) ± 0.010(syst)
     //NOTE: These are for Bs→Ds⁺Ds⁻ from the same paper as Bd→D⁺D⁻
     CorrData.push_back(dato(-0.053, 0.096, 0.020));  // C observable (NOTE: Check paper for actual values)
+    names.push_back("C_Bsdpsdms");
     CorrData.push_back(dato(-0.055, 0.092, 0.021));  // S observable (NOTE: Check paper for actual values)
+    names.push_back("S_Bsdpsdms");
 
     CorrStat(0, 0) = 1.;       
     CorrStat(1, 1) = 1.;       
@@ -1058,11 +1172,15 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     CorrSyst(1, 0) = 0.;      
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bsdpsdms_LHCb2024",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bsdpsdms_LHCb2024", names));
+    names.clear();
     CorrData.clear();
 
     //ACPBpdpd0b and ACPBpdpsd0b from LHCb:2023wbb (correlated)
     dato Bpdpd0b_acp(2.5e-2, 1.0e-2, 0.4e-2, 0.3e-2);
+    names.push_back("ACP_Bpdpd0b");
     dato Bpdpsd0b_acp(0.5e-2, 0.2e-2, 0.5e-2, 0.3e-2);
+    names.push_back("ACP_Bpdpsd0b");
 
     CorrData.push_back(dato(Bpdpd0b_acp.getMean(), Bpdpd0b_acp.getSigma()));  // ACPBpdpd0b
     CorrData.push_back(dato(Bpdpsd0b_acp.getMean(), Bpdpsd0b_acp.getSigma())); // ACPBpdpsd0b
@@ -1074,6 +1192,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     Corr_ACP_charged(1, 0) = 0.386;
 
     corrmeas.insert(pair<string, CorrelatedGaussianObservables>("ACP_Bpdpd0b_Bpdpsd0b_LHCb2023",CorrelatedGaussianObservables(CorrData, Corr_ACP_charged)));
+    corrmeas_channels.insert(pair<string, std::vector<std::string>>("ACP_Bpdpd0b_Bpdpsd0b_LHCb2023", names));
+    names.clear();
     CorrData.clear();
 
     //data for the pull in newmeas
