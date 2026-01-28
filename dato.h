@@ -15,12 +15,13 @@
 class dato {
 
 public:
-    dato(double ave, double sig1, double sig2 = 0., double sig3 = 0.) {
+    dato(double ave, double sig1, double sig2 = 0., double sig3 = 0., double sig4 = 0.) {
         sigma1 = sig1;
         sigma2 = sig2;
         sigma3 = sig3;
+        sigma4 = sig4;
         mean = ave;
-        sigma = sqrt(sigma1 * sigma1 + sigma2 * sigma2 + sigma3 * sigma3);
+        sigma = sqrt(sigma1 * sigma1 + sigma2 * sigma2 + sigma3 * sigma3 + sigma4 * sigma4);
     };
 
     virtual ~dato() {
@@ -67,8 +68,13 @@ public:
         return sigma3;
     }
 
+    double getSigma4() const
+    {
+        return sigma4;
+    }
+
 private:
-    double mean, sigma, sigma1, sigma2, sigma3;
+    double mean, sigma, sigma1, sigma2, sigma3, sigma4;
 
 };
 
