@@ -48,7 +48,10 @@ public:
     std::vector<std::string> channelNamesSU3 = {"Bpjpsipp", "Bpjpsikp", "Bdjpsip0", "Bdjpsik0", "Bdjpset1", "Bdjpsiet8", "Bsjpsip0", "Bsjpsik0b", "Bsjpsiet1", "Bsjpsiet8", "Bpjpsirp", "Bpjpsikstp", "Bdjpsir0", "Bdjpsikst0", "Bdjpsiph", "Bdjpsiom", "Bsjpsir0", "Bsjpsikst0", "Bsjpsiph", "Bsjpsiom", "Bpdpd0b", "Bpdspd0b", "Bddpdm", "Bddpsdm", "Bddpsdms", "Bdd0d0b", "Bsdpdm", "Bsdpdms", "Bsdpsdms", "Bsd0d0b"};
     std::vector<std::string> vectorMesonChannels = {
         "Bpjpsirp", "Bpjpsikstp", "Bdjpsir0", "Bdjpsikst0", "Bdjpsiph", "Bdjpsiom", "Bsjpsir0", "Bsjpsikst0", "Bsjpsiph", "Bsjpsiom"};
+    std::vector<std::string> pseudoscalarMesonChannels = {"Bpjpsipp", "Bpjpsikp", "Bdjpsip0", "Bdjpsik0s", "Bdjpsik0l", "Bdjpsik0", "Bdjpsiet", "Bdjpsietp", "Bsjpsip0", "Bsjpsik0s", "Bsjpsik0l", "Bsjpsik0b", "Bsjpsiet", "Bsjpsietp"};
+    std::vector<std::string> ddbarChannels = {"Bpdpd0b", "Bpdspd0b", "Bddpdm", "Bddpsdm", "Bddpsdms", "Bdd0d0b", "Bsdpdm", "Bsdpdms", "Bsdpsdms", "Bsd0d0b"};
 
+    std::vector<std::string> channels;
 
     // global variables
     const double m_Bp = 5.27941; // B+ meson mass in GeV
@@ -225,6 +228,7 @@ private:
     map<string, std::vector<std::string>> corrmeas_channels;
     // vector to store reference amplitudes for SU(3) breaking
     std::unordered_set<std::string> referenceAmplitudes;
+    std::map<std::string, std::pair<TComplex, TComplex>> amplitude_map;
 };
 
 #endif

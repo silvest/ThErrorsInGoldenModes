@@ -37,6 +37,19 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     std::vector<dato> data;
     PDGAverage pdgaverage;
 
+    if (BJPSIP)
+    {
+        channels.insert(channels.end(), pseudoscalarMesonChannels.begin(), pseudoscalarMesonChannels.end());
+    }
+    if (BJPSIV)
+    {
+        channels.insert(channels.end(), vectorMesonChannels.begin(), vectorMesonChannels.end());
+    }
+    if (BDDb)
+    {
+        channels.insert(channels.end(), ddbarChannels.begin(), ddbarChannels.end());
+    }
+
     DeclareParameters(); // Ensure parameters are defined
 
     // Add CKM parameters directly in the constructor
@@ -56,7 +69,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     // measurements
 
     /////////////////////////////
-    //Bdjpsik0
+    // Bdjpsik0
     /////////////////////////////
 
     // BR measurements
@@ -78,11 +91,11 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     // CP asymmetries
 
-    //uncorrelated data first
+    // uncorrelated data first
 
-    //CBdjpsik0s
-    data.push_back(dato(0.005, 0.021, 0.037)); //Belle:2012paq
-    data.push_back(dato(0.026, 0.025, 0.016)); //BaBar:2009byl
+    // CBdjpsik0s
+    data.push_back(dato(0.005, 0.021, 0.037)); // Belle:2012paq
+    data.push_back(dato(0.026, 0.025, 0.016)); // BaBar:2009byl
 
     pdgaverage.setData(data);
     pdgaverage.setName("CBdjpsik0s");
@@ -90,14 +103,13 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //SBdjpsik0s
-    data.push_back(dato(0.670, 0.029, 0.013));  //Belle:2012paq
-    data.push_back(dato(0.657, 0.036, 0.012));  //BaBar:2009byl
-    data.push_back(dato(0.57, 0.58, 0.06)); //Belle:2012teq
-    data.push_back(dato(0.775, 0.425)); //CDF:1999ijp
-    data.push_back(dato(0.73, 0.93, 0.16)); //ALEPH:2000jem
-    data.push_back(dato(3.1, 1.9, 0.5)); //OPAL:1998mtm
-
+    // SBdjpsik0s
+    data.push_back(dato(0.670, 0.029, 0.013)); // Belle:2012paq
+    data.push_back(dato(0.657, 0.036, 0.012)); // BaBar:2009byl
+    data.push_back(dato(0.57, 0.58, 0.06));    // Belle:2012teq
+    data.push_back(dato(0.775, 0.425));        // CDF:1999ijp
+    data.push_back(dato(0.73, 0.93, 0.16));    // ALEPH:2000jem
+    data.push_back(dato(3.1, 1.9, 0.5));       // OPAL:1998mtm
 
     pdgaverage.setData(data);
     pdgaverage.setName("SBdjpsik0s");
@@ -106,63 +118,57 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //Correlated Measurements
+    // Correlated Measurements
     std::vector<dato> CorrData;
     TMatrixDSym CorrStat(2);
     TMatrixDSym CorrSyst(2);
     std::vector<std::string> names;
 
-
-    //Bdjpsik0s : C and S observables from LHCb:2023zcp
-    CorrData.push_back(dato(0.010, 0.012));  // C observable
+    // Bdjpsik0s : C and S observables from LHCb:2023zcp
+    CorrData.push_back(dato(0.010, 0.012)); // C observable
     names.push_back("CBdjpsik0s");
     CorrData.push_back(dato(0.726, 0.014)); // S observable
     names.push_back("SBdjpsik0s");
 
+    // Populate the correlation matrix
+    CorrStat(0, 0) = 1.;   // Variance for C
+    CorrStat(1, 1) = 1.;   // Variance for S
+    CorrStat(0, 1) = 0.41; // Correlation between C and S
+    CorrStat(1, 0) = 0.41; // Symmetric part (same as Corr(0, 1))
 
-// Populate the correlation matrix
-    CorrStat(0, 0) = 1.;       // Variance for C
-    CorrStat(1, 1) = 1.;       // Variance for S
-    CorrStat(0, 1) = 0.41;      // Correlation between C and S
-    CorrStat(1, 0) = 0.41;      // Symmetric part (same as Corr(0, 1))
-
-
-// Insert correlated data into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsik0s_LHCb2023",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    // Insert correlated data into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsik0s_LHCb2023", CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bdjpsik0s_LHCb2023", names));
     CorrData.clear();
     names.clear();
 
-    //Bdjpsik0s : C and S observables from Belle-II:2024lwr
-    CorrData.push_back(dato(-0.035, 0.026, 0.029));  // C observable
+    // Bdjpsik0s : C and S observables from Belle-II:2024lwr
+    CorrData.push_back(dato(-0.035, 0.026, 0.029)); // C observable
     names.push_back("CBdjpsik0s");
     CorrData.push_back(dato(0.724, 0.035, 0.009)); // S observable
     names.push_back("SBdjpsik0s");
 
-
-// Populate the correlation matrix
-    CorrStat(0, 0) = 1.;       //
+    // Populate the correlation matrix
+    CorrStat(0, 0) = 1.; //
     CorrStat(1, 1) = 1.;
-    CorrStat(0, 1) = -0.09;      // Correlation between C and S
-    CorrStat(1, 0) = -0.09;      // Symmetric part (same as Corr(0, 1))
-
+    CorrStat(0, 1) = -0.09; // Correlation between C and S
+    CorrStat(1, 0) = -0.09; // Symmetric part (same as Corr(0, 1))
 
     // Populate the correlation matrix
-    CorrSyst(0, 0) = 1.;       //
+    CorrSyst(0, 0) = 1.; //
     CorrSyst(1, 1) = 1.;
-    CorrSyst(0, 1) = 0.;      // Correlation between C and S
-    CorrSyst(1, 0) = 0.;      // Symmetric part (same as Corr(0, 1))
+    CorrSyst(0, 1) = 0.; // Correlation between C and S
+    CorrSyst(1, 0) = 0.; // Symmetric part (same as Corr(0, 1))
 
-
-// Insert correlated data into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsik0s_BelleII2024",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    // Insert correlated data into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsik0s_BelleII2024", CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bdjpsik0s_BelleII2024", names));
     CorrData.clear();
     names.clear();
 
-    //CBdjpsik0l
-    data.push_back(dato(-0.007, 0.026, 0.029)); //Belle:2012paq
-    data.push_back(dato(-0.033, 0.050, 0.027)); //BaBar:2009byl
+    // CBdjpsik0l
+    data.push_back(dato(-0.007, 0.026, 0.029)); // Belle:2012paq
+    data.push_back(dato(-0.033, 0.050, 0.027)); // BaBar:2009byl
 
     pdgaverage.setData(data);
     pdgaverage.setName("CBdjpsik0l");
@@ -170,9 +176,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //SBdjpsik0l
-    data.push_back(dato(0.642, 0.047, 0.021)); //Belle:2012paq
-    data.push_back(dato(0.694, 0.061, 0.031));    //BaBar:2009byl
+    // SBdjpsik0l
+    data.push_back(dato(0.642, 0.047, 0.021)); // Belle:2012paq
+    data.push_back(dato(0.694, 0.061, 0.031)); // BaBar:2009byl
 
     pdgaverage.setData(data);
     pdgaverage.setName("SBdjpsik0l");
@@ -200,9 +206,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     // CBdjpsip0
 
-    data.push_back(dato(0.155, 0.14, 0.035));  ////Belle:2018nxw
-    data.push_back(dato(0.13, 0.12, 0.03)); //Belle-II:2024hqw
-
+    data.push_back(dato(0.155, 0.14, 0.035)); ////Belle:2018nxw
+    data.push_back(dato(0.13, 0.12, 0.03));   // Belle-II:2024hqw
 
     pdgaverage.setData(data);
     pdgaverage.setName("CBdjpsip0");
@@ -211,10 +216,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //SBdjpsip0
-    data.push_back(dato(-0.59, 0.19, 0.03));  ////Belle:2018nxw
-    data.push_back(dato(-0.88, 0.17, 0.03)); //Belle-II:2024hqw
-
+    // SBdjpsip0
+    data.push_back(dato(-0.59, 0.19, 0.03)); ////Belle:2018nxw
+    data.push_back(dato(-0.88, 0.17, 0.03)); // Belle-II:2024hqw
 
     pdgaverage.setData(data);
     pdgaverage.setName("SBdjpsip0");
@@ -223,36 +227,33 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //Bdjpsip0 : C and S observables from BaBar:2008kfx
-    CorrData.push_back(dato(-0.20, 0.19, 0.03));  // C observable
+    // Bdjpsip0 : C and S observables from BaBar:2008kfx
+    CorrData.push_back(dato(-0.20, 0.19, 0.03)); // C observable
     names.push_back("CBdjpsip0");
     CorrData.push_back(dato(-1.23, 0.21, 0.04)); // S observable
     names.push_back("SBdjpsip0");
 
-
-// Populate the correlation matrix
-    CorrStat(0, 0) = 1.;       //
+    // Populate the correlation matrix
+    CorrStat(0, 0) = 1.; //
     CorrStat(1, 1) = 1.;
-    CorrStat(0, 1) = 0.197;      // Correlation between C and S
-    CorrStat(1, 0) = 0.197;      // Symmetric part (same as Corr(0, 1))
-
+    CorrStat(0, 1) = 0.197; // Correlation between C and S
+    CorrStat(1, 0) = 0.197; // Symmetric part (same as Corr(0, 1))
 
     // Populate the correlation matrix
-    CorrSyst(0, 0) = 1.;       //
+    CorrSyst(0, 0) = 1.; //
     CorrSyst(1, 1) = 1.;
-    CorrSyst(0, 1) = 0.;      // Correlation between C and S
-    CorrSyst(1, 0) = 0.;      // Symmetric part (same as Corr(0, 1))
+    CorrSyst(0, 1) = 0.; // Correlation between C and S
+    CorrSyst(1, 0) = 0.; // Symmetric part (same as Corr(0, 1))
 
-
-// Insert correlated data for BaBar:2008kfx into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsip0_BaBar2008",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    // Insert correlated data for BaBar:2008kfx into corrmeas
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsip0_BaBar2008", CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
 
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bdjpsip0_BaBar2008", names));
     CorrData.clear();
     names.clear();
 
     ////////////////////////////
-    // Bdjpsieta 
+    // Bdjpsieta
     ////////////////////////////
 
     // BR measurements
@@ -268,7 +269,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     // Ratios of BRs
 
     // BR(Bd->J/psi eta)/BR(Bs->J/psi eta)
-    data.push_back(dato(2.16e-2,0.16e-2,0.05e-2,0.07e-2)); //LHCb:2025sgp supersedes previous LHCb:2014oms
+    data.push_back(dato(2.16e-2, 0.16e-2, 0.05e-2, 0.07e-2)); // LHCb:2025sgp supersedes previous LHCb:2014oms
 
     pdgaverage.setData(data);
     pdgaverage.setName("R_Bdjpsieta_Bsjpsieta");
@@ -284,7 +285,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     // Ratios of BRs
 
     // BR(Bd->J/psi eta')/BR(Bs->J/psi eta')
-    data.push_back(dato(1.33e-2,0.12e-2,0.05e-2,0.04e-2)); //LHCb:2025sgp supersedes previous LHCb:2014oms
+    data.push_back(dato(1.33e-2, 0.12e-2, 0.05e-2, 0.04e-2)); // LHCb:2025sgp supersedes previous LHCb:2014oms
 
     pdgaverage.setData(data);
     pdgaverage.setName("R_Bdjpsietap_Bsjpsietap");
@@ -294,7 +295,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     data.clear();
 
     // BR(Bd->J/psi eta')/BR(Bd->J/psi eta)
-    data.push_back(dato(0.48,0.06,0.02,0.01)); //LHCb:2025sgp supersedes previous LHCb:2014oms
+    data.push_back(dato(0.48, 0.06, 0.02, 0.01)); // LHCb:2025sgp supersedes previous LHCb:2014oms
 
     pdgaverage.setData(data);
     pdgaverage.setName("R_Bdjpsietap_Bdjpsieta");
@@ -327,14 +328,13 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     // CP asymmetry
 
-    //ACPBpjpsikp
-    data.push_back(dato(0.09e-2, 0.27e-2, 0.07e-2)); //LHCb:2017joy
-    data.push_back(dato(5.9e-3, 3.6e-3, 0.7e-3)); //D0:2013mrm
-    data.push_back(dato(-7.6e-3, 5.0e-3, 2.2e-3)); //Belle:2010zqr
-    data.push_back(dato(90.e-3, 70.e-3, 20.e-3)); //Belle:2007oni
-    data.push_back(dato(30.e-3, 15.e-3, 6.e-3)); //BaBar:2004htr
-    data.push_back(dato(18.e-3, 43.e-3, 4.e-3)); //CLEO:2000oig
-
+    // ACPBpjpsikp
+    data.push_back(dato(0.09e-2, 0.27e-2, 0.07e-2)); // LHCb:2017joy
+    data.push_back(dato(5.9e-3, 3.6e-3, 0.7e-3));    // D0:2013mrm
+    data.push_back(dato(-7.6e-3, 5.0e-3, 2.2e-3));   // Belle:2010zqr
+    data.push_back(dato(90.e-3, 70.e-3, 20.e-3));    // Belle:2007oni
+    data.push_back(dato(30.e-3, 15.e-3, 6.e-3));     // BaBar:2004htr
+    data.push_back(dato(18.e-3, 43.e-3, 4.e-3));     // CLEO:2000oig
 
     pdgaverage.setData(data);
     pdgaverage.setName("ACPBpjpsikp");
@@ -348,7 +348,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     /////////////////////////////
 
     // BR measurements
-    data.push_back(dato(3.8e-5, 0.6e-5, 0.3e-5));    // Belle:2002oex
+    data.push_back(dato(3.8e-5, 0.6e-5, 0.3e-5)); // Belle:2002oex
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBpjpsipp");
@@ -376,8 +376,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     // CP asymmetry
 
-    //deltaA_Bpjpsipp_Bpjpsikp - Difference in ACP between pi and K modes
-    meas.insert(pair<string, dato>("deltaA_Bpjpsipp_Bpjpsikp", dato(1.42e-2, 0.43e-2, 0.08e-2))); //LHCb:2024exp
+    // deltaA_Bpjpsipp_Bpjpsikp - Difference in ACP between pi and K modes
+    meas.insert(pair<string, dato>("deltaA_Bpjpsipp_Bpjpsikp", dato(1.42e-2, 0.43e-2, 0.08e-2))); // LHCb:2024exp
 
     /////////////////////////////
     // Bsjpsip0
@@ -385,8 +385,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     // BR measurements
 
-    meas.insert(pair<string, dato>("BRBsjpsip0", dato(0.,1.2e-5/8.03*3.2))); // extrapolated from the upper limit in Belle:2023tdz
-    
+    meas.insert(pair<string, dato>("BRBsjpsip0", dato(0., 1.2e-5 / 8.03 * 3.2))); // extrapolated from the upper limit in Belle:2023tdz
+
     /////////////////////////////
     // Bsjpsik0b
     /////////////////////////////
@@ -394,23 +394,23 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     // BR measurements
 
     // BRBsjpsik0s
-    meas.insert(pair<string, dato>("BRBsjpsik0s", dato(2.06e-5, 0.08e-5, 0.06e-5, 0.07e-5,0.08e-5))); // LHCb:2021qbv
+    meas.insert(pair<string, dato>("BRBsjpsik0s", dato(2.06e-5, 0.08e-5, 0.06e-5, 0.07e-5, 0.08e-5))); // LHCb:2021qbv
 
     // ACP measurments
 
-    //Bsjpsik0s : C and S observables from LHCb:2015brj
-    CorrData.push_back(dato(0.55, 0.71, 0.06)); //LHCb:2015brj
+    // Bsjpsik0s : C and S observables from LHCb:2015brj
+    CorrData.push_back(dato(0.55, 0.71, 0.06)); // LHCb:2015brj
     names.push_back("SBsjpsik0s");
-    CorrData.push_back(dato(-0.28, 0.41, 0.08)); //LHCb:2015brj
+    CorrData.push_back(dato(-0.28, 0.41, 0.08)); // LHCb:2015brj
     names.push_back("CBsjpsik0s");
     // Populate the correlation matrix
-    CorrStat(0, 0) = 1.;       //
+    CorrStat(0, 0) = 1.; //
     CorrStat(1, 1) = 1.;
-    CorrStat(0, 1) = -0.06;     // Correlation
-    CorrStat(1, 0) = -0.06;     // Symmetric part (same as Corr(0, 1))
-    CorrSyst = TMatrixD(TMatrixD::kIdentity,2); // No systematic correlation available in the paper
+    CorrStat(0, 1) = -0.06;                      // Correlation
+    CorrStat(1, 0) = -0.06;                      // Symmetric part (same as Corr(0, 1))
+    CorrSyst = TMatrixD(TMatrixD::kIdentity, 2); // No systematic correlation available in the paper
     // Insert correlated data into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bsjpsik0s_LHCb2015",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bsjpsik0s_LHCb2015", CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bsjpsik0s_LHCb2015", names));
     CorrData.clear();
     names.clear();
@@ -421,8 +421,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     // BR measurements
 
-    // BRBsjpsieta 
-    meas.insert(pair<string, dato>("BRBsjpsieta", dato(5.27e-4, 0.50e-4, 0.25e-4, 0.97e-4))); //Chang:2012gnb with symmetrized errors
+    // BRBsjpsieta
+    meas.insert(pair<string, dato>("BRBsjpsieta", dato(5.27e-4, 0.50e-4, 0.25e-4, 0.97e-4))); // Chang:2012gnb with symmetrized errors
 
     // Ratios of BRs
 
@@ -435,8 +435,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     // BR ratio measurements
 
     // R_Bsjpsietap_Bsjpsieta
-    data.push_back(dato(0.80,0.02,0.02,0.01)); //LHCb:2025sgp
-    data.push_back(dato(0.73,0.14,0.02)); //Chang:2012gnb
+    data.push_back(dato(0.80, 0.02, 0.02, 0.01)); // LHCb:2025sgp
+    data.push_back(dato(0.73, 0.14, 0.02));       // Chang:2012gnb
 
     pdgaverage.setData(data);
     pdgaverage.setName("R_Bsjpsietap_Bsjpsieta");
@@ -446,7 +446,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     data.clear();
 
     // R_Bsjpsietap_Bsjpsiphi
-    meas.insert(pair<string, dato>("R_Bsjpsietap_Bsjpsiphi", dato(0.370,0.013,0.018,0.011))); //LHCb:2025sgp
+    meas.insert(pair<string, dato>("R_Bsjpsietap_Bsjpsiphi", dato(0.370, 0.013, 0.018, 0.011))); // LHCb:2025sgp
 
     /////////////////////////////
     // Bsjpsiph
@@ -466,25 +466,25 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     // Correlated data sets for polarization fractions and CP asymmetries
 
-    //LHCb:2023sim (Run 1+2 combined)
+    // LHCb:2023sim (Run 1+2 combined)
 
-    CorrData.push_back(dato(-0.044, 0.020));  //phi_s
+    CorrData.push_back(dato(-0.044, 0.020)); // phi_s
     names.push_back("phi_Bsjpsiph");
-    CorrData.push_back(dato(0.990, 0.010));   //lambda
+    CorrData.push_back(dato(0.990, 0.010)); // lambda
     names.push_back("lambda_Bsjpsiph");
-    CorrData.push_back(dato(0.2471, 0.0032)); //f_perp
+    CorrData.push_back(dato(0.2471, 0.0032)); // f_perp
     names.push_back("f_perp_Bsjpsiph");
-    CorrData.push_back(dato(0.5175, 0.0035)); //f_0
+    CorrData.push_back(dato(0.5175, 0.0035)); // f_0
     names.push_back("f_0_Bsjpsiph");
-    CorrData.push_back(dato(2.924, 0.076));     //delta_perp - delta_0
+    CorrData.push_back(dato(2.924, 0.076)); // delta_perp - delta_0
     names.push_back("delta_perp_Bsjpsiph");
-    CorrData.push_back(dato(3.150, 0.062));     //delta_paral - delta_0
+    CorrData.push_back(dato(3.150, 0.062)); // delta_paral - delta_0
     names.push_back("delta_paral_Bsjpsiph");
 
     // Populate the correlation matrix
     TMatrixDSym CorrPhis(6);
     CorrPhis(0, 0) = 1.;
-    CorrPhis(0, 1) = CorrPhis(1, 0 ) = -0.01;
+    CorrPhis(0, 1) = CorrPhis(1, 0) = -0.01;
     CorrPhis(0, 2) = CorrPhis(2, 0) = -0.01;
     CorrPhis(0, 3) = CorrPhis(3, 0) = -0.01;
     CorrPhis(0, 4) = CorrPhis(4, 0) = 0.04;
@@ -506,24 +506,24 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     CorrPhis(5, 5) = 1.;
 
     // Insert correlated data into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bsjpsiph_LHCb2023sim",CorrelatedGaussianObservables(CorrData, CorrPhis)));
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bsjpsiph_LHCb2023sim", CorrelatedGaussianObservables(CorrData, CorrPhis)));
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("Bsjpsiph_LHCb2023sim", names));
     CorrData.clear();
     names.clear();
 
-    //CMS:2024znt (Run 1+2 combined)
+    // CMS:2024znt (Run 1+2 combined)
 
-    CorrData.push_back(dato(-0.074, 0.023));  //phi_s
+    CorrData.push_back(dato(-0.074, 0.023)); // phi_s
     names.push_back("phi_Bsjpsiph");
-    CorrData.push_back(dato(1.011, 0.019));   //lambda
+    CorrData.push_back(dato(1.011, 0.019)); // lambda
     names.push_back("lambda_Bsjpsiph");
-    CorrData.push_back(dato(0.5273, 0.0044)); //f_0
+    CorrData.push_back(dato(0.5273, 0.0044)); // f_0
     names.push_back("f_0_Bsjpsiph");
-    CorrData.push_back(dato(0.2417, 0.0036)); //f_perp
+    CorrData.push_back(dato(0.2417, 0.0036)); // f_perp
     names.push_back("f_perp_Bsjpsiph");
-    CorrData.push_back(dato(3.152, 0.077));     //delta_paral - delta_0
+    CorrData.push_back(dato(3.152, 0.077)); // delta_paral - delta_0
     names.push_back("delta_paral_Bsjpsiph");
-    CorrData.push_back(dato(2.940, 0.098));       //delta_perp - delta_0
+    CorrData.push_back(dato(2.940, 0.098)); // delta_perp - delta_0
     names.push_back("delta_perp_Bsjpsiph");
 
     // Populate the correlation matrix
@@ -550,42 +550,41 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     CorrPhis(5, 5) = 1.;
 
     // Insert correlated data into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bsjpsiph_CMS2024znt",CorrelatedGaussianObservables(CorrData, CorrPhis)));
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bsjpsiph_CMS2024znt", CorrelatedGaussianObservables(CorrData, CorrPhis)));
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("Bsjpsiph_CMS2024znt", names));
     CorrData.clear();
     names.clear();
 
-    //phi and lambda for ATLAS:2020lbz solution B
+    // phi and lambda for ATLAS:2020lbz solution B
     TMatrixDSym Corr5(5);
 
-    CorrData.push_back(dato(-0.081, 0.041, 0.022)); //phi_s
+    CorrData.push_back(dato(-0.081, 0.041, 0.022)); // phi_s
     names.push_back("phis_Bsjpsiph");
-    CorrData.push_back(dato(0.2213, 0.0019, 0.0023)); //f_paral
+    CorrData.push_back(dato(0.2213, 0.0019, 0.0023)); // f_paral
     names.push_back("f_paral_Bsjpsiph");
-    CorrData.push_back(dato(0.5131, 0.0013, 0.0038)); //f0
+    CorrData.push_back(dato(0.5131, 0.0013, 0.0038)); // f0
     names.push_back("f0_Bsjpsiph");
-    CorrData.push_back(dato(2.91, 0.11, 0.06)); //g_perp - g_0
+    CorrData.push_back(dato(2.91, 0.11, 0.06)); // g_perp - g_0
     names.push_back("g_perp_minus_g_0_Bsjpsiph");
-    CorrData.push_back(dato(2.94, 0.05, 0.09)); //g_par - g_0
+    CorrData.push_back(dato(2.94, 0.05, 0.09)); // g_par - g_0
     names.push_back("g_par_minus_g_0_Bsjpsiph");
 
-    Corr5(1,1) = Corr5(0,0) = Corr5(2,2) = Corr5(3,3) = Corr5(4,4) = 1.;
-    Corr5(1,0) = Corr5(0,1) = -0.003;
-    Corr5(2,0) = Corr5(0,2) = -0.004;
-    Corr5(3,0) = Corr5(0,3) = 0.004;
-    Corr5(4,0) = Corr5(0,4) = 0.007;
-    Corr5(1,2) = Corr5(2,1) = -0.341;
-    Corr5(1,3) = Corr5(3,1) = 0.133;
-    Corr5(1,4) = Corr5(4,1) = 0.522;
-    Corr5(2,3) = Corr5(3,2) = -0.034;
-    Corr5(2,4) = Corr5(4,2) = -0.103;
-    Corr5(3,4) = Corr5(4,3) = 0.254;
+    Corr5(1, 1) = Corr5(0, 0) = Corr5(2, 2) = Corr5(3, 3) = Corr5(4, 4) = 1.;
+    Corr5(1, 0) = Corr5(0, 1) = -0.003;
+    Corr5(2, 0) = Corr5(0, 2) = -0.004;
+    Corr5(3, 0) = Corr5(0, 3) = 0.004;
+    Corr5(4, 0) = Corr5(0, 4) = 0.007;
+    Corr5(1, 2) = Corr5(2, 1) = -0.341;
+    Corr5(1, 3) = Corr5(3, 1) = 0.133;
+    Corr5(1, 4) = Corr5(4, 1) = 0.522;
+    Corr5(2, 3) = Corr5(3, 2) = -0.034;
+    Corr5(2, 4) = Corr5(4, 2) = -0.103;
+    Corr5(3, 4) = Corr5(4, 3) = 0.254;
 
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("phi_Bsjpsiph_ATLAS2020B",CorrelatedGaussianObservables(CorrData, Corr5)));
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("phi_Bsjpsiph_ATLAS2020B", CorrelatedGaussianObservables(CorrData, Corr5)));
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("phi_Bsjpsiph_ATLAS2020B", names));
     names.clear();
     CorrData.clear();
-
 
     /////////////////////////////
     // Bsjpsiom
@@ -601,23 +600,23 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     meas.insert(pair<string, dato>("BRBsjpsikbst", dato(4.13e-5, 0.12e-5, 0.07e-5, 0.14e-5, 0.45e-5))); // LHCb:2013lka
 
-    //Angular analysis measurements: polarization fractions and CP asymmetries
-    // LHCb:2025vrr (Use only run 2 since no correlation matrix is given for the combined Run 1+2)
+    // Angular analysis measurements: polarization fractions and CP asymmetries
+    //  LHCb:2025vrr (Use only run 2 since no correlation matrix is given for the combined Run 1+2)
 
     TMatrixDSym CorrBsjpsikbst(7);
-    CorrData.push_back(dato(0.014, 0.030)); //A_CP_0
-    names.push_back("Acp_0_Bsjpsikbst");
-    CorrData.push_back(dato(-0.055, 0.066));  //A_CP_paral
-    names.push_back("Acp_paral_Bsjpsikbst");
-    CorrData.push_back(dato(0.060, 0.059));  //A_CP_perp
-    names.push_back("Acp_perp_Bsjpsikbst");
-    CorrData.push_back(dato(2.879,0.087)); //delta_paral - delta_0
-    names.push_back("delta_paral_Bsjpsikbst");
-    CorrData.push_back(dato(0.057,0.068)); //delta_perp - delta_0
-    names.push_back("delta_perp_Bsjpsikbst");
-    CorrData.push_back(dato(0.534,0.015)); //f_0
+    CorrData.push_back(dato(0.014, 0.030)); // A_CP_0
+    names.push_back("ACPBsjpsikbst_0");
+    CorrData.push_back(dato(-0.055, 0.066)); // A_CP_paral
+    names.push_back("ACPBsjpsikbst_paral");
+    CorrData.push_back(dato(0.060, 0.059)); // A_CP_perp
+    names.push_back("ACPBsjpsikbst_perp");
+    CorrData.push_back(dato(2.879, 0.087)); // delta_paral - delta_0
+    names.push_back("delta_Bsjpsikbst_paral");
+    CorrData.push_back(dato(0.057, 0.068)); // delta_perp - delta_0
+    names.push_back("delta_Bsjpsikbst_perp");
+    CorrData.push_back(dato(0.534, 0.015)); // f_0
     names.push_back("f_0_Bsjpsikbst");
-    CorrData.push_back(dato(0.211,0.015)); //f_perp
+    CorrData.push_back(dato(0.211, 0.015)); // f_perp
     names.push_back("f_perp_Bsjpsikbst");
 
     // Populate the correlation matrix
@@ -642,7 +641,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     CorrBsjpsikbst(3, 3) = 1.;
     CorrBsjpsikbst(3, 4) = CorrBsjpsikbst(4, 3) = 0.69;
     CorrBsjpsikbst(3, 5) = CorrBsjpsikbst(5, 3) = -0.09;
-    CorrBsjpsikbst(3, 6) = CorrBsjpsikbst(6, 3) =  0.05;
+    CorrBsjpsikbst(3, 6) = CorrBsjpsikbst(6, 3) = 0.05;
     CorrBsjpsikbst(4, 4) = 1.;
     CorrBsjpsikbst(4, 5) = CorrBsjpsikbst(5, 4) = -0.03;
     CorrBsjpsikbst(4, 6) = CorrBsjpsikbst(6, 4) = 0.0;
@@ -651,7 +650,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     CorrBsjpsikbst(6, 6) = 1.;
 
     // Insert correlated data into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bsjpsikbst_LHCb2025",CorrelatedGaussianObservables(CorrData, CorrBsjpsikbst)));
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bsjpsikbst_LHCb2025", CorrelatedGaussianObservables(CorrData, CorrBsjpsikbst)));
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("Bsjpsikbst_LHCb2025", names));
     CorrData.clear();
     names.clear();
@@ -670,16 +669,16 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     meas.insert(pair<string, dato>("BRBdjpsiom", dato(2.16e-5, 0.30e-5, 0.14e-5))); // Belle-II:2024fgp
 
-    //Ratios of BRs
-    // R_Bdjpsiom_Bdjpsirho from LHCb:2012cw
+    // Ratios of BRs
+    //  R_Bdjpsiom_Bdjpsirho from LHCb:2012cw
     meas.insert(pair<string, dato>("R_Bdjpsiom_Bdjpsirho", dato(0.86, 0.19, 0.10))); // LHCb:2012cw
 
-    //Transversity fractions and phases from LHCb:2014vbo
-    meas.insert(pair<string, dato>("f_0_Bdjpsiom", dato(0.405, 0.14, 0.035))); // LHCb:2014vbo
-    meas.insert(pair<string, dato>("f_paral_Bdjpsiom", dato(0.58, 0.135, 0.035))); // LHCb:2014vbo
-    meas.insert(pair<string, dato>("delta_paral_Bdjpsiom-delta_0_Bdjpsirho", dato(123.5/180.*M_PI, 13.7/180.*M_PI))); // LHCb:2014vbo
-    meas.insert(pair<string, dato>("delta_perp_Bdjpsiom-delta_perp_Bdjpsirho", dato(227.4/180.*M_PI, 84.9/180.*M_PI))); // LHCb:2014vbo
-    meas.insert(pair<string, dato>("delta_0_Bdjpsiom-delta_0_Bdjpsirho", dato(268.8/180.*M_PI, 11.9/180.*M_PI))); // LHCb:2014vbo
+    // Transversity fractions and phases from LHCb:2014vbo
+    meas.insert(pair<string, dato>("f_0_Bdjpsiom", dato(0.405, 0.14, 0.035)));                                                  // LHCb:2014vbo
+    meas.insert(pair<string, dato>("f_paral_Bdjpsiom", dato(0.58, 0.135, 0.035)));                                              // LHCb:2014vbo
+    meas.insert(pair<string, dato>("delta_paral_Bdjpsiom-delta_0_Bdjpsirho", dato(123.5 / 180. * M_PI, 13.7 / 180. * M_PI)));   // LHCb:2014vbo
+    meas.insert(pair<string, dato>("delta_perp_Bdjpsiom-delta_perp_Bdjpsirho", dato(227.4 / 180. * M_PI, 84.9 / 180. * M_PI))); // LHCb:2014vbo
+    meas.insert(pair<string, dato>("delta_0_Bdjpsiom-delta_0_Bdjpsirho", dato(268.8 / 180. * M_PI, 11.9 / 180. * M_PI)));       // LHCb:2014vbo
 
     /////////////////////////////
     // Bdjpsikst
@@ -703,9 +702,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //ACPBdjpsikst - Direct CP asymmetry for Bd->J/psi K*
-    data.push_back(dato(-0.01, 0.04, 0.02)); //Belle:2014nuw
-    data.push_back(dato(0.030, 0.058, 0.012)); //BaBar:2009byl
+    // ACPBdjpsikst - Direct CP asymmetry for Bd->J/psi K*
+    data.push_back(dato(-0.01, 0.04, 0.02));   // Belle:2014nuw
+    data.push_back(dato(0.030, 0.058, 0.012)); // BaBar:2009byl
 
     pdgaverage.setData(data);
     pdgaverage.setName("ACPBdjpsikst");
@@ -714,19 +713,17 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
+    // polarization
 
-    //polarization
-
-    //f_0 Bdjpsikst
-    data.push_back(dato(0.587, 0.011)); //D0:2008nly
-    data.push_back(dato(0.556, 0.009, 0.010)); //BaBar:2007rbr
-    data.push_back(dato(0.562, 0.026, 0.018)); //CDF:2004dxr
-    data.push_back(dato(0.574, 0.012, 0.009)); //Belle:2005qtf
-    data.push_back(dato(0.59, 0.06, 0.01)); //CDF:2000edf
-    data.push_back(dato(0.52, 0.07, 0.04)); //CLEO:1997ilq
-    data.push_back(dato(0.65, 0.10, 0.04)); //CDF:1995kwt
-    data.push_back(dato(0.97, 0.16, 0.15)); //ARGUS:1994rms
-
+    // f_0 Bdjpsikst
+    data.push_back(dato(0.587, 0.011));        // D0:2008nly
+    data.push_back(dato(0.556, 0.009, 0.010)); // BaBar:2007rbr
+    data.push_back(dato(0.562, 0.026, 0.018)); // CDF:2004dxr
+    data.push_back(dato(0.574, 0.012, 0.009)); // Belle:2005qtf
+    data.push_back(dato(0.59, 0.06, 0.01));    // CDF:2000edf
+    data.push_back(dato(0.52, 0.07, 0.04));    // CLEO:1997ilq
+    data.push_back(dato(0.65, 0.10, 0.04));    // CDF:1995kwt
+    data.push_back(dato(0.97, 0.16, 0.15));    // ARGUS:1994rms
 
     pdgaverage.setData(data);
     pdgaverage.setName("f_0_Bdjpsikst");
@@ -735,10 +732,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //f_paral Bdjpsikst
-    data.push_back(dato(0.230, 0.013, 0.025)); //D0:2008nly
-    data.push_back(dato(0.211, 0.010, 0.006)); //BaBar:2007rbr
-
+    // f_paral Bdjpsikst
+    data.push_back(dato(0.230, 0.013, 0.025)); // D0:2008nly
+    data.push_back(dato(0.211, 0.010, 0.006)); // BaBar:2007rbr
 
     pdgaverage.setData(data);
     pdgaverage.setName("f_paral_Bdjpsikst");
@@ -747,11 +743,10 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //f_perp Bdjpsikst
-    data.push_back(dato(0.233, 0.010, 0.005)); //BaBar:2007rbr
-    data.push_back(dato(0.215, 0.032, 0.006)); //CDF:2004dxr
-    data.push_back(dato(0.195, 0.012, 0.008)); //Belle:2005qtf
-
+    // f_perp Bdjpsikst
+    data.push_back(dato(0.233, 0.010, 0.005)); // BaBar:2007rbr
+    data.push_back(dato(0.215, 0.032, 0.006)); // CDF:2004dxr
+    data.push_back(dato(0.195, 0.012, 0.008)); // Belle:2005qtf
 
     pdgaverage.setData(data);
     pdgaverage.setName("f_perp_Bdjpsikst");
@@ -760,10 +755,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //delta_paral Bdjpsikst
-    data.push_back(dato(-2.69, 0.08, 0.11)); //D0:2008nly
-    data.push_back(dato(-2.93, 0.08, 0.04)); //BaBar:2007rbr
-
+    // delta_paral Bdjpsikst
+    data.push_back(dato(-2.69, 0.08, 0.11)); // D0:2008nly
+    data.push_back(dato(-2.93, 0.08, 0.04)); // BaBar:2007rbr
 
     pdgaverage.setData(data);
     pdgaverage.setName("delta_paral_Bdjpsikst");
@@ -772,10 +766,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //delta_perp Bdjpsikst
-    data.push_back(dato(3.21, 0.06, 0.06)); //D0:2008nly
-    data.push_back(dato(2.91, 0.05, 0.03)); //BaBar:2007rbr
-
+    // delta_perp Bdjpsikst
+    data.push_back(dato(3.21, 0.06, 0.06)); // D0:2008nly
+    data.push_back(dato(2.91, 0.05, 0.03)); // BaBar:2007rbr
 
     pdgaverage.setData(data);
     pdgaverage.setName("delta_perp_Bdjpsikst");
@@ -784,18 +777,16 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-
-    
     // Polarization fractions and phases from LHCb:2013vga
 
     TMatrixDSym CorrBdjpsikst(4);
-    CorrData.push_back(dato(0.227, sqrt(0.004*0.004+0.011*0.011))); //f_paral
+    CorrData.push_back(dato(0.227, sqrt(0.004 * 0.004 + 0.011 * 0.011))); // f_paral
     names.push_back("f_paral_Bdjpsikst");
-    CorrData.push_back(dato(0.201, sqrt(0.004*0.004+0.008*0.008))); //f_perp
+    CorrData.push_back(dato(0.201, sqrt(0.004 * 0.004 + 0.008 * 0.008))); // f_perp
     names.push_back("f_perp_Bdjpsikst");
-    CorrData.push_back(dato(-2.94, sqrt(0.02*0.02+0.03*0.03))); //delta_paral - delta_0
+    CorrData.push_back(dato(-2.94, sqrt(0.02 * 0.02 + 0.03 * 0.03))); // delta_paral - delta_0
     names.push_back("delta_paral_Bdjpsikst");
-    CorrData.push_back(dato(2.94, sqrt(0.02*0.02+0.02*0.02))); //delta_perp - delta_0
+    CorrData.push_back(dato(2.94, sqrt(0.02 * 0.02 + 0.02 * 0.02))); // delta_perp - delta_0
     names.push_back("delta_perp_Bdjpsikst");
 
     // Populate the correlation matrix
@@ -811,22 +802,22 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     CorrBdjpsikst(3, 3) = 1.;
 
     // Insert correlated data into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bdjpsikst_LHCb2013",CorrelatedGaussianObservables(CorrData, CorrBdjpsikst)));
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bdjpsikst_LHCb2013", CorrelatedGaussianObservables(CorrData, CorrBdjpsikst)));
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("Bdjpsikst_LHCb2013", names));
     CorrData.clear();
     names.clear();
 
     // CP asymmetries from LHCb:2013vga
-    meas.insert(pair<string, dato>("ACP_fparal_Bdjpsikst", dato(-0.011, 0.016, 0.005))); // LHCb:2013vga
-    meas.insert(pair<string, dato>("ACP_fperp_Bdjpsikst", dato(0.032, 0.018, 0.003)));  // LHCb:2013vga
-    meas.insert(pair<string, dato>("ACP_delta_paral_Bdjpsikst", dato(-0.003, 0.007, 0.002))); // LHCb:2013vga
-    meas.insert(pair<string, dato>("ACP_delta_perp_Bdjpsikst", dato(0.003, 0.005, 0.001)));  // LHCb:2013vga
+    meas.insert(pair<string, dato>("ACPfparal_Bdjpsikst", dato(-0.011, 0.016, 0.005)));       // LHCb:2013vga
+    meas.insert(pair<string, dato>("ACPPfperp_Bdjpsikst", dato(0.032, 0.018, 0.003)));        // LHCb:2013vga
+    meas.insert(pair<string, dato>("ACPPdelta_paral_Bdjpsikst", dato(-0.003, 0.007, 0.002))); // LHCb:2013vga
+    meas.insert(pair<string, dato>("ACPPdelta_perp_Bdjpsikst", dato(0.003, 0.005, 0.001)));   // LHCb:2013vga
 
-    //CBdjpsikst
-    meas.insert(pair<string, dato>("CBdjpsikst", dato(0.025, 0.083, 0.054))); //BaBar:2009byl
+    // CBdjpsikst
+    meas.insert(pair<string, dato>("CBdjpsikst", dato(0.025, 0.083, 0.054))); // BaBar:2009byl
 
-    //SBdjpsikst
-    meas.insert(pair<string, dato>("SBdjpsikst", dato(0.601, 0.239, 0.087))); //BaBar:2009byl
+    // SBdjpsikst
+    meas.insert(pair<string, dato>("SBdjpsikst", dato(0.601, 0.239, 0.087))); // BaBar:2009byl
 
     /////////////////////////////
     // Bdjpsirh
@@ -843,20 +834,20 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //CP violation for the different polarizations of Bdjpsirh from LHCb:2014xpr
+    // CP violation for the different polarizations of Bdjpsirh from LHCb:2014xpr
 
-    CorrData.push_back(dato(-0.047, 0.034, 0.011)); //Alpha_0
-    names.push_back("Acp_0_Bdjpsirh");
-    CorrData.push_back(dato(-0.060, 0.060, 0.007)); //Alpha_paral
-    names.push_back("Acp_paral_Bdjpsirh");
-    CorrData.push_back(dato(0.020, 0.109, 0.018)); //Alpha_perp
-    names.push_back("Acp_perp_Bdjpsirh");
-    CorrData.push_back(dato(-3.3/180.*M_PI, 7.2/180.*M_PI, 1.7/180.*M_PI)); //2beta_perp - 2beta_0
-    names.push_back("2beta_perp_Bdjpsirh-2beta_0_Bdjpsirh");
-    CorrData.push_back(dato(-0.5/180.*M_PI, 6.5/180.*M_PI, 1.6/180.*M_PI)); //2beta_paral - 2beta_0
-    names.push_back("2beta_paral_Bdjpsirh-2beta_0_Bdjpsirh");
-    CorrData.push_back(dato(42.1/180.*M_PI, 10.2/180.*M_PI, 5.0/180.*M_PI)); //2beta_0
-    names.push_back("2beta_0_Bdjpsirh");
+    CorrData.push_back(dato(-0.047, 0.034, 0.011)); // Alpha_0
+    names.push_back("ACPBdjpsirh_0");
+    CorrData.push_back(dato(-0.060, 0.060, 0.007)); // Alpha_paral
+    names.push_back("ACPBdjpsirh_paral");
+    CorrData.push_back(dato(0.020, 0.109, 0.018)); // Alpha_perp
+    names.push_back("ACPBdjpsirh_perp");
+    CorrData.push_back(dato(-3.3 / 180. * M_PI, 7.2 / 180. * M_PI, 1.7 / 180. * M_PI)); // 2beta_perp - 2beta_0
+    names.push_back("2beta_Bdjpsirh_perp-2beta_Bdjpsirh_0");
+    CorrData.push_back(dato(-0.5 / 180. * M_PI, 6.5 / 180. * M_PI, 1.6 / 180. * M_PI)); // 2beta_paral - 2beta_0
+    names.push_back("2beta_Bdjpsirh_paral-2beta_Bdjpsirh_0");
+    CorrData.push_back(dato(42.1 / 180. * M_PI, 10.2 / 180. * M_PI, 5.0 / 180. * M_PI)); // 2beta_0
+    names.push_back("2beta_Bdjpsirh_0");
     // Populate the correlation matrix
     TMatrixDSym CorrBdjpsirh(6);
 
@@ -883,7 +874,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     CorrBdjpsirh(5, 5) = 1.;
 
     // Insert correlated data into corrmeas
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bdjpsirh_LHCb2014xpr",CorrelatedGaussianObservables(CorrData, CorrBdjpsirh)));
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bdjpsirh_LHCb2014xpr", CorrelatedGaussianObservables(CorrData, CorrBdjpsirh)));
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("Bdjpsirh_LHCb2014xpr", names));
     CorrData.clear();
     names.clear();
@@ -893,21 +884,21 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     /////////////////////////////
 
     // BRBdjpsiphi
-    meas.insert(pair<string, dato>("BRBdjpsiphi", dato(6.8e-8, 3.0e-8, 0.9e-8))); //LHCb:2020xjm
+    meas.insert(pair<string, dato>("BRBdjpsiphi", dato(6.8e-8, 3.0e-8, 0.9e-8))); // LHCb:2020xjm
 
     /////////////////////////////
     // Bpjpsikst
     /////////////////////////////
 
     // BRBpjpsikst
-    meas.insert(pair<string, dato>("BRBpjpsikst", dato(1.43e-3, 0.08e-3))); //PDGlive 1/2025
+    meas.insert(pair<string, dato>("BRBpjpsikst", dato(1.43e-3, 0.08e-3))); // PDGlive 1/2025
 
     // polarization fractions from Belle:2005qtf
-    meas.insert(pair<string, dato>("f_0_Bpjpsikst", dato(0.604, 0.015, 0.018))); //Belle:2005qtf
-    meas.insert(pair<string, dato>("f_perp_Bpjpsikst", dato(0.180, 0.014, 0.010))); //Belle:2005qtf
+    meas.insert(pair<string, dato>("f_0_Bpjpsikst", dato(0.604, 0.015, 0.018)));    // Belle:2005qtf
+    meas.insert(pair<string, dato>("f_perp_Bpjpsikst", dato(0.180, 0.014, 0.010))); // Belle:2005qtf
 
     // CP asymmetry from BaBar:2004htr
-    meas.insert(pair<string, dato>("ACPBpjpsikst", dato(0.048, 0.029, 0.016))); //BaBar:2004htr
+    meas.insert(pair<string, dato>("ACPBpjpsikst", dato(0.048, 0.029, 0.016))); // BaBar:2004htr
 
     /////////////////////////////
     // Bpjpsirho
@@ -915,7 +906,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     // BRBpjpsirho
     data.push_back(dato(3.81e-5, 0.25e-5, 0.35e-5)); // LHCb:2018pil
-    data.push_back(dato(5.0e-5, 0.7e-5, 0.31e-5));     // BaBar:2007yvx
+    data.push_back(dato(5.0e-5, 0.7e-5, 0.31e-5));   // BaBar:2007yvx
 
     pdgaverage.setData(data);
     pdgaverage.setName("BRBpjpsirho");
@@ -923,10 +914,10 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    // CP asymmetry 
+    // CP asymmetry
 
     data.push_back(dato(-0.045, 0.056, 0.008)); // LHCb:2018pil
-    data.push_back(dato(-0.11, 0.12, 0.08));     // BaBar:2007yvx
+    data.push_back(dato(-0.11, 0.12, 0.08));    // BaBar:2007yvx
 
     pdgaverage.setData(data);
     pdgaverage.setName("ACPBpjpsirho");
@@ -987,9 +978,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
     data.clear();
 
-    //ACPBpdpd0b (B⁺→D⁺D̄⁰)
-    data.push_back(dato(0.00, 0.08, 0.02)); //Belle:2008doh
-    data.push_back(dato(-0.13, 0.14, 0.02));  //BaBar:2006uih
+    // ACPBpdpd0b (B⁺→D⁺D̄⁰)
+    data.push_back(dato(0.00, 0.08, 0.02));  // Belle:2008doh
+    data.push_back(dato(-0.13, 0.14, 0.02)); // BaBar:2006uih
 
     pdgaverage.setData(data);
     pdgaverage.setName("ACPBpdpd0b");
@@ -1002,67 +993,67 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     // B→DD Correlated CP measurements
     //----------------------------------------------------------------------
 
-    //Bddpdm : C and S observables from LHCb:2024gkk (arXiv:2409.03009)
-    CorrData.push_back(dato(0.128, 0.103, 0.010));  // C observable
+    // Bddpdm : C and S observables from LHCb:2024gkk (arXiv:2409.03009)
+    CorrData.push_back(dato(0.128, 0.103, 0.010)); // C observable
     names.push_back("C_Bddpdm");
     CorrData.push_back(dato(0.552, 0.100, 0.010)); // S observable
     names.push_back("S_Bddpdm");
 
-    CorrStat(0, 0) = 1.;       
-    CorrStat(1, 1) = 1.;       
-    CorrStat(0, 1) = -0.472;      // Correlation between C and S
-    CorrStat(1, 0) = -0.472;      
+    CorrStat(0, 0) = 1.;
+    CorrStat(1, 1) = 1.;
+    CorrStat(0, 1) = -0.472; // Correlation between C and S
+    CorrStat(1, 0) = -0.472;
 
-    CorrSyst(0, 0) = 1.;       
-    CorrSyst(1, 1) = 1.;       
-    CorrSyst(0, 1) = 0.;      
-    CorrSyst(1, 0) = 0.;      
+    CorrSyst(0, 0) = 1.;
+    CorrSyst(1, 1) = 1.;
+    CorrSyst(0, 1) = 0.;
+    CorrSyst(1, 0) = 0.;
 
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bddpdm_LHCb2024",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bddpdm_LHCb2024", CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bddpdm_LHCb2024", names));
     names.clear();
     CorrData.clear();
 
-    //Bsdpsdms : C and S observables from LHCb Run2 (part of arXiv:2409.03009 combination)
-    //We use C and S instead of phi_s and lambda to avoid using pre-averaged values
-    //From LHCb Run2: C = 0.128 ± 0.103(stat) ± 0.010(syst), S = 0.552 ± 0.100(stat) ± 0.010(syst)
-    //NOTE: These are for Bs→Ds⁺Ds⁻ from the same paper as Bd→D⁺D⁻
-    CorrData.push_back(dato(-0.053, 0.096, 0.020));  // C observable (NOTE: Check paper for actual values)
+    // Bsdpsdms : C and S observables from LHCb Run2 (part of arXiv:2409.03009 combination)
+    // We use C and S instead of phi_s and lambda to avoid using pre-averaged values
+    // From LHCb Run2: C = 0.128 ± 0.103(stat) ± 0.010(syst), S = 0.552 ± 0.100(stat) ± 0.010(syst)
+    // NOTE: These are for Bs→Ds⁺Ds⁻ from the same paper as Bd→D⁺D⁻
+    CorrData.push_back(dato(-0.053, 0.096, 0.020)); // C observable (NOTE: Check paper for actual values)
     names.push_back("C_Bsdpsdms");
-    CorrData.push_back(dato(-0.055, 0.092, 0.021));  // S observable (NOTE: Check paper for actual values)
+    CorrData.push_back(dato(-0.055, 0.092, 0.021)); // S observable (NOTE: Check paper for actual values)
     names.push_back("S_Bsdpsdms");
 
-    CorrStat(0, 0) = 1.;       
-    CorrStat(1, 1) = 1.;       
-    CorrStat(0, 1) = 0.;      // Correlation coefficient (CHECK PAPER)
-    CorrStat(1, 0) = 0.;      
+    CorrStat(0, 0) = 1.;
+    CorrStat(1, 1) = 1.;
+    CorrStat(0, 1) = 0.; // Correlation coefficient (CHECK PAPER)
+    CorrStat(1, 0) = 0.;
 
-    CorrSyst(0, 0) = 1.;       
-    CorrSyst(1, 1) = 1.;       
-    CorrSyst(0, 1) = 0.;      
-    CorrSyst(1, 0) = 0.;      
+    CorrSyst(0, 0) = 1.;
+    CorrSyst(1, 1) = 1.;
+    CorrSyst(0, 1) = 0.;
+    CorrSyst(1, 0) = 0.;
 
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bsdpsdms_LHCb2024",CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bsdpsdms_LHCb2024", CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("CS_Bsdpsdms_LHCb2024", names));
     names.clear();
     CorrData.clear();
 
-    //ACPBpdpd0b and ACPBpdpsd0b from LHCb:2023wbb (correlated)
+    // ACPBpdpd0b and ACPBpdpsd0b from LHCb:2023wbb (correlated)
     dato Bpdpd0b_acp(2.5e-2, 1.0e-2, 0.4e-2, 0.3e-2);
-    names.push_back("ACP_Bpdpd0b");
+    names.push_back("ACPBpdpd0b");
     dato Bpdpsd0b_acp(0.5e-2, 0.2e-2, 0.5e-2, 0.3e-2);
-    names.push_back("ACP_Bpdpsd0b");
+    names.push_back("ACPBpdpsd0b");
 
-    CorrData.push_back(dato(Bpdpd0b_acp.getMean(), Bpdpd0b_acp.getSigma()));  // ACPBpdpd0b
+    CorrData.push_back(dato(Bpdpd0b_acp.getMean(), Bpdpd0b_acp.getSigma()));   // ACPBpdpd0b
     CorrData.push_back(dato(Bpdpsd0b_acp.getMean(), Bpdpsd0b_acp.getSigma())); // ACPBpdpsd0b
 
     TMatrixDSym Corr_ACP_charged(2);
     Corr_ACP_charged(0, 0) = 1.0;
     Corr_ACP_charged(1, 1) = 1.0;
-    Corr_ACP_charged(0, 1) = 0.386;  // Correlation from LHCb:2023wbb
+    Corr_ACP_charged(0, 1) = 0.386; // Correlation from LHCb:2023wbb
     Corr_ACP_charged(1, 0) = 0.386;
 
-    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("ACP_Bpdpd0b_Bpdpsd0b_LHCb2023",CorrelatedGaussianObservables(CorrData, Corr_ACP_charged)));
+    corrmeas.insert(pair<string, CorrelatedGaussianObservables>("ACP_Bpdpd0b_Bpdpsd0b_LHCb2023", CorrelatedGaussianObservables(CorrData, Corr_ACP_charged)));
     corrmeas_channels.insert(pair<string, std::vector<std::string>>("ACP_Bpdpd0b_Bpdpsd0b_LHCb2023", names));
     names.clear();
     CorrData.clear();
@@ -1071,7 +1062,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     // Create histograms for all observables
 
-    for (const auto& channel : channelNamesSU3) {
+    for (const auto &channel : channelNamesSU3)
+    {
         // create histos for mod and phase as well as real and imaginary parts for the effective parameters
         for (const auto &param : channelParameters[channel])
         {
@@ -1079,7 +1071,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
             std::string newStr;
             size_t length = param.length();
 
-            newStr.reserve(length + 1); 
+            newStr.reserve(length + 1);
 
             if (param.ends_with("_re"))
             {
@@ -1097,7 +1089,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         // Branching ratio (BR)
         if (meas.find("BR" + channel) != meas.end())
         {
-                histos.createH1D("BR_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("BR_" + channel, 500, 0.0, 0.0);
         }
 
         // ACP, C, and S observables
@@ -1107,21 +1099,21 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         }
         if (meas.find("C" + channel) != meas.end())
         {
-                histos.createH1D("C_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("C_" + channel, 500, 0.0, 0.0);
         }
         if (meas.find("S" + channel) != meas.end())
         {
             histos.createH1D("S_" + channel, 500, 0.0, 0.0);
         }
-
     }
 
-    for (const auto& channel : channelNames) {
+    for (const auto &channel : channelNames)
+    {
 
         // Branching ratio (BR)
         if (meas.find("BR" + channel) != meas.end())
         {
-                histos.createH1D("BR_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("BR_" + channel, 500, 0.0, 0.0);
         }
 
         // ACP, C, and S observables
@@ -1131,17 +1123,17 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         }
         if (meas.find("C" + channel) != meas.end())
         {
-                histos.createH1D("C_" + channel, 500, 0.0, 0.0);
+            histos.createH1D("C_" + channel, 500, 0.0, 0.0);
         }
         if (meas.find("S" + channel) != meas.end())
         {
             histos.createH1D("S_" + channel, 500, 0.0, 0.0);
         }
-
     }
 
     // Create histograms for correlated observables (from corrmeas)
-    for (auto& pair : corrmeas) {
+    for (auto &pair : corrmeas)
+    {
         const auto &corr_key = pair.first;
         auto &corrObservable = pair.second;
 
@@ -1164,26 +1156,26 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
                 histos.createH1D("ACP_" + channels[i], 500, 0.0, 0.0);
             }
         }
-      }
-	    histos.createH1D("phi_Bsjpsiph", 500, 0.0, 0.0);
-        histos.createH1D("f_perp_Bsjpsiph", 500, 0.0, 0.0);
-        histos.createH1D("f_paral_Bsjpsiph", 500, 0.0, 0.0);
-        histos.createH1D("f_0_Bsjpsiph", 500, 0.0, 0.0);
-        histos.createH1D("delta_perp_Bsjpsiph", 500, 0.0, 0.0);
-        histos.createH1D("delta_paral_Bsjpsiph", 500, 0.0, 0.0);
-	    histos.createH1D("lambda_Bsjpsiph", 500, 0.0, 0.0);
-        histos.createH1D("f_perp_Bdjpsikst", 500, 0.0, 0.0);
-        histos.createH1D("f_paral_Bdjpsikst", 500, 0.0, 0.0);
-        histos.createH1D("f_0_Bdjpsikst", 500, 0.0, 0.0);
-        histos.createH1D("delta_perp_Bdjpsikst", 500, 0.0, 0.0);
-        histos.createH1D("delta_paral_Bdjpsikst", 500, 0.0, 0.0);
-        histos.createH1D("f_paral_Bsjpsikst", 500, 0.0, 0.0);
-        histos.createH1D("f_0_Bsjpsikst", 500, 0.0, 0.0);
-        histos.createH1D("delta_perp_Bsjpsikst", 500, 0.0, 0.0);
-        histos.createH1D("delta_paral_Bsjpsikst", 500, 0.0, 0.0);
-        histos.createH1D("A0_CP_Bsjpsikst", 500, 0.0, 0.0);
-        histos.createH1D("Aperp_CP_Bsjpsikst", 500, 0.0, 0.0);
-        histos.createH1D("Aparal_CP_Bsjpsikst", 500, 0.0, 0.0);
+    }
+    histos.createH1D("phi_Bsjpsiph", 500, 0.0, 0.0);
+    histos.createH1D("f_perp_Bsjpsiph", 500, 0.0, 0.0);
+    histos.createH1D("f_paral_Bsjpsiph", 500, 0.0, 0.0);
+    histos.createH1D("f_0_Bsjpsiph", 500, 0.0, 0.0);
+    histos.createH1D("delta_perp_Bsjpsiph", 500, 0.0, 0.0);
+    histos.createH1D("delta_paral_Bsjpsiph", 500, 0.0, 0.0);
+    histos.createH1D("lambda_Bsjpsiph", 500, 0.0, 0.0);
+    histos.createH1D("f_perp_Bdjpsikst", 500, 0.0, 0.0);
+    histos.createH1D("f_paral_Bdjpsikst", 500, 0.0, 0.0);
+    histos.createH1D("f_0_Bdjpsikst", 500, 0.0, 0.0);
+    histos.createH1D("delta_perp_Bdjpsikst", 500, 0.0, 0.0);
+    histos.createH1D("delta_paral_Bdjpsikst", 500, 0.0, 0.0);
+    histos.createH1D("f_paral_Bsjpsikst", 500, 0.0, 0.0);
+    histos.createH1D("f_0_Bsjpsikst", 500, 0.0, 0.0);
+    histos.createH1D("delta_perp_Bsjpsikst", 500, 0.0, 0.0);
+    histos.createH1D("delta_paral_Bsjpsikst", 500, 0.0, 0.0);
+    histos.createH1D("A0_CP_Bsjpsikst", 500, 0.0, 0.0);
+    histos.createH1D("Aperp_CP_Bsjpsikst", 500, 0.0, 0.0);
+    histos.createH1D("Aparal_CP_Bsjpsikst", 500, 0.0, 0.0);
 }
 
 //---------------------------------------------------------------
@@ -2447,11 +2439,8 @@ Parameter goldenmodesB::get_amplitude(const std::string &channel)
         base_channel = channel.substr(0, channel.find("_perp"));
     }
 
-    // Compute the decay amplitude for the base channel if not already computed
-    if (amplitudes.find(base_channel) == amplitudes.end())
-    {
-        compute_decay_amplitudes(base_channel, false);
-    }
+    // Compute the decay amplitude for the base channel
+    compute_decay_amplitudes(base_channel, false);
 
     // Check if the specific requested amplitude exists
     it = amplitudes.find(channel);
@@ -2495,12 +2484,8 @@ Parameter goldenmodesB::get_conjugate_amplitude(const std::string &channel)
         base_channel = channel.substr(0, channel.find("_perp"));
     }
 
-    // Compute the conjugate decay amplitude for the base channel if not already computed
-    if (amplitudes.find(base_channel) == amplitudes.end())
-    {
-        compute_decay_amplitudes(base_channel, true);
-    }
-
+    // Compute the conjugate decay amplitude for the base channel
+    compute_decay_amplitudes(base_channel, true);
     // Check if the specific conjugate amplitude exists
     it = amplitudes.find(channel);
     if (it == amplitudes.end())
@@ -2685,7 +2670,7 @@ double goldenmodesB::CalculateBR(Parameter amplitude, const std::string &channel
     double p = sqrt(mass_term1 * mass_term2) / (2.0 * m_B);
 
     // Compute the decay width (Γ)
-    double decay_width = (std::pow(G_F, 2) / (32.0 * M_PI * h_t)) * (p / std::pow(m_B, 2)) * std::norm(amplitude);
+    double decay_width = (G_F * G_F / (32.0 * M_PI * h_t)) * (p / (m_B * m_B)) * amplitude.Abs2();
 
     // Compute the branching ratio using the B meson's lifetime
     double lifetime = getBMesonLifetime(bMeson);
@@ -2705,8 +2690,8 @@ double goldenmodesB::CalculateBR(Parameter amplitude, const std::string &channel
 double goldenmodesB::CalculateAcp(const Parameter &amplitude, const Parameter &conjugate_amplitude) const
 {
     // Ensure amplitudes are non-zero to avoid division errors
-    double A2 = std::norm(amplitude);
-    double Abar2 = std::norm(conjugate_amplitude);
+    double A2 = amplitude.Abs2();
+    double Abar2 = conjugate_amplitude.Abs2();
 
     if (A2 + Abar2 == 0)
     {
@@ -2734,12 +2719,12 @@ double goldenmodesB::CalculateC(const Parameter &amplitude, const Parameter &con
         q_p *= ckm.get_q_p_KS(); // Multiply by q/p for K0 mixing
     }
 
-    // Get CP eigenvalue for the channel (ensure it exists)
-    if (cpEigenvalue.find(channel) == cpEigenvalue.end())
-    {
-        throw std::runtime_error("Error: CalculateC - CP eigenvalue missing for channel: " + channel);
-    }
-    double eta = cpEigenvalue.at(channel);
+    // // Get CP eigenvalue for the channel (ensure it exists)
+    // if (cpEigenvalue.find(channel) == cpEigenvalue.end())
+    // {
+    //     throw std::runtime_error("Error: CalculateC - CP eigenvalue missing for channel: " + channel);
+    // }
+    // double eta = cpEigenvalue.at(channel);
 
     // Compute λ (lambda) = η * (q/p) * (A_conjugate / A)
     if (std::abs(amplitude) == 0)
@@ -2751,7 +2736,7 @@ double goldenmodesB::CalculateC(const Parameter &amplitude, const Parameter &con
     TComplex lambda = eta * q_p * (conjugate_amplitude / amplitude);
 
     // Compute C observable: C = (1 - |λ|^2) / (1 + |λ|^2)
-    double mod_lambda_squared = std::norm(lambda);
+    double mod_lambda_squared = lambda.Abs2();
     return (1.0 - mod_lambda_squared) / (1.0 + mod_lambda_squared);
 }
 
@@ -2772,12 +2757,12 @@ double goldenmodesB::CalculateS(const Parameter &amplitude, const Parameter &con
         q_p *= ckm.get_q_p_KS(); // Multiply by q/p for K0 mixing
     }
 
-    // Get CP eigenvalue for the channel (ensure it exists)
-    if (cpEigenvalue.find(channel) == cpEigenvalue.end())
-    {
-        throw std::runtime_error("Error: CalculateS - CP eigenvalue missing for channel: " + channel);
-    }
-    double eta = cpEigenvalue.at(channel);
+    // // Get CP eigenvalue for the channel (ensure it exists)
+    // if (cpEigenvalue.find(channel) == cpEigenvalue.end())
+    // {
+    //     throw std::runtime_error("Error: CalculateS - CP eigenvalue missing for channel: " + channel);
+    // }
+    // double eta = cpEigenvalue.at(channel);
 
     // Compute λ (lambda) = η * (q/p) * (A_conjugate / A)
     if (std::abs(amplitude) == 0)
@@ -2789,7 +2774,7 @@ double goldenmodesB::CalculateS(const Parameter &amplitude, const Parameter &con
     TComplex lambda = eta * q_p * (conjugate_amplitude / amplitude);
 
     // Compute S observable: S = 2 Im(λ) / (1 + |λ|^2)
-    double mod_lambda_squared = std::norm(lambda);
+    double mod_lambda_squared = lambda.Abs2();
     return (2.0 * std::imag(lambda)) / (1.0 + mod_lambda_squared);
 }
 
@@ -2808,78 +2793,78 @@ std::pair<double, double> goldenmodesB::CalculatePhiAndLambda(const Parameter &a
     TComplex lambda = q_p * (conjugate_amplitude / amplitude);
 
     // Compute |lambda|
-    double mod_lambda = std::abs(lambda);
+    double mod_lambda = lambda.Abs();
 
     // Compute phi_s = -arg(lambda)
-    double phi_s = -std::arg(lambda);
+    double phi_s = -lambda.Arg();
 
     return {phi_s, mod_lambda};
 }
 
-std::pair<std::vector<std::string>, std::string> goldenmodesB::extractChannelFromCorrKey(const std::string &corr_key)
-{
-    std::vector<std::string> channels;
-    std::string experiment;
+// std::pair<std::vector<std::string>, std::string> goldenmodesB::extractChannelFromCorrKey(const std::string &corr_key)
+// {
+//     std::vector<std::string> channels;
+//     std::string experiment;
 
-    if (corr_key.rfind("CS_", 0) == 0)
-    {
-        // Format: "CS_channel_exp"
-        size_t underscore = corr_key.find("_", 3);
-        if (underscore != std::string::npos)
-        {
-            channels.push_back(corr_key.substr(3, underscore - 3)); // Extract channel
-            experiment = corr_key.substr(underscore + 1);           // Extract experiment
-        }
-    }
-    else if (corr_key.rfind("ACP_", 0) == 0)
-    {
-        // Format: "ACP_channel1_channel2_exp"
-        size_t first_underscore = corr_key.find("_", 4);
-        size_t second_underscore = corr_key.find("_", first_underscore + 1);
-        if (first_underscore != std::string::npos && second_underscore != std::string::npos)
-        {
-            channels.push_back(corr_key.substr(4, first_underscore - 4));
-            channels.push_back(corr_key.substr(first_underscore + 1, second_underscore - first_underscore - 1));
-            experiment = corr_key.substr(second_underscore + 1);
-        }
-    }
-    else if (corr_key.rfind("phi_lambda_", 0) == 0)
-    {
-        // Format: "phi_lambda_channel_exp"
-        size_t underscore = corr_key.find("_", 11);
-        if (underscore != std::string::npos)
-        {
-            channels.push_back(corr_key.substr(11, underscore - 11));
-            experiment = corr_key.substr(underscore + 1);
-        }
-    }
-    else if (corr_key.rfind("phi_", 0) == 0)
-    {
-        // Format: "phi_channel_exp"
-        size_t underscore = corr_key.find("_", 4);
-        if (underscore != std::string::npos)
-        {
-            channels.push_back(corr_key.substr(4, underscore - 4));
-            experiment = corr_key.substr(underscore + 1);
-        }
-    }
-    else if (corr_key.rfind("polarization_", 0) == 0)
-    {
-        // Format: "polarization_channel_exp"
-        size_t underscore = corr_key.find("_", 13);
-        if (underscore != std::string::npos)
-        {
-            channels.push_back(corr_key.substr(13, underscore - 13));
-            experiment = corr_key.substr(underscore + 1);
-        }
-    }
-    else
-    {
-        std::cerr << "Warning!! Unknown key format: " << corr_key << std::endl;
-    }
+//     if (corr_key.rfind("CS_", 0) == 0)
+//     {
+//         // Format: "CS_channel_exp"
+//         size_t underscore = corr_key.find("_", 3);
+//         if (underscore != std::string::npos)
+//         {
+//             channels.push_back(corr_key.substr(3, underscore - 3)); // Extract channel
+//             experiment = corr_key.substr(underscore + 1);           // Extract experiment
+//         }
+//     }
+//     else if (corr_key.rfind("ACP_", 0) == 0)
+//     {
+//         // Format: "ACP_channel1_channel2_exp"
+//         size_t first_underscore = corr_key.find("_", 4);
+//         size_t second_underscore = corr_key.find("_", first_underscore + 1);
+//         if (first_underscore != std::string::npos && second_underscore != std::string::npos)
+//         {
+//             channels.push_back(corr_key.substr(4, first_underscore - 4));
+//             channels.push_back(corr_key.substr(first_underscore + 1, second_underscore - first_underscore - 1));
+//             experiment = corr_key.substr(second_underscore + 1);
+//         }
+//     }
+//     else if (corr_key.rfind("phi_lambda_", 0) == 0)
+//     {
+//         // Format: "phi_lambda_channel_exp"
+//         size_t underscore = corr_key.find("_", 11);
+//         if (underscore != std::string::npos)
+//         {
+//             channels.push_back(corr_key.substr(11, underscore - 11));
+//             experiment = corr_key.substr(underscore + 1);
+//         }
+//     }
+//     else if (corr_key.rfind("phi_", 0) == 0)
+//     {
+//         // Format: "phi_channel_exp"
+//         size_t underscore = corr_key.find("_", 4);
+//         if (underscore != std::string::npos)
+//         {
+//             channels.push_back(corr_key.substr(4, underscore - 4));
+//             experiment = corr_key.substr(underscore + 1);
+//         }
+//     }
+//     else if (corr_key.rfind("polarization_", 0) == 0)
+//     {
+//         // Format: "polarization_channel_exp"
+//         size_t underscore = corr_key.find("_", 13);
+//         if (underscore != std::string::npos)
+//         {
+//             channels.push_back(corr_key.substr(13, underscore - 13));
+//             experiment = corr_key.substr(underscore + 1);
+//         }
+//     }
+//     else
+//     {
+//         std::cerr << "Warning!! Unknown key format: " << corr_key << std::endl;
+//     }
 
-    return {channels, experiment};
-}
+//     return {channels, experiment};
+// }
 
 std::map<std::string, double> goldenmodesB::getPolarizationParams(
     const std::string &channel,
@@ -2957,13 +2942,12 @@ double goldenmodesB::Calculate_UncorrelatedObservables(const std::map<std::strin
 {
     double ll_uncorr = 0.0; // Initialize log-likelihood contribution
 
-    std::vector<std::string> channels = {
-        "Bpjpsikp", "Bpjpsipp", "Bdjpsip0", "Bdjpsik0s", "Bdjpsik0l", "Bdjpsikst", "Bsjpsiph"};
-
     for (const auto &channel : channels)
     {
         try
         {
+            if (! std::ranges::contains(vectorMesonChannels, channel)) // not a vector meson channel
+            {
             auto it = amplitude_map.find(channel);
             if (it == amplitude_map.end())
             {
@@ -3007,11 +2991,25 @@ double goldenmodesB::Calculate_UncorrelatedObservables(const std::map<std::strin
             }
 
             // **Compute and store branching ratios if they exist in meas**
-            std::string br_obsKey = "BR_" + channel;
-            std::string br_measKey = "BR" + channel;
+
+            std::string br_obsKey;
+            std::string br_measKey;
+            std::string channel_for_br = channel;
+            if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l")
+            {
+                br_obsKey = "BR_Bdjpsik0";
+                br_measKey = "BRBdjpsik0";
+                channel_for_br = "Bdjpsik0";             // Use the non-rotated state for BR
+                amp_pair = amplitude_map.at("Bdjpsik0"); // Use the non-rotated stated for BR
+            }
+            else
+            {
+                br_obsKey = "BR_" + channel;
+                br_measKey = "BR" + channel;
+            }
             if (meas.find(br_measKey) != meas.end())
             {
-                double br_predicted = CalculateBR(amp_pair.first, channel);
+                double br_predicted = CalculateBR(amp_pair.first, channel_for_br);
                 obs[br_obsKey] = br_predicted;
 
                 double observed = meas.at(br_measKey).getMean();
@@ -3030,7 +3028,14 @@ double goldenmodesB::Calculate_UncorrelatedObservables(const std::map<std::strin
     std::vector<std::pair<std::string, std::pair<std::string, std::string>>> br_ratios = {
         {"R_Bpjpsipp_Bpjpsikp", {"Bpjpsipp", "Bpjpsikp"}},
         {"R_Bdjpsiom_Bdjpsirh", {"Bdjpsiom", "Bdjpsirh"}},
-        {"R_Bdjpsikst_Bdjpsik0", {"Bdjpsikst", "Bdjpsik0"}}};
+        {"R_Bdjpsikst_Bdjpsik0", {"Bdjpsikst", "Bdjpsik0"}},
+        {"R_Bdjpsieta_Bsjpsieta", {"Bdjpsieta", "Bsjpsieta"}},
+        {"R_Bdjpsietap_Bsjpsietap", {"Bdjpsietap", "Bsjpsietap"}},
+        {"R_Bdjpsietap_Bdjpsieta", {"Bdjpsietap", "Bdjpsieta"}},
+        {"R_Bsjpsieta_Bsjpsphi", {"Bsjpsieta", "Bsjpsphi"}},
+        {"R_Bsjpsietap_Bsjpsieta", {"Bsjpsietap", "Bsjpsieta"}},
+        {"R_Bsjpsietap_Bsjpsieta", {"Bsjpsietap", "Bsjpsieta"}},
+        {"R_Bsjpsietap_Bsjpsiphi", {"Bsjpsietap", "Bsjpsiphi"}}};
 
     for (const auto &[ratioKey, channels] : br_ratios)
     {
@@ -3340,22 +3345,26 @@ double goldenmodesB::LogLikelihood(const std::vector<double> &parameters)
             expectedSize += it->second.size();
         }
     }
-    // Last 4 parameters are for CKM
-    if (parameters.size() != expectedSize + 4)
+    // Last 5 parameters are for CKM + eta-eta' mixing angle
+    if (parameters.size() != expectedSize + 5)
     {
         std::cerr << "Error: parameters.size() = " << parameters.size()
-                  << ", but expected size = " << expectedSize + 4 << std::endl;
-        return -1e30;
+                  << ", but expected size = " << expectedSize + 5 << std::endl;
+        return log(0.); // Return log(0) for invalid size
     }
     if (parameters.empty())
     {
         std::cerr << "Error: Empty parameters vector!" << std::endl;
-        return -1e30;
+        return log(0.);
     }
 
     // Unpack CKM parameters and compute CKM elements
-    std::vector<double> ckmParams(parameters.end() - 4, parameters.end());
+    std::vector<double> ckmParams(parameters.end() - 5, parameters.end() - 1);
     ckm.computeCKM(ckmParams[0], ckmParams[1], ckmParams[2], ckmParams[3], true);
+
+    // eta-eta' mixing angle
+    double theta_P = parameters.back();
+    SetParameterValue("theta_P", theta_P);
 
     // Unpack the parameters for each channel (from channelNamesSU3)
     int index = 0;
@@ -3386,7 +3395,7 @@ double goldenmodesB::LogLikelihood(const std::vector<double> &parameters)
         else
         {
             std::cerr << "Channel " << channel << " not found in channelParameters." << std::endl;
-            return -1e30;
+            return log(0.); // Return log(0) for invalid channel
         }
     }
     // Print parameters every 1000 iterations
@@ -3397,244 +3406,175 @@ double goldenmodesB::LogLikelihood(const std::vector<double> &parameters)
         }
     }*/
     // Build the amplitude map using physical amplitudes
-    std::map<std::string, std::pair<Parameter, Parameter>> amplitude_map;
+
     amplitude_map.clear();
 
     for (const std::string &channel : channelNamesSU3)
     {
-        if (std::find(vectorMesonChannels.begin(), vectorMesonChannels.end(), channel) != vectorMesonChannels.end())
+        if (std::ranges::contains(vectorMesonChannels, channel))
         {
-            // Vector meson channels: handle polarized parameters
-            Parameter A_0 = getPar("A_" + channel + "_0");
-            Parameter B_0 = getPar("B_" + channel + "_0");
-            Parameter A_perp = getPar("A_" + channel + "_perp");
-            Parameter B_perp = getPar("B_" + channel + "_perp");
-            Parameter A_paral = getPar("A_" + channel + "_paral");
-            Parameter B_paral = getPar("B_" + channel + "_paral");
-
-            // Store real and imaginary parts
-            obs["A_0_re_" + channel] = A_0.Re();
-            obs["A_0_im_" + channel] = A_0.Im();
-            obs["B_0_re_" + channel] = B_0.Re();
-            obs["B_0_im_" + channel] = B_0.Im();
-
-            obs["A_perp_re_" + channel] = A_perp.Re();
-            obs["A_perp_im_" + channel] = A_perp.Im();
-            obs["B_perp_re_" + channel] = B_perp.Re();
-            obs["B_perp_im_" + channel] = B_perp.Im();
-
-            obs["A_paral_re_" + channel] = A_paral.Re();
-            obs["A_paral_im_" + channel] = A_paral.Im();
-            obs["B_paral_re_" + channel] = B_paral.Re();
-            obs["B_paral_im_" + channel] = B_paral.Im();
+            amplitude_map[channel + "_0"] = {get_amplitude(channel + "_0"), get_conjugate_amplitude(channel + "_0")};
+            amplitude_map[channel + "_perp"] = {get_amplitude(channel + "_perp"), get_conjugate_amplitude(channel + "_perp")};
+            amplitude_map[channel + "_paral"] = {get_amplitude(channel + "_paral"), get_conjugate_amplitude(channel + "_paral")};
         }
         else
         {
-            // Pseudoscalar channels: handle A and B
-            Parameter A = getPar("A_" + channel);
-            Parameter B = getPar("B_" + channel);
-            obs["A_re_" + channel] = A.Re();
-            obs["A_im_" + channel] = A.Im();
-            obs["B_re_" + channel] = B.Re();
-            obs["B_im_" + channel] = B.Im();
+            // Directly store original amplitudes
+            amplitude_map[channel] = {get_amplitude(channel), get_conjugate_amplitude(channel)};
+
+            // For CP observables, add K0s and K0l cases with the same amplitudes as Bdjpsik0
+            if (channel == "Bdjpsik0")
+            {
+                amplitude_map["Bdjpsik0s"] = amplitude_map["Bdjpsik0"];
+                amplitude_map["Bdjpsik0l"] = amplitude_map["Bdjpsik0"];
+            }
+            else if (channel == "Bsjpsik0")
+            {
+                amplitude_map["Bsjpsik0s"] = amplitude_map["Bsjpsik0"];
+            }
         }
 
-        // Directly store original amplitudes
-        amplitude_map[channel] = {get_amplitude(channel), get_conjugate_amplitude(channel)};
+        for (const std::string &channel : channelNames)
+        {
+            // compute amplitudes for eta and etaprime final states
+            if (channel.ends_with("eta"))
+            {
+                amplitude_map[channel] = {cos(theta_P) * amplitude_map[channel + "8"].first - sin(theta_P) * amplitude_map[channel + "1"].first,
+                                          cos(theta_P) * amplitude_map[channel + "8"].second - sin(theta_P) * amplitude_map[channel + "1"].second};
+                amplitude_map[channel + "p"] = {sin(theta_P) * amplitude_map[channel + "8"].first + cos(theta_P) * amplitude_map[channel + "1"].first,
+                                                sin(theta_P) * amplitude_map[channel + "8"].second + cos(theta_P) * amplitude_map[channel + "1"].second};
+            }
+        }
 
-        // For CP observables, add K0s and K0l cases with the same amplitudes as Bdjpsik0
-        if (channel == "Bdjpsik0")
+        // Check NaN/Inf values in amplitudes
+        for (const auto &[chan, amp_pair] : amplitude_map)
         {
-            amplitude_map["Bdjpsik0s"] = amplitude_map["Bdjpsik0"];
-            amplitude_map["Bdjpsik0l"] = amplitude_map["Bdjpsik0"];
+            if (std::isnan(abs(amp_pair.first)) || std::isinf(abs(amp_pair.first)) ||
+                std::isnan(abs(amp_pair.second)) || std::isinf(abs(amp_pair.second)))
+            {
+                std::cerr << "Invalid amplitude (NaN or Inf) for channel: " << chan << std::endl;
+                return log(0.);
+            }
         }
-        else if (channel == "Bsjpsik0")
-        {
-            amplitude_map["Bsjpsik0s"] = amplitude_map["Bsjpsik0"];
-        }
+
+        // Add contributions from uncorrelated and correlated observables
+        ll += Calculate_UncorrelatedObservables(amplitude_map);
+        ll += Calculate_CorrelatedObservables(amplitude_map);
+
+        return ll;
     }
 
-    // Check NaN/Inf values in amplitudes
-    for (const auto &[chan, amp_pair] : amplitude_map)
+    //---------------------------------------------------------
+
+    void goldenmodesB::MCMCUserIterationInterface()
     {
-        if (std::isnan(abs(amp_pair.first)) || std::isinf(abs(amp_pair.first)) ||
-            std::isnan(abs(amp_pair.second)) || std::isinf(abs(amp_pair.second)))
+        // Loop over all MCMC chains
+        const unsigned int log_interval = 1000; // Log every 1000 iterations
+        std::vector<double> pars;
+
+        for (unsigned int i = 0; i < fMCMCNChains; ++i)
         {
-            std::cerr << "Invalid amplitude (NaN or Inf) for channel: " << chan << std::endl;
-            return -100;
-        }
-    }
-
-    // Compute Branching Ratios and Likelihood Contribution
-    for (const std::string &channel : channelNames)
-    {
-        const auto &amp_pair = amplitude_map[channel];
-
-        if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l")
-        {
-            const auto &amp_pair = amplitude_map["Bdjpsik0"];      // Use the non-rotated state
-            double br_A = CalculateBR(amp_pair.first, "Bdjpsik0"); // Compute BR with non-rotated states
-            double br_conj_A = CalculateBR(amp_pair.second, "Bdjpsik0");
-            double br_predicted = 0.5 * (br_A + br_conj_A);
-            obs["BR_Bdjpsik0"] = br_predicted;
-
+            pars = fMCMCStates.at(i).parameters;
             try
             {
-                std::string br_key = "BRBdjpsik0";
-                double br_observed = meas.at(br_key).getMean();
-                double br_uncertainty = meas.at(br_key).getSigma();
-                double diff = br_predicted - br_observed;
-                ll += -0.5 * (diff * diff / (br_uncertainty * br_uncertainty));
+                LogLikelihood(pars);
             }
-            catch (const std::out_of_range &)
+            catch (const std::exception &e)
             {
-                std::cerr << "Error: Branching ratio for Bdjpsik0 not found in meas map." << std::endl;
-                return -1e30;
+                std::cerr << "Error in LogLikelihood: " << e.what() << std::endl;
+                return;
             }
-        }
-        else
-        {
-            // Calculate BR for each channel
-            double br_A = CalculateBR(amp_pair.first, channel);
-            double br_conj_A = CalculateBR(amp_pair.second, channel);
-            double br_predicted = 0.5 * (br_A + br_conj_A);
-            obs["BR_" + channel] = br_predicted;
 
-            // Compute log-likelihood for BR
-            try
-            {
-                std::string br_key = "BR" + channel;
-                double br_observed = meas.at(br_key).getMean();
-                double br_uncertainty = meas.at(br_key).getSigma();
-                double diff = br_predicted - br_observed;
-                ll += -0.5 * (diff * diff / (br_uncertainty * br_uncertainty));
-            }
-            catch (const std::out_of_range &)
-            {
-                std::cerr << "Error: Branching ratio for " << channel << " not found in meas map." << std::endl;
-                return -1e30;
-            }
+            // Directly fill histograms
+            histos.fillh1d();
+            histos.fillh2d();
         }
     }
 
-    // Add contributions from uncorrelated and correlated observables
-    ll += Calculate_UncorrelatedObservables(amplitude_map);
-    ll += Calculate_CorrelatedObservables(amplitude_map);
-
-    return ll;
-}
-
-//---------------------------------------------------------
-
-void goldenmodesB::MCMCUserIterationInterface()
-{
-    // Loop over all MCMC chains
-    const unsigned int log_interval = 1000; // Log every 1000 iterations
-    std::vector<double> pars;
-
-    for (unsigned int i = 0; i < fMCMCNChains; ++i)
+    void goldenmodesB::SaveHistograms(const std::string &filename)
     {
-        pars = fMCMCStates.at(i).parameters;
-        try
+        TFile file(filename.c_str(), "RECREATE");
+
+        // Write all histograms to the file
+        for (const auto &histPair : histos.h1d)
         {
-            LogLikelihood(pars);
+            histPair.second->Write();
         }
-        catch (const std::exception &e)
+
+        // Write all 2D histograms
+        for (const auto &histPair : histos.h2d)
         {
-            std::cerr << "Error in LogLikelihood: " << e.what() << std::endl;
+            histPair.second->Write();
+        }
+
+        file.Close();
+        std::cout << "Histograms saved to " << filename << std::endl;
+    }
+
+    // ---------------------------------------------------------
+
+    void goldenmodesB::PrintObservablePulls(const std::string &filename)
+    {
+        std::ofstream outfile(filename);
+
+        if (!outfile.is_open())
+        {
+            std::cerr << "Error: Unable to open file " << filename << std::endl;
             return;
         }
 
-        // Directly fill histograms
-        histos.fillh1d();
-        histos.fillh2d();
-    }
-}
+        // Header for the output file
+        outfile << "Observable\t\t Measurement\t\t Mean\t\t Sigma\t\t Pull\n";
 
-void goldenmodesB::SaveHistograms(const std::string &filename)
-{
-    TFile file(filename.c_str(), "RECREATE");
+        // Define mappings for observable names and measurement keys
+        std::map<std::string, std::string> measMap = {
+            {"BR_Bdjpsik0", "BRBdjpsik0"}, {"BR_Bdjpsip0", "BRBdjpsip0"}, {"BR_Bdjpsiom", "BRBdjpsiom"}, {"BR_Bpjpsikp", "BRBpjpsikp"}, {"BR_Bpjpsipp", "BRBpjpsipp"}, {"BR_Bsjpsiph", "BRBsjpsiph"}, {"BR_Bsjpsik0s", "BRBsjpsik0s"}, {"BR_Bdjpsirh", "BRBdjpsirh"}, {"BR_Bdjpsikst", "BRBdjpsikst"}, {"BR_Bsjpsikst", "BRBsjpsikst"}, {"C_Bdjpsik0s", "CBdjpsik0s"}, {"C_Bdjpsik0l", "CBdjpsik0l"}, {"S_Bdjpsik0s", "SBdjpsik0s"}, {"S_Bdjpsik0l", "SBdjpsik0l"}, {"C_Bdjpsip0", "CBdjpsip0"}, {"S_Bdjpsip0", "SBdjpsip0"}, {"ACP_Bpjpsikp", "ACPBpjpsikp"}, {"ACP_Bpjpsipp", "ACPBpjpsipp"}, {"deltaA_Bpjpsipp_Bpjpsikp", "deltaA_Bpjpsipp_Bpjpsikp"}, {"R_Bpjpsipp_Bpjpsikp", "R_Bpjpsipp_Bpjpsikp"}, {"lambda_Bsjpsiph", "lambda_Bsjpsiph"}, {"phi_Bsjpsiph", "phi_Bsjpsiph"}, {"f_perp_Bsjpsiph", "f_perp_Bsjpsiph"}, {"f_paral_Bsjpsiph", "f_paral_Bsjpsiph"}, {"f_0_Bsjpsiph", "f_0_Bsjpsiph"}, {"delta_perp_Bsjpsiph", "delta_perp_Bsjpsiph"}, {"delta_paral_Bsjpsiph", "delta_paral_Bsjpsiph"}, {"R_Bdjpsiom_Bdjpsirh", "R_Bdjpsiom_Bdjpsirh"}, {"R_Bdjpsikst_Bdjpsik0", "R_Bdjpsikst_Bdjpsik0"}, {"C_Bdjpsikst", "CBdjpsikst"}, {"S_Bdjpsikst", "SBdjpsikst"}, {"f_0_Bdjpsikst", "f_0_Bdjpsikst"}, {"f_paral_Bdjpsikst", "f_paral_Bdjpsikst"}, {"f_perp_Bdjpsikst", "f_perp_Bdjpsikst"}, {"delta_paral_Bdjpsikst", "delta_paral_Bdjpsikst"}, {"delta_perp_Bdjpsikst", "delta_perp_Bdjpsikst"}, {"f_0_Bsjpsikst", "f_0_Bsjpsikst"}, {"f_paral_Bsjpsikst", "f_paral_Bsjpsikst"}, {"delta_paral_Bsjpsikst", "delta_paral_Bsjpsikst"}, {"delta_perp_Bsjpsikst", "delta_perp_Bsjpsikst"}, {"A0_CP_Bsjpsikst", "A0_CP_Bsjpsikst"}, {"Aparal_CP_Bsjpsikst", "Aparal_CP_Bsjpsikst"}, {"Aperp_CP_Bsjpsikst", "Aperp_CP_Bsjpsikst"}, {"BR_Bddpdm", "BRBddpdm"}, {"C_Bddpdm", "CBddpdm"}, {"S_Bddpdm", "SBddpdm"}, {"BR_Bsdpsdms", "BRBsdpsdms"}, {"C_Bsdpsdms", "CBsdpsdms"}, {"S_Bsdpsdms", "SBsdpsdms"}, {"BR_Bpdpd0b", "BRBpdpd0b"}, {"ACP_Bpdpd0b", "ACPBpdpd0b"}, {"BR_Bpdpsd0b", "BRBpdpsd0b"}, {"ACP_Bpdpsd0b", "ACPBpdpsd0b"}
 
-    // Write all histograms to the file
-    for (const auto &histPair : histos.h1d)
-    {
-        histPair.second->Write();
-    }
+        };
 
-    // Write all 2D histograms
-    for (const auto &histPair : histos.h2d)
-    {
-        histPair.second->Write();
-    }
-
-    file.Close();
-    std::cout << "Histograms saved to " << filename << std::endl;
-}
-
-// ---------------------------------------------------------
-
-void goldenmodesB::PrintObservablePulls(const std::string &filename)
-{
-    std::ofstream outfile(filename);
-
-    if (!outfile.is_open())
-    {
-        std::cerr << "Error: Unable to open file " << filename << std::endl;
-        return;
-    }
-
-    // Header for the output file
-    outfile << "Observable\t\t Measurement\t\t Mean\t\t Sigma\t\t Pull\n";
-
-    // Define mappings for observable names and measurement keys
-    std::map<std::string, std::string> measMap = {
-        {"BR_Bdjpsik0", "BRBdjpsik0"}, {"BR_Bdjpsip0", "BRBdjpsip0"}, {"BR_Bdjpsiom", "BRBdjpsiom"}, {"BR_Bpjpsikp", "BRBpjpsikp"}, {"BR_Bpjpsipp", "BRBpjpsipp"}, {"BR_Bsjpsiph", "BRBsjpsiph"}, {"BR_Bsjpsik0s", "BRBsjpsik0s"}, {"BR_Bdjpsirh", "BRBdjpsirh"}, {"BR_Bdjpsikst", "BRBdjpsikst"}, {"BR_Bsjpsikst", "BRBsjpsikst"}, {"C_Bdjpsik0s", "CBdjpsik0s"}, {"C_Bdjpsik0l", "CBdjpsik0l"}, {"S_Bdjpsik0s", "SBdjpsik0s"}, {"S_Bdjpsik0l", "SBdjpsik0l"}, {"C_Bdjpsip0", "CBdjpsip0"}, {"S_Bdjpsip0", "SBdjpsip0"}, {"ACP_Bpjpsikp", "ACPBpjpsikp"}, {"ACP_Bpjpsipp", "ACPBpjpsipp"}, {"deltaA_Bpjpsipp_Bpjpsikp", "deltaA_Bpjpsipp_Bpjpsikp"}, {"R_Bpjpsipp_Bpjpsikp", "R_Bpjpsipp_Bpjpsikp"}, {"lambda_Bsjpsiph", "lambda_Bsjpsiph"}, {"phi_Bsjpsiph", "phi_Bsjpsiph"}, {"f_perp_Bsjpsiph", "f_perp_Bsjpsiph"}, {"f_paral_Bsjpsiph", "f_paral_Bsjpsiph"}, {"f_0_Bsjpsiph", "f_0_Bsjpsiph"}, {"delta_perp_Bsjpsiph", "delta_perp_Bsjpsiph"}, {"delta_paral_Bsjpsiph", "delta_paral_Bsjpsiph"}, {"R_Bdjpsiom_Bdjpsirh", "R_Bdjpsiom_Bdjpsirh"}, {"R_Bdjpsikst_Bdjpsik0", "R_Bdjpsikst_Bdjpsik0"}, {"C_Bdjpsikst", "CBdjpsikst"}, {"S_Bdjpsikst", "SBdjpsikst"}, {"f_0_Bdjpsikst", "f_0_Bdjpsikst"}, {"f_paral_Bdjpsikst", "f_paral_Bdjpsikst"}, {"f_perp_Bdjpsikst", "f_perp_Bdjpsikst"}, {"delta_paral_Bdjpsikst", "delta_paral_Bdjpsikst"}, {"delta_perp_Bdjpsikst", "delta_perp_Bdjpsikst"}, {"f_0_Bsjpsikst", "f_0_Bsjpsikst"}, {"f_paral_Bsjpsikst", "f_paral_Bsjpsikst"}, {"delta_paral_Bsjpsikst", "delta_paral_Bsjpsikst"}, {"delta_perp_Bsjpsikst", "delta_perp_Bsjpsikst"}, {"A0_CP_Bsjpsikst", "A0_CP_Bsjpsikst"}, {"Aparal_CP_Bsjpsikst", "Aparal_CP_Bsjpsikst"}, {"Aperp_CP_Bsjpsikst", "Aperp_CP_Bsjpsikst"}, {"BR_Bddpdm", "BRBddpdm"}, {"C_Bddpdm", "CBddpdm"}, {"S_Bddpdm", "SBddpdm"}, {"BR_Bsdpsdms", "BRBsdpsdms"}, {"C_Bsdpsdms", "CBsdpsdms"}, {"S_Bsdpsdms", "SBsdpsdms"}, {"BR_Bpdpd0b", "BRBpdpd0b"}, {"ACP_Bpdpd0b", "ACPBpdpd0b"}, {"BR_Bpdpsd0b", "BRBpdpsd0b"}, {"ACP_Bpdpsd0b", "ACPBpdpsd0b"}
-
-    };
-
-    for (const auto &histPair : histos.h1d)
-    {
-        const std::string &obs_name = histPair.first;
-        TH1D *hist = histPair.second;
-
-        double obs_mean = hist->GetMean();
-        double obs_measurement = 0.0;
-        double sigma_measurement = 0.0;
-        bool found_measurement = false;
-
-        // Check if the observable exists in `newmeas` first
-        if (measMap.find(obs_name) != measMap.end())
+        for (const auto &histPair : histos.h1d)
         {
-            const std::string &key = measMap[obs_name];
+            const std::string &obs_name = histPair.first;
+            TH1D *hist = histPair.second;
 
-            if (newmeas.find(key) != newmeas.end())
+            double obs_mean = hist->GetMean();
+            double obs_measurement = 0.0;
+            double sigma_measurement = 0.0;
+            bool found_measurement = false;
+
+            // Check if the observable exists in `newmeas` first
+            if (measMap.find(obs_name) != measMap.end())
             {
-                obs_measurement = newmeas.at(key).getMean();
-                sigma_measurement = newmeas.at(key).getSigma();
-                found_measurement = true;
+                const std::string &key = measMap[obs_name];
+
+                if (newmeas.find(key) != newmeas.end())
+                {
+                    obs_measurement = newmeas.at(key).getMean();
+                    sigma_measurement = newmeas.at(key).getSigma();
+                    found_measurement = true;
+                }
+                else if (meas.find(key) != meas.end())
+                {
+                    // Use `meas` only if it is not found in `newmeas`
+                    obs_measurement = meas.at(key).getMean();
+                    sigma_measurement = meas.at(key).getSigma();
+                    found_measurement = true;
+                }
             }
-            else if (meas.find(key) != meas.end())
+
+            if (found_measurement)
             {
-                // Use `meas` only if it is not found in `newmeas`
-                obs_measurement = meas.at(key).getMean();
-                sigma_measurement = meas.at(key).getSigma();
-                found_measurement = true;
+                // Calculate the pull value: (predicted - observed) / uncertainty
+                double pull = (obs_mean - obs_measurement) / sigma_measurement;
+
+                outfile << obs_name << "\t"
+                        << obs_measurement << "\t"
+                        << obs_mean << "\t"
+                        << sigma_measurement << "\t"
+                        << pull << "\n";
             }
         }
 
-        if (found_measurement)
-        {
-            // Calculate the pull value: (predicted - observed) / uncertainty
-            double pull = (obs_mean - obs_measurement) / sigma_measurement;
-
-            outfile << obs_name << "\t"
-                    << obs_measurement << "\t"
-                    << obs_mean << "\t"
-                    << sigma_measurement << "\t"
-                    << pull << "\n";
-        }
+        outfile.close();
+        std::cout << "Pull values saved to " << filename << std::endl;
     }
-
-    outfile.close();
-    std::cout << "Pull values saved to " << filename << std::endl;
-}
