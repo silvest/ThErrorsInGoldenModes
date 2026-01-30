@@ -123,7 +123,7 @@ CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
   }
 
 
-double CorrelatedGaussianObservables::logweight(const TVectorD& v) {
+double CorrelatedGaussianObservables::logweight(const TVectorD& v) const {
     int n = Obs.GetNrows();
     double chisq = 0.;
 

@@ -29,7 +29,9 @@ public:
 
   const TMatrixDSym& getCov() const { return Cov; }
 
-  double logweight(const TVectorD& v) ;
+  const size_t getNObs() const { return Obs.GetNoElements(); }
+
+  double logweight(const TVectorD& v) const;
 
 private:
   TVectorD Obs;

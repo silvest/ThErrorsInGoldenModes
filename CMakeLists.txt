@@ -4,7 +4,7 @@ project(GoldenModes VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_COMPILER "mpicxx")
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -54,7 +54,6 @@ include_directories(
 
 # Source files for the library
 set(LIBRARY_SOURCES
-    goldenmodes.cpp
     goldenmodesB.cpp
     CKM.cpp
     ModelParameter.cpp
@@ -65,7 +64,7 @@ set(LIBRARY_SOURCES
 
 # Header files
 set(LIBRARY_HEADERS
-    goldenmodes.h
+    goldenmodesB.h
     CKM.h
     ModelParameter.h
     PDGAverage.h

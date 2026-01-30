@@ -144,10 +144,10 @@ void CKMParameters::computeCKMfromAngles(double lambda, double A, double rho, do
     // Sine of the mixing angles
     double s12 = lambda;
     double s23 = A * pow(lambda, 2.0);
-    double s13 = TComplex::Abs(TComplex(A * pow(lambda, 3.0) * rho_nb, -A * pow(lambda, 3.0) * eta_nb));
+    double s13 = TComplex(A * pow(lambda, 3.0) * rho_nb, -A * pow(lambda, 3.0) * eta_nb).Rho();
 
     // CP-violating phase (delta)
-    double delta = -TComplex::Arg(TComplex(A * pow(lambda, 3.0) * rho_nb, -A * pow(lambda, 3.0) * eta_nb));
+    double delta = -TComplex(A * pow(lambda, 3.0) * rho_nb, -A * pow(lambda, 3.0) * eta_nb).Theta();
 
     // Cosines of the mixing angles
     double c12 = sqrt(1.0 - s12 * s12);

@@ -2,12 +2,14 @@
 #include <BAT/BCAux.h>
 #include <mpi.h>
 #include <fstream>
-#include "goldenmodes.h"
+#include "goldenmodesB.h"
 #include "CKM.h"
 #include <vector>
 #include <random>
 #include <chrono>
 #include <thread>
+#include <string>
+#include <cstring>
 
 using namespace std;
 
@@ -29,19 +31,50 @@ void showProgressBar(int current, int total, double elapsedTime) {
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
+    // Parse command line arguments
+    string outputFileName = "";
+    bool flagBJPSIV = false;
+    bool flagBJPSIP = false;
+    bool flagBDDb = false;
+    double dsu3_limit = 0.2;
+    double ewp_limit = 0.0;
+
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--outfile") == 0 && i + 1 < argc) {
+            outputFileName = argv[++i];
+        } else if (strcmp(argv[i], "--flagBJPSIV") == 0) {
+            flagBJPSIV = true;
+        } else if (strcmp(argv[i], "--flagBJPSIP") == 0) {
+            flagBJPSIP = true;
+        } else if (strcmp(argv[i], "--flagBDDb") == 0) {
+            flagBDDb = true;
+        } else if (strcmp(argv[i], "--dsu3_limit") == 0 && i + 1 < argc) {
+            dsu3_limit = atof(argv[++i]);
+        } else if (strcmp(argv[i], "--ewp_limit") == 0 && i + 1 < argc) {
+            ewp_limit = atof(argv[++i]);
+        }
+    }
+
+    cout << "Output file name: " << outputFileName << endl;
+    cout << "FlagBJPSIV: " << (flagBJPSIV ? "true" : "false") << endl;
+    cout << "FlagBJPSIP: " << (flagBJPSIP ? "true" : "false") << endl;
+    cout << "FlagBDDb: " << (flagBDDb ? "true" : "false") << endl;
+    cout << "dsu3_limit: " << dsu3_limit << endl;
+    cout << "ewp_limit: " << ewp_limit << endl;
+    // Initialize MPI
     MPI_Init(NULL, NULL);
     // Initialize BAT logging
     BCLog::OpenLog("log_GM.txt", BCLog::detail, BCLog::detail);
     BCLog::SetLogLevelScreen(BCLog::summary);
 
     // Create an instance of the BqDqDqbar model
-    goldenmodes model;
+    goldenmodesB model(dsu3_limit, ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb);
     cout << "Model constructed correctly" << endl;
 
     // Set the number of chains, pre-run, and run iterations
-    model.SetNChains(4);
-    model.SetNIterationsPreRunMax(2000000); // Pre-run iterations
+    model.SetNChains(12);
+    model.SetNIterationsPreRunMax(20000000); // Pre-run iterations
     model.SetNIterationsRun(1000000);
     model.SetProposeMultivariate(true);
     unsigned int nParameters = model.GetNParameters();
@@ -116,7 +149,7 @@ int main() {
     model.PrintAllMarginalized("marginalized_parameters_GM.pdf");
     model.WriteMarginalizedDistributions("marginalized_pars_GM.root", "RECREATE");
     model.SaveHistograms("output_histograms_GM.root");
-    model.PrintObservablePulls("observable_pulls_GM.txt");
+    // model.PrintObservablePulls("observable_pulls_GM.txt");
 
     BCLog::OutSummary("MCMC analysis completed.");
     BCLog::CloseLog();
