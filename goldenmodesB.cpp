@@ -37,6 +37,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     cout << "constructor for goldenmodes called: inserting the experimental data" << endl;
     vector<dato> data;
     PDGAverage pdgaverage;
+    evaluatedevts = 0;
 
     if (BJPSIP)
     {
@@ -3631,8 +3632,6 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
 
 double goldenmodesB::LogLikelihood(const vector<double> &parameters)
 {
-    static int iteration_counter = 0;
-    ++iteration_counter;
 
     obs.clear();     // Clear obs map for each iteration
     double ll = 0.0; // Log-likelihood accumulator
@@ -3729,8 +3728,7 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
 
 void goldenmodesB::MCMCUserIterationInterface()
 {
-    // Loop over all MCMC chains
-    const unsigned int log_interval = 1000; // Log every 1000 iterations
+
     vector<double> pars;
 
     for (unsigned int i = 0; i < fMCMCNChains; ++i)

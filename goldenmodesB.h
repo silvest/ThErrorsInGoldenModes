@@ -179,6 +179,8 @@ private:
         return amplitude;
     }
 
+    int evaluatedevts;
+
     void addAmplitudeParameter(const std::string &amplitudeName, const double &lowerLimit, const double &upperLimit, bool isVectorChannel = false)
     {
         if (!isVectorChannel)

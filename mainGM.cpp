@@ -25,6 +25,7 @@ int main(int argc, char* argv[]) {
     int nIterationsRun = 10000;
     int nIterationsPreRunFactorized = 1000;
     int nIterationsUpdateMax = 100;
+    int nChains = 10;
 
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--outfile") == 0 && i + 1 < argc) {
@@ -47,6 +48,26 @@ int main(int argc, char* argv[]) {
             nIterationsPreRunFactorized = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--nUpdateMax") == 0 && i + 1 < argc) {
             nIterationsUpdateMax = atoi(argv[++i]);
+        }
+        else if (strcmp(argv[i], "--nChains") == 0 && i + 1 < argc) {
+             nChains = atoi(argv[++i]);
+        }
+        else if (strcmp(argv[i], "--help") == 0) {
+            cout << "Usage: " << argv[0] << " [options]\n"
+                 << "Options:\n"
+                 << "  --outfile <filename>            Specify output file name prefix\n"
+                 << "  --flagBJPSIV                    Enable BJPSIV flag\n"
+                 << "  --flagBJPSIP                    Enable BJPSIP flag\n"
+                 << "  --flagBDDb                     Enable BDDb flag\n"
+                 << "  --dsu3_limit <value>            Set dsu3 limit (default: 0.2)\n"
+                 << "  --ewp_limit <value>             Set ewp limit (default: 0.0)\n"
+                 << "  --nPreRun <value>               Set number of pre-run iterations (default: 100000)\n"
+                 << "  --nRun <value>                  Set number of run iterations (default: 10000)\n"
+                 << "  --nPreRunFactorized <value>     Set number of factorized pre-run iterations (default: 1000)\n"
+                 << "  --nUpdateMax <value>            Set max number of update iterations (default: 100)\n"
+                 << "  --nChains <value>               Set number of chains (default: 10)\n"
+                 << "  --help                          Show this help message\n";
+            return 0;
         }
     }
 
@@ -71,11 +92,11 @@ int main(int argc, char* argv[]) {
     cout << "Model constructed correctly" << endl;
 
     // Set the number of chains, pre-run, and run iterations
-    model.SetNChains(12);
+    model.SetNChains(nChains);
     model.SetNIterationsPreRunMax(nIterationsPreRun); // Pre-run iterations
     model.SetNIterationsRun(nIterationsRun);
-    model.SetProposeMultivariate(false);
-    //model.SetNIterationsPreRunFactorized(nIterationsPreRunFactorized);
+    model.SetProposeMultivariate(true);
+    model.SetNIterationsPreRunFactorized(nIterationsPreRunFactorized);
     model.SetNIterationsPreRunCheck(nIterationsUpdateMax);
     
     // Start time measurement
