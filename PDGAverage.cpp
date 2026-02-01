@@ -31,5 +31,5 @@ void PDGAverage::CalculateAverage() {
     fScaleFactor = std::max(1.,sqrt(chi2 / (fData.size() - 1.)));
     // rescale the uncertainty
     fUncertainty *= fScaleFactor;
-    std::cout << "PDG average for" << fName << ": " << fAverage << " +- " << fUncertainty << " with scale factor " << fScaleFactor << std::endl;
+    std::cout << "PDG average for " << fName << ": " << fAverage << " +- " << fUncertainty << " with scale factor " << fScaleFactor << std::endl;
 }

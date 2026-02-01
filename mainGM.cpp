@@ -13,24 +13,6 @@
 
 using namespace std;
 
-// Function to show the progress bar
-void showProgressBar(int current, int total, double elapsedTime) {
-    static int lastPrintedPercentage = -1;  // Store the last printed percentage
-    int percentage = (double)current / total * 100;
-
-    // Only update every 10% progress
-    if (percentage / 20 > lastPrintedPercentage / 20) {
-        lastPrintedPercentage = percentage;  // Update last printed percentage
-        double remainingTime = (elapsedTime / current) * (total - current);
-
-        // Print progress bar and estimated time remaining
-        cout << "\rProgress: [" << string(percentage / 2, '=') << string(50 - (percentage / 2), ' ')
-             << "] " << percentage << "%  ";
-        cout << "Estimated time remaining: " << remainingTime << " seconds" << flush;
-    }
-}
-
-
 int main(int argc, char* argv[]) {
     // Parse command line arguments
     string outputFileName = "";
@@ -39,6 +21,10 @@ int main(int argc, char* argv[]) {
     bool flagBDDb = false;
     double dsu3_limit = 0.2;
     double ewp_limit = 0.0;
+    int nIterationsPreRun = 100000;
+    int nIterationsRun = 10000;
+    int nIterationsPreRunFactorized = 1000;
+    int nIterationsUpdateMax = 100;
 
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--outfile") == 0 && i + 1 < argc) {
@@ -53,6 +39,14 @@ int main(int argc, char* argv[]) {
             dsu3_limit = atof(argv[++i]);
         } else if (strcmp(argv[i], "--ewp_limit") == 0 && i + 1 < argc) {
             ewp_limit = atof(argv[++i]);
+        } else if (strcmp(argv[i], "--nPreRun") == 0 && i + 1 < argc) {
+            nIterationsPreRun = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--nRun") == 0 && i + 1 < argc) {
+            nIterationsRun = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--nPreRunFactorized") == 0 && i + 1 < argc) {
+            nIterationsPreRunFactorized = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "--nUpdateMax") == 0 && i + 1 < argc) {
+            nIterationsUpdateMax = atoi(argv[++i]);
         }
     }
 
@@ -62,10 +56,14 @@ int main(int argc, char* argv[]) {
     cout << "FlagBDDb: " << (flagBDDb ? "true" : "false") << endl;
     cout << "dsu3_limit: " << dsu3_limit << endl;
     cout << "ewp_limit: " << ewp_limit << endl;
+    cout << "nIterationsPreRun: " << nIterationsPreRun << endl;
+    cout << "nIterationsRun: " << nIterationsRun << endl;
+    cout << "nIterationsPreRunFactorized: " << nIterationsPreRunFactorized << endl;
+    cout << "nIterationsUpdateMax: " << nIterationsUpdateMax << endl;
     // Initialize MPI
     MPI_Init(NULL, NULL);
     // Initialize BAT logging
-    BCLog::OpenLog("log_GM.txt", BCLog::detail, BCLog::detail);
+    BCLog::OpenLog(outputFileName+"log.txt", BCLog::detail, BCLog::detail);
     BCLog::SetLogLevelScreen(BCLog::summary);
 
     // Create an instance of the BqDqDqbar model
@@ -74,16 +72,12 @@ int main(int argc, char* argv[]) {
 
     // Set the number of chains, pre-run, and run iterations
     model.SetNChains(12);
-    model.SetNIterationsPreRunMax(20000000); // Pre-run iterations
-    model.SetNIterationsRun(1000000);
-    model.SetProposeMultivariate(true);
-    unsigned int nParameters = model.GetNParameters();
-    cout << "Expected number of parameters: " << nParameters << endl;
-
-    model.SetNIterationsPreRunCheck(1000);
-    model.SetInitialPositionScheme(BCEngineMCMC::kInitCenter);
-    cout << "Set number of chains, pre-runs, and run iterations..." << endl;
-
+    model.SetNIterationsPreRunMax(nIterationsPreRun); // Pre-run iterations
+    model.SetNIterationsRun(nIterationsRun);
+    model.SetProposeMultivariate(false);
+    //model.SetNIterationsPreRunFactorized(nIterationsPreRunFactorized);
+    model.SetNIterationsPreRunCheck(nIterationsUpdateMax);
+    
     // Start time measurement
     auto start = chrono::high_resolution_clock::now();
 
@@ -94,69 +88,23 @@ int main(int argc, char* argv[]) {
              << ", " << model.GetParameter(i).GetUpperLimit() << "]" << endl;
     }
 
-    // ==============================
-    // PRE-RUN Progress Tracking
-    // ==============================
-    cout << "Starting Pre-run..." << endl;
-    unsigned int totalPreRun = model.GetNIterationsPreRunMax();
-    unsigned int updateFrequencyPreRun = totalPreRun / 100; // Update every 1%
 
-    for (unsigned int i = 0; i < totalPreRun; i += updateFrequencyPreRun) {
-        model.FindMode(model.GetBestFitParameters()); // Pre-run step
-
-        auto now = chrono::high_resolution_clock::now();
-        chrono::duration<double> elapsedTime = now - start;
-        showProgressBar(i, totalPreRun, elapsedTime.count());
-    }
-
-    showProgressBar(totalPreRun, totalPreRun, 0); // Ensure completion is printed
-    cout << endl;
-    cout << "Pre-run completed!" << endl;
-
-    // ==============================
-    // MCMC RUN Progress Tracking
-    // ==============================
-    cout << "Starting MCMC Run..." << endl;
-    unsigned int totalRun = model.GetNIterationsRun();
-    unsigned int updateFrequencyRun = totalRun / 100; // Update every 1%
-
-    for (unsigned int i = 0; i < totalRun; i += updateFrequencyRun) {
-        model.MarginalizeAll();  // MCMC step
-
-        auto now = chrono::high_resolution_clock::now();
-        chrono::duration<double> elapsedTime = now - start;
-        showProgressBar(i, totalRun, elapsedTime.count());
-    }
-
-    showProgressBar(totalRun, totalRun, 0); // Ensure completion is printed
-    cout << endl;
-    cout << "MCMC Run completed!" << endl;
-
-    // ==============================
-    // Save Results & Log Output
-    // ==============================
-    std::vector<double> bestFitParameters = model.GetBestFitParameters();
-
-    std::ofstream resultFile("results_GM.txt");
-    resultFile << "Best-fit parameters:\n";
-    for (unsigned i = 0; i < model.GetNParameters(); ++i) {
-        resultFile << model.GetParameter(i).GetName() << ": "
-                   << model.GetBestFitParameters()[i] << std::endl;
-    }
-    resultFile.close();
+    model.MarginalizeAll();  // MCMC
 
     model.PrintSummary();
-    model.PrintAllMarginalized("marginalized_parameters_GM.pdf");
-    model.WriteMarginalizedDistributions("marginalized_pars_GM.root", "RECREATE");
-    model.SaveHistograms("output_histograms_GM.root");
+    model.PrintAllMarginalized(outputFileName+"marginalized_parameters.pdf");
+    model.PrintCorrelationMatrix(outputFileName+"correlation_matrix.pdf");
+    model.WriteMarginalizedDistributions(outputFileName+"marginalized_pars.root", "RECREATE");
+    model.SaveHistograms(outputFileName+"output_histograms.root");
     // model.PrintObservablePulls("observable_pulls_GM.txt");
+    // model.PrintHistogram();
 
     BCLog::OutSummary("MCMC analysis completed.");
     BCLog::CloseLog();
 
     // End time measurement
-    auto end = chrono::high_resolution_clock::now();
-    chrono::duration<double> elapsedTime = end - start;
+    auto endTime = chrono::high_resolution_clock::now();
+    chrono::duration<double> elapsedTime = endTime - start;
     cout << "\nExecution time: " << elapsedTime.count() << " seconds" << endl;
 
     MPI_Finalize();

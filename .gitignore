@@ -1,3 +1,9 @@
+# build directory
+build/*
+
+#installation directory
+dist/*
+
 # Prerequisites
 *.d
 
