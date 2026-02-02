@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug mainGM",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/mainGM",
+      "args": [
+        "--flagBJPSIP",
+        "--flagBJPSIV",
+        "--flagBDDb",
+        "--dsu3_limit",
+        "1."
+      ],
+      "cwd": "${workspaceFolder}/build",
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "MIMode": "lldb"
+    }
+  ]
+}

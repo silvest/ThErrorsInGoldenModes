@@ -98,6 +98,7 @@ int main(int argc, char* argv[]) {
     model.SetProposeMultivariate(true);
     model.SetNIterationsPreRunFactorized(nIterationsPreRunFactorized);
     model.SetNIterationsPreRunCheck(nIterationsUpdateMax);
+    model.SetInitialPositionScheme(BCEngineMCMC::kInitCenter);
     
     // Start time measurement
     auto start = chrono::high_resolution_clock::now();

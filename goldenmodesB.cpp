@@ -42,10 +42,12 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     if (BJPSIP)
     {
         channels.insert(channels.end(), pseudoscalarMesonChannels.begin(), pseudoscalarMesonChannels.end());
+        channelNamesSU3.insert(channelNamesSU3.end(), pseudoscalarMesonChannelsSU3.begin(), pseudoscalarMesonChannelsSU3.end());
     }
     if (BJPSIV)
     {
         channels.insert(channels.end(), vectorMesonChannels.begin(), vectorMesonChannels.end());
+        channelNamesSU3.insert(channelNamesSU3.end(), vectorMesonChannelsSU3.begin(), vectorMesonChannelsSU3.end());
         vector<string> polarizedChannels;
         for (const auto &chan : vectorMesonChannels)
         {
@@ -58,6 +60,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     if (BDDb)
     {
         channels.insert(channels.end(), ddbarChannels.begin(), ddbarChannels.end());
+        channelNamesSU3.insert(channelNamesSU3.end(), ddbarChannelsSU3.begin(), ddbarChannelsSU3.end());
     }
 
     DeclareParameters(); // Ensure parameters are defined
@@ -1146,8 +1149,8 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addAmplitudeParameter("E2t_ccsd_BJPSIP_re", 0., 10.);
         addAmplitudeParameter("E2t_ccsd_BJPSIP_im", 0., 0.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_im", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_re", -10., 11.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_im", -10., 11.);
     }
     else if (channel == "Bdjpsip0")
     {
@@ -1164,8 +1167,8 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -10., 11.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -10., 11.);
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_re", "E2t_ccsd_BJPSIP_re");
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_im", "E2t_ccsd_BJPSIP_im");
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_re", "G2t_scd_BJPSIP_re");
@@ -1196,16 +1199,16 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_im", "E2t_ccsd_BJPSIP_im");
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -10., 11.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -10., 11.);
         addSU3BreakingParameter("delta_EA2t_ccsd_BJPSIP_re", "EA2t_ccdd_BJPSIP_re");
         addSU3BreakingParameter("delta_EA2t_ccsd_BJPSIP_im", "EA2t_ccdd_BJPSIP_im");
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -10., 11.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -10., 11.);
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_re", "G2t_scd_BJPSIP_re");
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_im", "G2t_scd_BJPSIP_im");
-        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -10., 10.);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -10., 11.);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -10., 11.);
         addSU3BreakingParameter("delta_G4t_csd_BJPSIP_re", "G4t_cdd_BJPSIP_re");
         addSU3BreakingParameter("delta_G4t_csd_BJPSIP_im", "G4t_cdd_BJPSIP_im");
     }
@@ -1234,16 +1237,16 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_im", "E2t_ccsd_BJPSIP_im");
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -10., 11.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -10., 11.);
         addSU3BreakingParameter("delta_EA2t_ccsd_BJPSIP_re", "EA2t_ccdd_BJPSIP_re");
         addSU3BreakingParameter("delta_EA2t_ccsd_BJPSIP_im", "EA2t_ccdd_BJPSIP_im");
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -10., 11.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -10., 11.);
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_re", "G2t_scd_BJPSIP_re");
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_im", "G2t_scd_BJPSIP_im");
-        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -10., 10.);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -10., 11.);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -10., 11.);
         addSU3BreakingParameter("delta_G4t_csd_BJPSIP_re", "G4t_cdd_BJPSIP_re");
         addSU3BreakingParameter("delta_G4t_csd_BJPSIP_im", "G4t_cdd_BJPSIP_im");
     }
@@ -1261,12 +1264,12 @@ void goldenmodesB::DefineParameters(const string &channel)
         channelParameters[channel] = params;
         addAmplitudeParameter("E2t_ccsd_BJPSIP_re", 0., 10.);
         addAmplitudeParameter("E2t_ccsd_BJPSIP_im", 0., 0.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_im", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_re", -10., 11.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_im", -10., 11.);
         addAmplitudeParameter("dP2EW_scu_BPJPSI_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP2EW_scu_BPJPSI_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("EA1_sdcd_BPJPSI_re", -10., 10.);
-        addAmplitudeParameter("EA1_sdcd_BPJPSI_im", -10., 10.);
+        addAmplitudeParameter("EA1_sdcd_BPJPSI_re", -10., 11.);
+        addAmplitudeParameter("EA1_sdcd_BPJPSI_im", -10., 11.);
     }
     else if (channel == "Bpjpsipp")
     {
@@ -1429,12 +1432,12 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addAmplitudeParameter("E2t_ccss_BJPSIV_re", 0., 10., true);
         addAmplitudeParameter("E2t_ccss_BJPSIV_im", 0., 0., true);
-        addAmplitudeParameter("G2t_scs_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G2t_scs_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("G4t_css_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G4t_css_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("G2t_scs_BJPSIV_re", -10., 11., true);
+        addAmplitudeParameter("G2t_scs_BJPSIV_im", -10., 11., true);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_re", -10., 11., true);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_im", -10., 11., true);
+        addAmplitudeParameter("G4t_css_BJPSIV_re", -10., 11., true);
+        addAmplitudeParameter("G4t_css_BJPSIV_im", -10., 11., true);
     }
     else if (channel == "Bsjpsiom")
     {
@@ -1470,8 +1473,8 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_G4t_cds_BJPSIV_im", "G4t_css_BJPSIV_im", true);
         addAmplitudeParameter("dP4EW_ucs_BVJPSI_re", -ewp_limit, ewp_limit, true);
         addAmplitudeParameter("dP4EW_ucs_BVJPSI_im", -ewp_limit, ewp_limit, true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -10., 10., true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -10., 10., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -10., 11., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -10., 11., true);
     }
     else if (channel == "Bsjpsikbst0")
     {
@@ -1514,8 +1517,8 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addAmplitudeParameter("dP4EW_ucs_BVJPSI_re", -ewp_limit, ewp_limit, true);
         addAmplitudeParameter("dP4EW_ucs_BVJPSI_im", -ewp_limit, ewp_limit, true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -10., 10., true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -10., 10., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -10., 11., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -10., 11., true);
     }
     else if (channel == "Bdjpsiom")
     {
@@ -1585,24 +1588,24 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addSU3BreakingParameter("delta_E2t_ccds_BJPSIV_re", "E2t_ccss_BJPSIV_re", true);
         addSU3BreakingParameter("delta_E2t_ccds_BJPSIV_im", "E2t_ccss_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_re", "E2t_ccds_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_im", "E2t_ccds_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_re", "delta_E2t_ccds_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_im", "delta_E2t_ccds_BJPSIV_im", true);
         addSU3BreakingParameter("delta_G2t_dcs_BJPSIV_re", "G2t_scs_BJPSIV_re", true);
         addSU3BreakingParameter("delta_G2t_dcs_BJPSIV_im", "G2t_scs_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_re", "G2t_dcs_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_im", "G2t_dcs_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_re", "delta_G2t_dcs_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_im", "delta_G2t_dcs_BJPSIV_im", true);
         addSU3BreakingParameter("delta_dP4EW_ucd_BVJPSI_re", "dP4EW_ucs_BVJPSI_re", true);
         addSU3BreakingParameter("delta_dP4EW_ucd_BVJPSI_im", "dP4EW_ucs_BVJPSI_im", true);
         addSU3BreakingParameter("delta_EA2t_ccds_BJPSIV_re", "EA2t_ccss_BJPSIV_re", true);
         addSU3BreakingParameter("delta_EA2t_ccds_BJPSIV_im", "EA2t_ccss_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_EA2t_ccdd_BJPSIV_re", "EA2t_ccds_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_EA2t_ccdd_BJPSIV_im", "EA2t_ccds_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_EA2t_ccdd_BJPSIV_re", "delta_EA2t_ccds_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_EA2t_ccdd_BJPSIV_im", "delta_EA2t_ccds_BJPSIV_im", true);
         addSU3BreakingParameter("delta_EA2_ddcd_BVJPSI_re", "EA2_ddcs_BVJPSI_re", true);
         addSU3BreakingParameter("delta_EA2_ddcd_BVJPSI_im", "EA2_ddcs_BVJPSI_im", true);
         addSU3BreakingParameter("delta_G4t_cds_BJPSIV_re", "G4t_css_BJPSIV_re", true);
         addSU3BreakingParameter("delta_G4t_cds_BJPSIV_im", "G4t_css_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_G4t_cdd_BJPSIV_re", "G4t_cds_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_G4t_cdd_BJPSIV_im", "G4t_cds_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_G4t_cdd_BJPSIV_re", "delta_G4t_cds_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_G4t_cdd_BJPSIV_im", "delta_G4t_cds_BJPSIV_im", true);
     }
     else if (channel == "Bdjpsikst0")
     {
@@ -1668,16 +1671,16 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addSU3BreakingParameter("delta_E2t_ccsd_BJPSIV_re", "E2t_ccss_BJPSIV_re", true);
         addSU3BreakingParameter("delta_E2t_ccsd_BJPSIV_im", "E2t_ccss_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_re", "E2t_ccsd_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_im", "E2t_ccsd_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_re", "delta_E2t_ccsd_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_im", "delta_E2t_ccsd_BJPSIV_im", true);
         addSU3BreakingParameter("delta_P4EW_ucd_BVJPSI_re", "dP4EW_ucs_BVJPSI_re", true);
         addSU3BreakingParameter("delta_P4EW_ucd_BVJPSI_im", "dP4EW_ucs_BVJPSI_im", true);
         addSU3BreakingParameter("delta_EA2_ddcd_BVJPSI_re", "EA2_ddcs_BVJPSI_re", true);
         addSU3BreakingParameter("delta_EA2_ddcd_BVJPSI_im", "EA2_ddcs_BVJPSI_im", true);
         addSU3BreakingParameter("delta_G2t_dcs_BJPSIV_re", "G2t_scs_BJPSIV_re", true);
         addSU3BreakingParameter("delta_G2t_dcs_BJPSIV_im", "G2t_scs_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_re", "G2t_dcs_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_im", "G2t_dcs_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_re", "delta_G2t_dcs_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_im", "delta_G2t_dcs_BJPSIV_im", true);
     }
     else if (channel == "Bdjpsiphi")
     {
@@ -1735,8 +1738,8 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_E2t_ccsd_BJPSIV_im", "E2t_ccss_BJPSIV_im", true);
         addAmplitudeParameter("dP2EW_scu_BJPSIV_re", -ewp_limit, ewp_limit, true);
         addAmplitudeParameter("dP2EW_scu_BJPSIV_im", -ewp_limit, ewp_limit, true);
-        addAmplitudeParameter("EA1_sdcd_BVJPSI_re", -10., 10., true);
-        addAmplitudeParameter("EA1_sdcd_BVJPSI_im", -10., 10., true);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_re", -10., 11., true);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_im", -10., 11., true);
         addSU3BreakingParameter("delta_G2t_scd_BJPSIV_re", "G2t_scs_BJPSIV_re", true);
         addSU3BreakingParameter("delta_G2t_scd_BJPSIV_im", "G2t_scs_BJPSIV_im", true);
     }
@@ -1784,16 +1787,16 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addSU3BreakingParameter("delta_E2t_ccsd_BJPSIV_re", "E2t_ccss_BJPSIV_re", true);
         addSU3BreakingParameter("delta_E2t_ccsd_BJPSIV_im", "E2t_ccss_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_re", "E2t_ccsd_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_im", "E2t_ccsd_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_re", "delta_E2t_ccsd_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_im", "delta_E2t_ccsd_BJPSIV_im", true);
         addSU3BreakingParameter("delta_dP2EW_dcu_BJPSIV_re", "dP2EW_scu_BJPSIV_re", true);
         addSU3BreakingParameter("delta_dP2EW_dcu_BJPSIV_im", "dP2EW_scu_BJPSIV_im", true);
         addSU3BreakingParameter("delta_EA1_ddcd_BVJPSI_re", "EA1_sdcd_BVJPSI_re", true);
         addSU3BreakingParameter("delta_EA1_ddcd_BVJPSI_im", "EA1_sdcd_BVJPSI_im", true);
         addSU3BreakingParameter("delta_G2t_scd_BJPSIV_re", "G2t_scs_BJPSIV_re", true);
         addSU3BreakingParameter("delta_G2t_scd_BJPSIV_im", "G2t_scs_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_re", "G2t_dcs_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_im", "G2t_dcs_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_re", "delta_G2t_dcs_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_im", "delta_G2t_dcs_BJPSIV_im", true);
     }
     else if (channel == "Bsdspdsm")
     {
@@ -1806,14 +1809,14 @@ void goldenmodesB::DefineParameters(const string &channel)
             "G3t_css_BDDb_re", "G3t_css_BDDb_im"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E1t_sccs_BDDb_re", -10., 10.);
+        addAmplitudeParameter("E1t_sccs_BDDb_re", 0., 10.);
         addAmplitudeParameter("E1t_sccs_BDDb_im", 0., 0.);
-        addAmplitudeParameter("A2t_cscs_BDbD_re", -10., 10.);
-        addAmplitudeParameter("A2t_cscs_BDbD_im", -10., 10.);
-        addAmplitudeParameter("G1t_scs_BDDb_re", -10., 10.);
-        addAmplitudeParameter("G1t_scs_BDDb_im", -10., 10.);
-        addAmplitudeParameter("G3t_css_BDDb_re", -10., 10.);
-        addAmplitudeParameter("G3t_css_BDDb_im", -10., 10.);
+        addAmplitudeParameter("A2t_cscs_BDbD_re", -10., 11.);
+        addAmplitudeParameter("A2t_cscs_BDbD_im", -10., 11.);
+        addAmplitudeParameter("G1t_scs_BDDb_re", -10., 11.);
+        addAmplitudeParameter("G1t_scs_BDDb_im", -10., 11.);
+        addAmplitudeParameter("G3t_css_BDDb_re", -10., 11.);
+        addAmplitudeParameter("G3t_css_BDDb_im", -10., 11.);
     }
     else if (channel == "Bsdpdsm")
     {
@@ -1855,8 +1858,8 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_A2t_cdcs_BDbD_im", "A2t_cscs_BDbD_im");
         addAmplitudeParameter("dP3EW_ucs_BDbD_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP3EW_ucs_BDbD_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("A2_dcds_BDDb_re", -10., 10.);
-        addAmplitudeParameter("A2_dcds_BDDb_im", -10., 10.);
+        addAmplitudeParameter("A2_dcds_BDDb_re", -10., 11.);
+        addAmplitudeParameter("A2_dcds_BDDb_im", -10., 11.);
         addSU3BreakingParameter("delta_G3t_cds_BDDb_re", "G3t_css_BDDb_re");
         addSU3BreakingParameter("delta_G3t_cds_BDDb_im", "G3t_css_BDDb_im");
     }
@@ -1902,20 +1905,20 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addSU3BreakingParameter("delta_E1t_dccs_BDDb_re", "E1t_sccs_BDDb_re");
         addSU3BreakingParameter("delta_E1t_dccs_BDDb_im", "E1t_sccs_BDDb_im");
-        addSU3BreakingParameter("delta_E1t_dccd_BDDb_re", "E1t_dccs_BDDb_re");
-        addSU3BreakingParameter("delta_E1t_dccd_BDDb_im", "E1t_dccs_BDDb_im");
+        addSU3BreakingParameter("delta_E1t_dccd_BDDb_re", "delta_E1t_dccs_BDDb_re");
+        addSU3BreakingParameter("delta_E1t_dccd_BDDb_im", "delta_E1t_dccs_BDDb_im");
         addSU3BreakingParameter("delta_A2t_cdcs_BDbD_re", "A2t_cscs_BDbD_re");
         addSU3BreakingParameter("delta_A2t_cdcs_BDbD_im", "A2t_cscs_BDbD_im");
-        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_re", "A2t_cdcs_BDbD_re");
-        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_im", "A2t_cdcs_BDbD_im");
+        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_re", "delta_A2t_cdcs_BDbD_re");
+        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_im", "delta_A2t_cdcs_BDbD_im");
         addSU3BreakingParameter("delta_G1t_dcs_BDDb_re", "G1t_scs_BDDb_re");
         addSU3BreakingParameter("delta_G1t_dcs_BDDb_im", "G1t_scs_BDDb_im");
         addSU3BreakingParameter("delta_G3t_cds_BDDb_re", "G3t_css_BDDb_re");
         addSU3BreakingParameter("delta_G3t_cds_BDDb_im", "G3t_css_BDDb_im");
-        addSU3BreakingParameter("delta_G1t_dcd_BDDb_re", "G1t_dcs_BDDb_re");
-        addSU3BreakingParameter("delta_G1t_dcd_BDDb_im", "G1t_dcs_BDDb_im");
-        addSU3BreakingParameter("delta_G3t_cdd_BDDb_re", "G3t_cds_BDDb_re");
-        addSU3BreakingParameter("delta_G3t_cdd_BDDb_im", "G3t_cds_BDDb_im");
+        addSU3BreakingParameter("delta_G1t_dcd_BDDb_re", "delta_G1t_dcs_BDDb_re");
+        addSU3BreakingParameter("delta_G1t_dcd_BDDb_im", "delta_G1t_dcs_BDDb_im");
+        addSU3BreakingParameter("delta_G3t_cdd_BDDb_re", "delta_G3t_cds_BDDb_re");
+        addSU3BreakingParameter("delta_G3t_cdd_BDDb_im", "delta_G3t_cds_BDDb_im");
     }
     else if (channel == "Bdd0d0b")
     {
@@ -1931,16 +1934,16 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addSU3BreakingParameter("delta_A2t_cdcs_BDbD_re", "A2t_cscs_BDbD_re");
         addSU3BreakingParameter("delta_A2t_cdcs_BDbD_im", "A2t_cscs_BDbD_im");
-        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_re", "A2t_cdcs_BDbD_re");
-        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_im", "A2t_cdcs_BDbD_im");
+        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_re", "delta_A2t_cdcs_BDbD_re");
+        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_im", "delta_A2t_cdcs_BDbD_im");
         addSU3BreakingParameter("delta_dP3EW_ucd_BDbD_re", "dP3EW_ucs_BDbD_re");
         addSU3BreakingParameter("delta_dP3EW_ucd_BDbD_im", "dP3EW_ucs_BDbD_im");
         addSU3BreakingParameter("delta_A2_dcdd_BDDb_re", "A2_dcds_BDDb_re");
         addSU3BreakingParameter("delta_A2_dcdd_BDDb_im", "A2_dcds_BDDb_im");
         addSU3BreakingParameter("delta_G3t_cds_BDDb_re", "G3t_css_BDDb_re");
         addSU3BreakingParameter("delta_G3t_cds_BDDb_im", "G3t_css_BDDb_im");
-        addSU3BreakingParameter("delta_G3t_cdd_BDDb_re", "G3t_cds_BDDb_re");
-        addSU3BreakingParameter("delta_G3t_cdd_BDDb_im", "G3t_cds_BDDb_im");
+        addSU3BreakingParameter("delta_G3t_cdd_BDDb_re", "delta_G3t_cds_BDDb_re");
+        addSU3BreakingParameter("delta_G3t_cdd_BDDb_im", "delta_G3t_cds_BDDb_im");
     }
     else if (channel == "Bpdpd0b")
     {
@@ -1950,19 +1953,22 @@ void goldenmodesB::DefineParameters(const string &channel)
             "delta_E1t_dccd_BDDb_re", "delta_E1t_dccd_BDDb_im",
             "dP1EW_dcu_BDDb_re", "dP1EW_dcu_BDDb_im",
             "A1_dcdd_BDDb_re", "A1_dcdd_BDDb_im",
-            "delta_G1t_dcd_BDDb_re", "delta_G1t_dcd_BDDb_im"};
+            "delta_G1t_dcd_BDDb_re", "delta_G1t_dcd_BDDb_im",
+            "delta_G1t_dcs_BDDb_re", "delta_G1t_dcs_BDDb_im"};
         channelParameters[channel] = params;
 
         addSU3BreakingParameter("delta_E1t_dccs_BDDb_re", "E1t_sccs_BDDb_re");
         addSU3BreakingParameter("delta_E1t_dccs_BDDb_im", "E1t_sccs_BDDb_im");
-        addSU3BreakingParameter("delta_E1t_dccd_BDDb_re", "E1t_dccs_BDDb_re");
-        addSU3BreakingParameter("delta_E1t_dccd_BDDb_im", "E1t_dccs_BDDb_im");
+        addSU3BreakingParameter("delta_E1t_dccd_BDDb_re", "delta_E1t_dccs_BDDb_re");
+        addSU3BreakingParameter("delta_E1t_dccd_BDDb_im", "delta_E1t_dccs_BDDb_im");
         addAmplitudeParameter("dP1EW_dcu_BDDb_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP1EW_dcu_BDDb_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("A1_dcdd_BDDb_re", -10., 10.);
-        addAmplitudeParameter("A1_dcdd_BDDb_im", -10., 10.);
-        addSU3BreakingParameter("delta_G1t_dcd_BDDb_re", "G1t_dcs_BDDb_re");
-        addSU3BreakingParameter("delta_G1t_dcd_BDDb_im", "G1t_dcs_BDDb_im");
+        addAmplitudeParameter("A1_dcdd_BDDb_re", -10., 11.);
+        addAmplitudeParameter("A1_dcdd_BDDb_im", -10., 11.);
+        addSU3BreakingParameter("delta_G1t_dcs_BDDb_re", "G1t_scs_BDDb_re");
+        addSU3BreakingParameter("delta_G1t_dcs_BDDb_im", "G1t_scs_BDDb_im");
+        addSU3BreakingParameter("delta_G1t_dcd_BDDb_re", "delta_G1t_dcs_BDDb_re");
+        addSU3BreakingParameter("delta_G1t_dcd_BDDb_im", "delta_G1t_dcs_BDDb_im");
     }
     else if (channel == "Bpdspd0b")
     {
@@ -2038,9 +2044,9 @@ TComplex goldenmodesB::getPar(const string &baseName) const
     }
 
     // Check if this is a derived amplitude (has a delta parameter)
-    // Look for "delta_<baseName>" in the deltaToReference map
-    auto deltaIt = deltaToReference.find(baseName);
-    if (deltaIt != deltaToReference.end())
+    // Look for "delta_<baseName>" in the deltaReferenceAmplitudes map
+    auto deltaIt = deltaReferenceAmplitudes.find("delta_" + baseName);
+    if (deltaIt != deltaReferenceAmplitudes.end())
     {
         // This is a derived amplitude: result = reference * (1 + delta)
         // Get the delta value
@@ -2051,7 +2057,7 @@ TComplex goldenmodesB::getPar(const string &baseName) const
         {
             TComplex delta(delta_real->second, delta_imag->second);
             // Recursively get the reference amplitude (handles chained deltas)
-            TComplex ref = getPar(deltaIt->second);
+            TComplex ref = getPar(deltaReferenceAmplitudes.at("delta_" + baseName));
             return ref * (TComplex(1, 0) + delta);
         }
     }
@@ -2088,26 +2094,20 @@ double goldenmodesB::getParameterValue(const string &paramName) const
 //----------------------------------------------------------
 
 // compute decay amplitude for each channel
-void goldenmodesB::compute_decay_amplitudes(const string &channel, bool conjugate)
+void goldenmodesB::compute_decay_amplitudes(const string &channel)
 {
-    // cout << "computing decay amplitude for channel " << channel << endl;
-    amplitudes[channel] = TComplex(0.0, 0.0);
 
-    TComplex amp;
-    TComplex amp_0;
-    TComplex amp_paral;
-    TComplex amp_perp;
-    // Get the CKM elements for the current channel, apply conjugation based on the 'conjugate' flag
-    TComplex lam_bs_c = conjugate ? ckm.getVcb() * TComplex::Conjugate(ckm.getVcs()) : ckm.getVcs() * TComplex::Conjugate(ckm.getVcb());
-    TComplex lam_bs_u = conjugate ? ckm.getVub() * TComplex::Conjugate(ckm.getVus()) : ckm.getVus() * TComplex::Conjugate(ckm.getVub());
-    TComplex lam_bd_c = conjugate ? ckm.getVcb() * TComplex::Conjugate(ckm.getVcd()) : ckm.getVcd() * TComplex::Conjugate(ckm.getVcb());
-    TComplex lam_bd_u = conjugate ? ckm.getVub() * TComplex::Conjugate(ckm.getVud()) : ckm.getVud() * TComplex::Conjugate(ckm.getVub());
+    TComplex amp, ampc;
+    TComplex amp_0, ampc_0;
+    TComplex amp_paral, ampc_paral;
+    TComplex amp_perp, ampc_perp;
 
     if (channel == "Bdjpsik0")
     {
         // Bd→J/ψ K⁰: b→c(c̄s), spectator d
         amp = lam_bs_c * getPar("E2t_ccsd_BJPSIP") - lam_bs_u * getPar("G2t_scd_BJPSIP");
-        amplitudes[channel] = amp;
+        ampc = lamst_bs_c * getPar("E2t_ccsd_BJPSIP") - lamst_bs_u * getPar("G2t_scd_BJPSIP");
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdjpsip0")
     {
@@ -2115,7 +2115,10 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel, bool conjugat
         amp = (lam_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI")) -
                lam_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") + getPar("G2t_dcd_BJPSIP"))) /
               sqrt(2.);
-        amplitudes[channel] = amp;
+        ampc = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI")) -
+                lamst_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") + getPar("G2t_dcd_BJPSIP"))) /
+               sqrt(2.);
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdjpsieta8")
     {
@@ -2123,7 +2126,10 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel, bool conjugat
         amp = ((lam_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") - 2. * getPar("EA2t_ccsd_BJPSIP"))) +
                lam_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") + 2. * getPar("G4t_csd_BJPSIP"))) /
               sqrt(6.);
-        amplitudes[channel] = amp;
+        ampc = ((lamst_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") - 2. * getPar("EA2t_ccsd_BJPSIP"))) +
+                lamst_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") + 2. * getPar("G4t_csd_BJPSIP"))) /
+               sqrt(6.);
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdjpsieta1")
     {
@@ -2131,33 +2137,42 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel, bool conjugat
         amp = ((lam_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") + getPar("EA2t_ccsd_BJPSIP"))) +
                lam_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") - getPar("G4t_csd_BJPSIP"))) /
               sqrt(3.);
-        amplitudes[channel] = amp;
+        ampc = ((lamst_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") + getPar("EA2t_ccsd_BJPSIP"))) +
+                lamst_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") - getPar("G4t_csd_BJPSIP"))) /
+               sqrt(3.);
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bpjpsikp")
     {
         // B⁺→J/ψ K⁺: b→c(c̄s), spectator u
         amp = lam_bs_c * (getPar("E2t_ccsd_BJPSIP") + getPar("dP2EW_scu_BPJPSI")) +
               lam_bs_u * (getPar("EA1_sdcd_BPJPSI") + getPar("dP2EW_scu_BPJPSI") - getPar("G2t_scd_BJPSIP"));
-        amplitudes[channel] = amp;
+        ampc = lamst_bs_c * (getPar("E2t_ccsd_BJPSIP") + getPar("dP2EW_scu_BPJPSI")) +
+               lamst_bs_u * (getPar("EA1_sdcd_BPJPSI") + getPar("dP2EW_scu_BPJPSI") - getPar("G2t_scd_BJPSIP"));
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bpjpsipp")
     {
         // B⁺→J/ψ π⁺: b→c(c̄d), spectator u
         amp = lam_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP2EW_dcu_BPJPSI")) +
               lam_bd_u * (getPar("EA1_ddcd_BPJPSI") + getPar("dP2EW_dcu_BPJPSI") - getPar("G2t_dcd_BJPSIP"));
-        amplitudes[channel] = amp;
+        ampc = lamst_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP2EW_dcu_BPJPSI")) +
+               lamst_bd_u * (getPar("EA1_ddcd_BPJPSI") + getPar("dP2EW_dcu_BPJPSI") - getPar("G2t_dcd_BJPSIP"));
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsip0")
     {
         // Bs→J/ψ π⁰: b→c(c̄s), spectator s
         amp = -(lam_bs_c * getPar("dP4EW_ucs_BPJPSI") + lam_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI"))) / sqrt(2.);
-        amplitudes[channel] = amp;
+        ampc = -(lamst_bs_c * getPar("dP4EW_ucs_BPJPSI") + lamst_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI"))) / sqrt(2.);
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsik0b")
     {
         // Bs→J/ψ \bar{K}⁰: b→c(c̄d), spectator s
         amp = lam_bd_c * getPar("E2t_ccds_BJPSIP") - lam_bd_u * getPar("G2t_dcs_BJPSIP");
-        amplitudes[channel] = amp;
+        ampc = lamst_bd_c * getPar("E2t_ccds_BJPSIP") - lamst_bd_u * getPar("G2t_dcs_BJPSIP");
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsieta8")
     {
@@ -2165,7 +2180,10 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel, bool conjugat
         amp = ((lam_bs_c * (-2. * getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") - 2. * getPar("EA2t_ccss_BJPSIP"))) +
                lam_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") + 2. * getPar("G4t_css_BJPSIP"))) /
               sqrt(6.);
-        amplitudes[channel] = amp;
+        ampc = ((lamst_bs_c * (-2. * getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") - 2. * getPar("EA2t_ccss_BJPSIP"))) +
+                lamst_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") + 2. * getPar("G4t_css_BJPSIP"))) /
+               sqrt(6.);
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsieta1")
     {
@@ -2173,20 +2191,29 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel, bool conjugat
         amp = ((lam_bs_c * (getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") + getPar("EA2t_ccss_BJPSIP"))) +
                lam_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") - getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") - getPar("G4t_css_BJPSIP"))) /
               sqrt(3.);
-        amplitudes[channel] = amp;
+        ampc = ((lamst_bs_c * (getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") + getPar("EA2t_ccss_BJPSIP"))) +
+                lamst_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") - getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") - getPar("G4t_css_BJPSIP"))) /
+               sqrt(3.);
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsiphi")
     {
         // Bs→J/ψ φ: b→c(c̄s), spectator s
         amp_0 = -lam_bs_c * (getPar("E2t_ccss_BJPSIV_0") + getPar("EA2t_ccss_BJPSIV_0")) +
                 lam_bs_u * (getPar("G2t_scs_BJPSIV_0") + getPar("G4t_css_BJPSIV_0"));
+        ampc_0 = -lamst_bs_c * (getPar("E2t_ccss_BJPSIV_0") + getPar("EA2t_ccss_BJPSIV_0")) +
+                 lamst_bs_u * (getPar("G2t_scs_BJPSIV_0") + getPar("G4t_css_BJPSIV_0"));
         amp_paral = -lam_bs_c * (getPar("E2t_ccss_BJPSIV_paral") + getPar("EA2t_ccss_BJPSIV_paral")) +
                     lam_bs_u * (getPar("G2t_scs_BJPSIV_paral") + getPar("G4t_css_BJPSIV_paral"));
+        ampc_paral = -lamst_bs_c * (getPar("E2t_ccss_BJPSIV_paral") + getPar("EA2t_ccss_BJPSIV_paral")) +
+                     lamst_bs_u * (getPar("G2t_scs_BJPSIV_paral") + getPar("G4t_css_BJPSIV_paral"));
         amp_perp = -lam_bs_c * (getPar("E2t_ccss_BJPSIV_perp") + getPar("EA2t_ccss_BJPSIV_perp")) +
                    lam_bs_u * (getPar("G2t_scs_BJPSIV_perp") + getPar("G4t_css_BJPSIV_perp"));
-        amplitudes[channel + "_0"] = amp_0;
-        amplitudes[channel + "_paral"] = amp_paral;
-        amplitudes[channel + "_perp"] = amp_perp;
+        ampc_perp = -lamst_bs_c * (getPar("E2t_ccss_BJPSIV_perp") + getPar("EA2t_ccss_BJPSIV_perp")) +
+                    lamst_bs_u * (getPar("G2t_scs_BJPSIV_perp") + getPar("G4t_css_BJPSIV_perp"));
+        amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
+        amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
+        amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
     }
     else if (channel == "Bsjpsiom")
     {
@@ -2194,35 +2221,50 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel, bool conjugat
         amp_0 = (lam_bs_c * (2. * getPar("EA2t_ccds_BJPSIV_0") + getPar("dP4EW_ucs_BVJPSI_0")) +
                  lam_bs_u * (getPar("EA2_ddcs_BVJPSI_0") + getPar("dP4EW_ucs_BVJPSI_0") - 2. * getPar("G4t_cds_BJPSIV_0"))) /
                 sqrt(2.);
+        ampc_0 = (lamst_bs_c * (2. * getPar("EA2t_ccds_BJPSIV_0") + getPar("dP4EW_ucs_BVJPSI_0")) +
+                  lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_0") + getPar("dP4EW_ucs_BVJPSI_0") - 2. * getPar("G4t_cds_BJPSIV_0"))) /
+                 sqrt(2.);
         amp_paral = (lam_bs_c * (2. * getPar("EA2t_ccds_BJPSIV_paral") + getPar("dP4EW_ucs_BVJPSI_paral")) +
                      lam_bs_u * (getPar("EA2_ddcs_BVJPSI_paral") + getPar("dP4EW_ucs_BVJPSI_paral") - 2. * getPar("G4t_cds_BJPSIV_paral"))) /
                     sqrt(2.);
+        ampc_paral = (lamst_bs_c * (2. * getPar("EA2t_ccds_BJPSIV_paral") + getPar("dP4EW_ucs_BVJPSI_paral")) +
+                      lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_paral") + getPar("dP4EW_ucs_BVJPSI_paral") - 2. * getPar("G4t_cds_BJPSIV_paral"))) /
+                     sqrt(2.);
         amp_perp = (lam_bs_c * (2. * getPar("EA2t_ccds_BJPSIV_perp") + getPar("dP4EW_ucs_BVJPSI_perp")) +
                     lam_bs_u * (getPar("EA2_ddcs_BVJPSI_perp") + getPar("dP4EW_ucs_BVJPSI_perp") - 2. * getPar("G4t_cds_BJPSIV_perp"))) /
                    sqrt(2.);
-        amplitudes[channel + "_0"] = amp_0;
-        amplitudes[channel + "_paral"] = amp_paral;
-        amplitudes[channel + "_perp"] = amp_perp;
+        ampc_perp = (lamst_bs_c * (2. * getPar("EA2t_ccds_BJPSIV_perp") + getPar("dP4EW_ucs_BVJPSI_perp")) +
+                     lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_perp") + getPar("dP4EW_ucs_BVJPSI_perp") - 2. * getPar("G4t_cds_BJPSIV_perp"))) /
+                    sqrt(2.);
+        amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
+        amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
+        amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
     }
     else if (channel == "Bsjpsikbst0")
     {
         // Bs→J/ψ \bar{K}*: b→c(c̄d), spectator s
         amp_0 = -lam_bd_c * getPar("E2t_ccds_BJPSIV_0") - lam_bd_u * getPar("G2t_dcs_BJPSIV_0");
+        ampc_0 = -lamst_bd_c * getPar("E2t_ccds_BJPSIV_0") - lamst_bd_u * getPar("G2t_dcs_BJPSIV_0");
         amp_paral = -lam_bd_c * getPar("E2t_ccds_BJPSIV_paral") - lam_bd_u * getPar("G2t_dcs_BJPSIV_paral");
+        ampc_paral = -lamst_bd_c * getPar("E2t_ccds_BJPSIV_paral") - lamst_bd_u * getPar("G2t_dcs_BJPSIV_paral");
         amp_perp = -lam_bd_c * getPar("E2t_ccds_BJPSIV_perp") - lam_bd_u * getPar("G2t_dcs_BJPSIV_perp");
-        amplitudes[channel + "_0"] = amp_0;
-        amplitudes[channel + "_paral"] = amp_paral;
-        amplitudes[channel + "_perp"] = amp_perp;
+        ampc_perp = -lamst_bd_c * getPar("E2t_ccds_BJPSIV_perp") - lamst_bd_u * getPar("G2t_dcs_BJPSIV_perp");
+        amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
+        amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
+        amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
     }
     else if (channel == "Bsjpsirho0")
     {
         // Bs→J/ψ \rho⁰: b→c(c̄s), spectator s
         amp_0 = -(lam_bs_c * getPar("dP4EW_ucs_BVJPSI_0") + lam_bs_u * (getPar("EA2_ddcs_BVJPSI_0") + getPar("dP4EW_ucs_BVJPSI_0"))) / sqrt(2.);
+        ampc_0 = -(lamst_bs_c * getPar("dP4EW_ucs_BVJPSI_0") + lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_0") + getPar("dP4EW_ucs_BVJPSI_0"))) / sqrt(2.);
         amp_paral = -(lam_bs_c * getPar("dP4EW_ucs_BVJPSI_paral") + lam_bs_u * (getPar("EA2_ddcs_BVJPSI_paral") + getPar("dP4EW_ucs_BVJPSI_paral"))) / sqrt(2.);
+        ampc_paral = -(lamst_bs_c * getPar("dP4EW_ucs_BVJPSI_paral") + lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_paral") + getPar("dP4EW_ucs_BVJPSI_paral"))) / sqrt(2.);
         amp_perp = -(lam_bs_c * getPar("dP4EW_ucs_BVJPSI_perp") + lam_bs_u * (getPar("EA2_ddcs_BVJPSI_perp") + getPar("dP4EW_ucs_BVJPSI_perp"))) / sqrt(2.);
-        amplitudes[channel + "_0"] = amp_0;
-        amplitudes[channel + "_paral"] = amp_paral;
-        amplitudes[channel + "_perp"] = amp_perp;
+        ampc_perp = -(lamst_bs_c * getPar("dP4EW_ucs_BVJPSI_perp") + lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_perp") + getPar("dP4EW_ucs_BVJPSI_perp"))) / sqrt(2.);
+        amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
+        amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
+        amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
     }
     else if (channel == "Bdjpsiom")
     {
@@ -2230,25 +2272,37 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel, bool conjugat
         amp_0 = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + 2. * getPar("EA2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) +
                  lam_bd_u * (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") - getPar("G2t_dcd_BJPSIV_0") - 2. * getPar("G4t_cdd_BJPSIV_0"))) /
                 sqrt(2.);
+        ampc_0 = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + 2. * getPar("EA2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) +
+                  lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") - getPar("G2t_dcd_BJPSIV_0") - 2. * getPar("G4t_cdd_BJPSIV_0"))) /
+                 sqrt(2.);
         amp_paral = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + 2. * getPar("EA2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) +
                      lam_bd_u * (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") - getPar("G2t_dcd_BJPSIV_paral") - 2. * getPar("G4t_cdd_BJPSIV_paral"))) /
                     sqrt(2.);
+        ampc_paral = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + 2. * getPar("EA2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) +
+                      lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") - getPar("G2t_dcd_BJPSIV_paral") - 2. * getPar("G4t_cdd_BJPSIV_paral"))) /
+                     sqrt(2.);
         amp_perp = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + 2. * getPar("EA2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) +
                     lam_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") - getPar("G2t_dcd_BJPSIV_perp") - 2. * getPar("G4t_cdd_BJPSIV_perp"))) /
                    sqrt(2.);
-        amplitudes[channel + "_0"] = amp_0;
-        amplitudes[channel + "_paral"] = amp_paral;
-        amplitudes[channel + "_perp"] = amp_perp;
+        ampc_perp = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + 2. * getPar("EA2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) +
+                     lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") - getPar("G2t_dcd_BJPSIV_perp") - 2. * getPar("G4t_cdd_BJPSIV_perp"))) /
+                    sqrt(2.);
+        amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
+        amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
+        amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
     }
     else if (channel == "Bdjpsikst0")
     {
         // Bd→J/ψ K*: b→c(c̄s), spectator d
         amp_0 = lam_bs_c * getPar("E2t_ccsd_BJPSIV_0") - lam_bs_u * getPar("G2t_scd_BJPSIV_0");
+        ampc_0 = lamst_bs_c * getPar("E2t_ccsd_BJPSIV_0") - lamst_bs_u * getPar("G2t_scd_BJPSIV_0");
         amp_paral = lam_bs_c * getPar("E2t_ccsd_BJPSIV_paral") - lam_bs_u * getPar("G2t_scd_BJPSIV_paral");
+        ampc_paral = lamst_bs_c * getPar("E2t_ccsd_BJPSIV_paral") - lamst_bs_u * getPar("G2t_scd_BJPSIV_paral");
         amp_perp = lam_bs_c * getPar("E2t_ccsd_BJPSIV_perp") - lam_bs_u * getPar("G2t_scd_BJPSIV_perp");
-        amplitudes[channel + "_0"] = amp_0;
-        amplitudes[channel + "_paral"] = amp_paral;
-        amplitudes[channel + "_perp"] = amp_perp;
+        ampc_perp = lamst_bs_c * getPar("E2t_ccsd_BJPSIV_perp") - lamst_bs_u * getPar("G2t_scd_BJPSIV_perp");
+        amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
+        amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
+        amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
     }
     else if (channel == "Bdjpsirho0")
     {
@@ -2256,212 +2310,160 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel, bool conjugat
         amp_0 = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) -
                  lam_bd_u * (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") + getPar("G2t_dcd_BJPSIV_0"))) /
                 sqrt(2.);
+        ampc_0 = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) -
+                  lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") + getPar("G2t_dcd_BJPSIV_0"))) /
+                 sqrt(2.);
         amp_paral = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) -
                      lam_bd_u * (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") + getPar("G2t_dcd_BJPSIV_paral"))) /
                     sqrt(2.);
+        ampc_paral = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) -
+                      lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") + getPar("G2t_dcd_BJPSIV_paral"))) /
+                     sqrt(2.);
         amp_perp = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) -
                     lam_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") + getPar("G2t_dcd_BJPSIV_perp"))) /
                    sqrt(2.);
-        amplitudes[channel + "_0"] = amp_0;
-        amplitudes[channel + "_paral"] = amp_paral;
-        amplitudes[channel + "_perp"] = amp_perp;
+        ampc_perp = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) -
+                     lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") + getPar("G2t_dcd_BJPSIV_perp"))) /
+                    sqrt(2.);
+        amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
+        amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
+        amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
     }
     else if (channel == "Bdjpsiphi")
     {
         // Bd→J/ψ \phi: b→c(c̄d), spectator d
         amp_0 = -lam_bd_c * getPar("EA2t_ccsd_BJPSIV_0") - lam_bd_u * getPar("G4t_csd_BJPSIV_0");
+        ampc_0 = -lamst_bd_c * getPar("EA2t_ccsd_BJPSIV_0") - lamst_bd_u * getPar("G4t_csd_BJPSIV_0");
         amp_paral = -lam_bd_c * getPar("EA2t_ccsd_BJPSIV_paral") - lam_bd_u * getPar("G4t_csd_BJPSIV_paral");
+        ampc_paral = -lamst_bd_c * getPar("EA2t_ccsd_BJPSIV_paral") - lamst_bd_u * getPar("G4t_csd_BJPSIV_paral");
         amp_perp = -lam_bd_c * getPar("EA2t_ccsd_BJPSIV_perp") - lam_bd_u * getPar("G4t_csd_BJPSIV_perp");
-        amplitudes[channel + "_0"] = amp_0;
-        amplitudes[channel + "_paral"] = amp_paral;
-        amplitudes[channel + "_perp"] = amp_perp;
+        ampc_perp = -lamst_bd_c * getPar("EA2t_ccsd_BJPSIV_perp") - lamst_bd_u * getPar("G4t_csd_BJPSIV_perp");
+        amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
+        amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
+        amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
     }
     else if (channel == "Bpjpsirhop")
     {
         // B⁺→J/ψ ρ⁺: b→c(c̄d), spectator u
         amp_0 = lam_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + getPar("dP2EW_dcu_BJPSIV_0")) +
                 lam_bd_u * (getPar("EA1_ddcd_BVJPSI_0") + getPar("dP2EW_dcu_BJPSIV_0") - getPar("G2t_dcd_BJPSIV_0"));
+        ampc_0 = lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + getPar("dP2EW_dcu_BJPSIV_0")) +
+                 lamst_bd_u * (getPar("EA1_ddcd_BVJPSI_0") + getPar("dP2EW_dcu_BJPSIV_0") - getPar("G2t_dcd_BJPSIV_0"));
         amp_paral = lam_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + getPar("dP2EW_dcu_BJPSIV_paral")) +
                     lam_bd_u * (getPar("EA1_ddcd_BVJPSI_paral") + getPar("dP2EW_dcu_BJPSIV_paral") - getPar("G2t_dcd_BJPSIV_paral"));
+        ampc_paral = lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + getPar("dP2EW_dcu_BJPSIV_paral")) +
+                     lamst_bd_u * (getPar("EA1_ddcd_BVJPSI_paral") + getPar("dP2EW_dcu_BJPSIV_paral") - getPar("G2t_dcd_BJPSIV_paral"));
         amp_perp = lam_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + getPar("dP2EW_dcu_BJPSIV_perp")) +
                    lam_bd_u * (getPar("EA1_ddcd_BVJPSI_perp") + getPar("dP2EW_dcu_BJPSIV_perp") - getPar("G2t_dcd_BJPSIV_perp"));
-        amplitudes[channel + "_0"] = amp_0;
-        amplitudes[channel + "_paral"] = amp_paral;
-        amplitudes[channel + "_perp"] = amp_perp;
+        ampc_perp = lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + getPar("dP2EW_dcu_BJPSIV_perp")) +
+                    lamst_bd_u * (getPar("EA1_ddcd_BVJPSI_perp") + getPar("dP2EW_dcu_BJPSIV_perp") - getPar("G2t_dcd_BJPSIV_perp"));
+        amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
+        amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
+        amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
     }
     else if (channel == "Bpjpsikstp")
     {
         // B⁺→J/ψ K*⁺: b→c(c̄s), spectator u
         amp_0 = lam_bs_c * (getPar("E2t_ccsd_BJPSIV_0") + getPar("dP2EW_scu_BJPSIV_0")) +
                 lam_bs_u * (getPar("EA1_sdcd_BVJPSI_0") + getPar("dP2EW_scu_BJPSIV_0") - getPar("G2t_scd_BJPSIV_0"));
+        ampc_0 = lamst_bs_c * (getPar("E2t_ccsd_BJPSIV_0") + getPar("dP2EW_scu_BJPSIV_0")) +
+                 lamst_bs_u * (getPar("EA1_sdcd_BVJPSI_0") + getPar("dP2EW_scu_BJPSIV_0") - getPar("G2t_scd_BJPSIV_0"));
         amp_paral = lam_bs_c * (getPar("E2t_ccsd_BJPSIV_paral") + getPar("dP2EW_scu_BJPSIV_paral")) +
                     lam_bs_u * (getPar("EA1_sdcd_BVJPSI_paral") + getPar("dP2EW_scu_BJPSIV_paral") - getPar("G2t_scd_BJPSIV_paral"));
+        ampc_paral = lamst_bs_c * (getPar("E2t_ccsd_BJPSIV_paral") + getPar("dP2EW_scu_BJPSIV_paral")) +
+                     lamst_bs_u * (getPar("EA1_sdcd_BVJPSI_paral") + getPar("dP2EW_scu_BJPSIV_paral") - getPar("G2t_scd_BJPSIV_paral"));
         amp_perp = lam_bs_c * (getPar("E2t_ccsd_BJPSIV_perp") + getPar("dP2EW_scu_BJPSIV_perp")) +
                    lam_bs_u * (getPar("EA1_sdcd_BVJPSI_perp") + getPar("dP2EW_scu_BJPSIV_perp") - getPar("G2t_scd_BJPSIV_perp"));
-        amplitudes[channel + "_0"] = amp_0;
-        amplitudes[channel + "_paral"] = amp_paral;
-        amplitudes[channel + "_perp"] = amp_perp;
+        ampc_perp = lamst_bs_c * (getPar("E2t_ccsd_BJPSIV_perp") + getPar("dP2EW_scu_BJPSIV_perp")) +
+                    lamst_bs_u * (getPar("EA1_sdcd_BVJPSI_perp") + getPar("dP2EW_scu_BJPSIV_perp") - getPar("G2t_scd_BJPSIV_perp"));
+        amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
+        amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
+        amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
     }
     else if (channel == "Bsdspdsm")
     {
         // b → c(c̄s), spectator s
         amp = lam_bs_c * (getPar("E1t_sccs_BDDb") + getPar("A2t_cscs_BDbD")) - lam_bs_u * (getPar("G1t_scs_BDDb") + getPar("G3t_css_BDDb"));
-        amplitudes[channel] = amp;
+        ampc = lamst_bs_c * (getPar("E1t_sccs_BDDb") + getPar("A2t_cscs_BDbD")) - lamst_bs_u * (getPar("G1t_scs_BDDb") + getPar("G3t_css_BDDb"));
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsdpdsm")
     {
         // b → c(c̄d), spectator s
         amp = lam_bd_c * (getPar("E1t_dccs_BDDb")) - lam_bs_u * (getPar("G1t_dcs_BDDb"));
-        amplitudes[channel] = amp;
+        ampc = lamst_bd_c * (getPar("E1t_dccs_BDDb")) - lamst_bs_u * (getPar("G1t_dcs_BDDb"));
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsdpdm")
     {
         // b → c(c̄s), spectator s
         amp = lam_bs_c * (getPar("A2t_cdcs_BDbD")) - lam_bs_u * (getPar("G3t_cds_BDDb"));
-        amplitudes[channel] = amp;
+        ampc = lamst_bs_c * (getPar("A2t_cdcs_BDbD")) - lamst_bs_u * (getPar("G3t_cds_BDDb"));
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsd0d0b")
     {
         // b → c(c̄s), spectator s
         amp = -lam_bs_c * (getPar("A2t_cdcs_BDbD") + getPar("dP3EW_ucs_BDbD")) -
               lam_bs_u * (getPar("A2_dcds_BDDb") + getPar("dP3EW_ucs_BDbD") - getPar("G3t_cds_BDDb"));
-        amplitudes[channel] = amp;
+        ampc = -lamst_bs_c * (getPar("A2t_cdcs_BDbD") + getPar("dP3EW_ucs_BDbD")) -
+               lamst_bs_u * (getPar("A2_dcds_BDDb") + getPar("dP3EW_ucs_BDbD") - getPar("G3t_cds_BDDb"));
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bddspdsm")
     {
         // b → c(c̄d), spectator d
         amp = lam_bd_c * (getPar("A2t_cscd_BDbD")) - lam_bd_u * (getPar("G3t_csd_BDDb"));
-        amplitudes[channel] = amp;
+        ampc = lamst_bd_c * (getPar("A2t_cscd_BDbD")) - lamst_bd_u * (getPar("G3t_csd_BDDb"));
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bddspdm")
     {
         // b → c(c̄s), spectator d
         amp = lam_bs_c * (getPar("E1t_sccd_BDDb")) - lam_bs_u * (getPar("G1t_scd_BDDb"));
-        amplitudes[channel] = amp;
+        ampc = lamst_bs_c * (getPar("E1t_sccd_BDDb")) - lamst_bs_u * (getPar("G1t_scd_BDDb"));
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bddpdm")
     {
         // b → c(c̄d), spectator d
         amp = lam_bd_c * (getPar("E1t_dccd_BDDb") + getPar("A2t_cdcd_BDbD")) -
               lam_bd_u * (getPar("G1t_dcd_BDDb") + getPar("G3t_cdd_BDDb"));
-        amplitudes[channel] = amp;
+        ampc = lamst_bd_c * (getPar("E1t_dccd_BDDb") + getPar("A2t_cdcd_BDbD")) -
+               lamst_bd_u * (getPar("G1t_dcd_BDDb") + getPar("G3t_cdd_BDDb"));
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdd0d0b")
     {
         // b → c(c̄d), spectator d
         amp = -lam_bd_c * (getPar("A2t_cdcd_BDbD") + getPar("dP3EW_ucd_BDbD")) -
               lam_bd_u * (getPar("A2_dcdd_BDDb") + getPar("dP3EW_ucd_BDbD") - getPar("G3t_cdd_BDDb"));
-        amplitudes[channel] = amp;
+        ampc = -lamst_bd_c * (getPar("A2t_cdcd_BDbD") + getPar("dP3EW_ucd_BDbD")) -
+               lamst_bd_u * (getPar("A2_dcdd_BDDb") + getPar("dP3EW_ucd_BDbD") - getPar("G3t_cdd_BDDb"));
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bpdpd0b")
     {
         // b → c(c̄d), spectator u
         amp = +lam_bd_c * (getPar("E1t_dccd_BDDb") + getPar("dP1EW_dcu_BDDb")) +
               lam_bd_u * (getPar("A1_dcdd_BDDb") + getPar("dP1EW_dcu_BDDb") - getPar("G1t_dcd_BDDb"));
-        amplitudes[channel] = amp;
+        ampc = +lamst_bd_c * (getPar("E1t_dccd_BDDb") + getPar("dP1EW_dcu_BDDb")) +
+               lamst_bd_u * (getPar("A1_dcdd_BDDb") + getPar("dP1EW_dcu_BDDb") - getPar("G1t_dcd_BDDb"));
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bpdspd0b")
     {
         // b → c(c̄s), spectator u
         amp = +lam_bs_c * (getPar("E1t_sccd_BDDb") + getPar("dP1EW_scu_BDDb")) +
               lam_bs_u * (getPar("A1_scdd_BDDb") + getPar("dP1EW_scu_BDDb") - getPar("G1t_scd_BDDb"));
-        amplitudes[channel] = amp;
+        ampc = +lamst_bs_c * (getPar("E1t_sccd_BDDb") + getPar("dP1EW_scu_BDDb")) +
+               lamst_bs_u * (getPar("A1_scdd_BDDb") + getPar("dP1EW_scu_BDDb") - getPar("G1t_scd_BDDb"));
+        amplitude_map[channel] = make_pair(amp, ampc);
     }
     else
     {
         cout << "WARNING: amplitude for channel " << channel << " not found in compute_decay_amplitudes" << endl;
     }
-}
-
-// Getter for amplitudes
-TComplex goldenmodesB::get_amplitude(const string &channel)
-{
-    // First, check if the amplitude is already computed
-    auto it = amplitudes.find(channel);
-    if (it != amplitudes.end())
-    {
-        // cout << "Returning precomputed amplitude for channel " << channel << ":" << it->second << endl;
-        return it->second;
-    }
-
-    // Extract the base channel name (if it's a polarized component)
-    string base_channel = channel;
-    if (channel.find("_0") != string::npos)
-    {
-        base_channel = channel.substr(0, channel.find("_0"));
-    }
-    else if (channel.find("_paral") != string::npos)
-    {
-        base_channel = channel.substr(0, channel.find("_paral"));
-    }
-    else if (channel.find("_perp") != string::npos)
-    {
-        base_channel = channel.substr(0, channel.find("_perp"));
-    }
-
-    // Compute the decay amplitude for the base channel
-    compute_decay_amplitudes(base_channel, false);
-
-    // Check if the specific requested amplitude exists
-    it = amplitudes.find(channel);
-    if (it == amplitudes.end())
-    {
-        cerr << "ERROR: Amplitude not found for channel: " << channel << endl;
-        cerr << "Available amplitudes: ";
-        for (const auto &pair : amplitudes)
-        {
-            cerr << pair.first << " ";
-        }
-        cerr << endl;
-        throw runtime_error("Amplitude not found for channel: " + channel);
-    }
-
-    // cout << "Returning computed amplitude for channel " << channel << ": " << it->second << endl;
-    return it->second;
-}
-
-// Getter for conjugated amplitudes
-TComplex goldenmodesB::get_conjugate_amplitude(const string &channel)
-{
-    // First, check if the conjugate amplitude already exists
-    auto it = amplitudes.find(channel);
-    if (it != amplitudes.end())
-    {
-        return it->second;
-    }
-
-    // Extract the base channel name (if it's a polarized component)
-    string base_channel = channel;
-    if (channel.find("_0") != string::npos)
-    {
-        base_channel = channel.substr(0, channel.find("_0"));
-    }
-    else if (channel.find("_paral") != string::npos)
-    {
-        base_channel = channel.substr(0, channel.find("_paral"));
-    }
-    else if (channel.find("_perp") != string::npos)
-    {
-        base_channel = channel.substr(0, channel.find("_perp"));
-    }
-
-    // Compute the conjugate decay amplitude for the base channel
-    compute_decay_amplitudes(base_channel, true);
-    // Check if the specific conjugate amplitude exists
-    it = amplitudes.find(channel);
-    if (it == amplitudes.end())
-    {
-        cerr << "ERROR: Conjugate amplitude not found for channel: " << channel << endl;
-        cerr << "Available amplitudes: ";
-        for (const auto &pair : amplitudes)
-        {
-            cerr << pair.first << " ";
-        }
-        cerr << endl;
-        throw runtime_error("Conjugate amplitude not found for channel: " + channel);
-    }
-
-    return it->second;
 }
 
 // Destructor
@@ -3057,94 +3059,104 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
         {"R_Bsjpsietap_Bsjpsieta", {"Bsjpsietap", "Bsjpsieta"}},
         {"R_Bsjpsietap_Bsjpsiphi", {"Bsjpsietap", "Bsjpsiphi"}}};
 
-    for (const auto &[ratioKey, channels] : br_ratios)
+    for (const auto &[ratioKey, rchannels] : br_ratios)
     {
+        if (find(channels.begin(), channels.end(), rchannels.first) == channels.end() ||
+            find(channels.begin(), channels.end(), rchannels.second) == channels.end())
+        {
+            continue; // Skip if either channel is not in the list
+        }
         double BR1, BR2;
-        bool is_vector_channel1 = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), channels.first) != vectorMesonChannels.end();  // channel1 is a vector meson channel
-        bool is_vector_channel2 = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), channels.second) != vectorMesonChannels.end(); // channel2 is a vector meson channel
+        bool is_vector_channel1 = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), rchannels.first) != vectorMesonChannels.end();  // channel1 is a vector meson channel
+        bool is_vector_channel2 = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), rchannels.second) != vectorMesonChannels.end(); // channel2 is a vector meson channel
         if (is_vector_channel1)
         {
-            if (obs.find("BR_" + channels.first + "_0") != obs.end() &&
-                obs.find("BR_" + channels.first + "_paral") != obs.end() &&
-                obs.find("BR_" + channels.first + "_perp") != obs.end())
+            if (obs.find("BR_" + rchannels.first + "_0") != obs.end() &&
+                obs.find("BR_" + rchannels.first + "_paral") != obs.end() &&
+                obs.find("BR_" + rchannels.first + "_perp") != obs.end())
             {
-                BR1 = obs["BR_" + channels.first + "_0"];
-                BR1 += obs["BR_" + channels.first + "_paral"];
-                BR1 += obs["BR_" + channels.first + "_perp"];
+                BR1 = obs["BR_" + rchannels.first + "_0"];
+                BR1 += obs["BR_" + rchannels.first + "_paral"];
+                BR1 += obs["BR_" + rchannels.first + "_perp"];
             }
             else
             {
                 // Compute BR from amplitudes if not already computed
-                auto it0 = amplitude_map.find(channels.first + "_0");
-                auto itparal = amplitude_map.find(channels.first + "_paral");
-                auto itperp = amplitude_map.find(channels.first + "_perp");
+                auto it0 = amplitude_map.find(rchannels.first + "_0");
+                auto itparal = amplitude_map.find(rchannels.first + "_paral");
+                auto itperp = amplitude_map.find(rchannels.first + "_perp");
                 if (it0 == amplitude_map.end() || itparal == amplitude_map.end() || itperp == amplitude_map.end())
                 {
-                    cerr << "Warning: Polarized amplitudes not found for " << channels.first << endl;
+                    cerr << "Warning: Polarized amplitudes not found for " << rchannels.first << endl;
                     continue;
                 }
-                obs["BR_" + channels.first + "_0"] = CalculateBR(it0->second.first, it0->second.second, channels.first);
-                BR1 += obs["BR_" + channels.first + "_0"];
-                obs["BR_" + channels.first + "_paral"] = CalculateBR(itparal->second.first, itparal->second.second, channels.first);
-                BR1 += obs["BR_" + channels.first + "_paral"];
-                obs["BR_" + channels.first + "_perp"] = CalculateBR(itperp->second.first, itperp->second.second, channels.first);
-                BR1 += obs["BR_" + channels.first + "_perp"];
+                obs["BR_" + rchannels.first + "_0"] = CalculateBR(it0->second.first, it0->second.second, rchannels.first);
+                BR1 += obs["BR_" + rchannels.first + "_0"];
+                obs["BR_" + rchannels.first + "_paral"] = CalculateBR(itparal->second.first, itparal->second.second, rchannels.first);
+                BR1 += obs["BR_" + rchannels.first + "_paral"];
+                obs["BR_" + rchannels.first + "_perp"] = CalculateBR(itperp->second.first, itperp->second.second, rchannels.first);
+                BR1 += obs["BR_" + rchannels.first + "_perp"];
             }
         }
-        else if (obs.find("BR_" + channels.first) != obs.end())
+        else if (obs.find("BR_" + rchannels.first) != obs.end())
         {
-            // cout << "Using precomputed BR for " << channels.first << " equal to " << obs["BR_" + channels.first] << endl;
-            BR1 = obs["BR_" + channels.first];
+            // cout << "Using precomputed BR for " << rchannels.first << " equal to " << obs["BR_" + rchannels.first] << endl;
+            BR1 = obs["BR_" + rchannels.first];
         }
         else
         {
-            if (amplitude_map.find(channels.first) != amplitude_map.end())
-                obs["BR_" + channels.first] = CalculateBR(amplitude_map.at(channels.first).first, amplitude_map.at(channels.first).second, channels.first);
+            if (amplitude_map.find(rchannels.first) != amplitude_map.end())
+                obs["BR_" + rchannels.first] = CalculateBR(amplitude_map.at(rchannels.first).first, amplitude_map.at(rchannels.first).second, rchannels.first);
             else
-                amplitude_map[channels.first] = make_pair(get_amplitude(channels.first), get_conjugate_amplitude(channels.first));
-            BR1 = obs["BR_" + channels.first];
+            {
+                cerr << "Warning: Polarized amplitudes not found for " << rchannels.first << endl;
+                continue;
+            }
         }
         if (is_vector_channel2)
         {
-            if (obs.find("BR_" + channels.second + "_0") != obs.end() &&
-                obs.find("BR_" + channels.second + "_paral") != obs.end() &&
-                obs.find("BR_" + channels.second + "_perp") != obs.end())
+            if (obs.find("BR_" + rchannels.second + "_0") != obs.end() &&
+                obs.find("BR_" + rchannels.second + "_paral") != obs.end() &&
+                obs.find("BR_" + rchannels.second + "_perp") != obs.end())
             {
-                BR2 = obs["BR_" + channels.second + "_0"];
-                BR2 += obs["BR_" + channels.second + "_paral"];
-                BR2 += obs["BR_" + channels.second + "_perp"];
+                BR2 = obs["BR_" + rchannels.second + "_0"];
+                BR2 += obs["BR_" + rchannels.second + "_paral"];
+                BR2 += obs["BR_" + rchannels.second + "_perp"];
             }
             else
             {
                 // Compute BR from amplitudes if not already computed
-                auto it0 = amplitude_map.find(channels.second + "_0");
-                auto itparal = amplitude_map.find(channels.second + "_paral");
-                auto itperp = amplitude_map.find(channels.second + "_perp");
+                auto it0 = amplitude_map.find(rchannels.second + "_0");
+                auto itparal = amplitude_map.find(rchannels.second + "_paral");
+                auto itperp = amplitude_map.find(rchannels.second + "_perp");
                 if (it0 == amplitude_map.end() || itparal == amplitude_map.end() || itperp == amplitude_map.end())
                 {
-                    cerr << "Warning: Polarized amplitudes not found for " << channels.second << endl;
+                    cerr << "Warning: Polarized amplitudes not found for " << rchannels.second << endl;
                     continue;
                 }
-                obs["BR_" + channels.second + "_0"] = CalculateBR(it0->second.first, it0->second.second, channels.second);
-                BR2 += obs["BR_" + channels.second + "_0"];
-                obs["BR_" + channels.second + "_paral"] = CalculateBR(itparal->second.first, itparal->second.second, channels.second);
-                BR2 += obs["BR_" + channels.second + "_paral"];
-                obs["BR_" + channels.second + "_perp"] = CalculateBR(itperp->second.first, itperp->second.second, channels.second);
-                BR2 += obs["BR_" + channels.second + "_perp"];
+                obs["BR_" + rchannels.second + "_0"] = CalculateBR(it0->second.first, it0->second.second, rchannels.second);
+                BR2 += obs["BR_" + rchannels.second + "_0"];
+                obs["BR_" + rchannels.second + "_paral"] = CalculateBR(itparal->second.first, itparal->second.second, rchannels.second);
+                BR2 += obs["BR_" + rchannels.second + "_paral"];
+                obs["BR_" + rchannels.second + "_perp"] = CalculateBR(itperp->second.first, itperp->second.second, rchannels.second);
+                BR2 += obs["BR_" + rchannels.second + "_perp"];
             }
         }
-        else if (obs.find("BR_" + channels.second) != obs.end())
+        else if (obs.find("BR_" + rchannels.second) != obs.end())
         {
-            // cout << "Using precomputed BR for " << channels.second << " equal to " << obs["BR_" + channels.second] << endl;
-            BR2 = obs["BR_" + channels.second];
+            // cout << "Using precomputed BR for " << rchannels.second << " equal to " << obs["BR_" + rchannels.second] << endl;
+            BR2 = obs["BR_" + rchannels.second];
         }
         else
         {
-            if (amplitude_map.find(channels.second) != amplitude_map.end())
-                obs["BR_" + channels.second] = CalculateBR(amplitude_map.at(channels.second).first, amplitude_map.at(channels.second).second, channels.second);
+            if (amplitude_map.find(rchannels.second) != amplitude_map.end())
+                obs["BR_" + rchannels.second] = CalculateBR(amplitude_map.at(rchannels.second).first, amplitude_map.at(rchannels.second).second, rchannels.second);
             else
-                amplitude_map[channels.second] = make_pair(get_amplitude(channels.second), get_conjugate_amplitude(channels.second));
-            BR2 = obs["BR_" + channels.second];
+            {
+                cerr << "Warning: Polarized amplitudes not found for " << rchannels.second << endl;
+                continue;
+            }
+            BR2 = obs["BR_" + rchannels.second];
         }
         if (BR1 != 0 && BR2 != 0)
         {
@@ -3172,9 +3184,14 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
 
     for (const auto &[deltaAKey, channelPair] : deltaA_ratios)
     {
+        if (find(channels.begin(), channels.end(), channelPair.first) == channels.end() ||
+            find(channels.begin(), channels.end(), channelPair.second) == channels.end())
+        {
+            continue; // Skip if either channel is not in the list
+        }
         string acp_key1 = "ACP_" + channelPair.first;
         string acp_key2 = "ACP_" + channelPair.second;
-        
+
         double ACP1, ACP2;
         if (obs.find(acp_key1) != obs.end())
         {
@@ -3229,8 +3246,10 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
     double ll_corr = 0.0; // Initialize the log-likelihood contribution
 
     string basechannel;
+    bool skip_observable;
     for (const auto meas_pair : corrmeas)
     {
+        skip_observable = false;
         const string &key = meas_pair.first;
         const CorrelatedGaussianObservables &corrObs = meas_pair.second;
         const vector<string> &obs_names = corrmeas_channels.at(key);
@@ -3251,8 +3270,13 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                 size_t pos = obs_name.find("B");
                 if (pos != string::npos)
                 {
-
                     basechannel = obs_name.substr(pos);
+                    if (find(channels.begin(), channels.end(), basechannel) == channels.end())
+                    {
+                        // skip if channel not in the list
+                        skip_observable = true;
+                        break;
+                    }
                 }
                 else
                 {
@@ -3286,14 +3310,12 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                 else
                 {
                     auto it = amplitude_map.find(basechannel);
-                    // if (it == amplitude_map.end())
-                    // {
-                    //     amp_pair = make_pair(get_amplitude(basechannel), get_conjugate_amplitude(basechannel));
-                    //     std::cout << "Calculating amplitude for " << basechannel << " in Calculate_CorrelatedObservables" << std::endl;
-                    //     std::cout << "Amplitude: " << amp_pair.first << ", Conjugate Amplitude: " << amp_pair.second << std::endl;
-                    //     amplitude_map[basechannel] = amp_pair;
-                    // }
-                    // else
+                    if (it == amplitude_map.end())
+                    {
+                        cerr << "Warning: Amplitude not found for channel " << basechannel << " in Calculate_CorrelatedObservables" << endl;
+                        continue;
+                    }
+                    else
                     {
                         amp_pair = it->second;
                     }
@@ -3615,6 +3637,10 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
             }
         }
 
+        if (skip_observable)
+        {
+            continue; // Skip this correlated observable if any channel was missing
+        }
         TVectorD res(corrObs.getNObs());
         for (size_t i = 0; i < corrObs.getNObs(); ++i)
         {
@@ -3650,6 +3676,15 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
     double theta_P = parameters.back();
     SetParameterValue("theta_P", theta_P);
 
+    lam_bs_c = ckm.getVcs() * TComplex::Conjugate(ckm.getVcb());
+    lam_bs_u = ckm.getVus() * TComplex::Conjugate(ckm.getVub());
+    lam_bd_c = ckm.getVcd() * TComplex::Conjugate(ckm.getVcb());
+    lam_bd_u = ckm.getVud() * TComplex::Conjugate(ckm.getVub());
+    lamst_bs_c = ckm.getVcb() * TComplex::Conjugate(ckm.getVcs());
+    lamst_bs_u = ckm.getVub() * TComplex::Conjugate(ckm.getVus());
+    lamst_bd_c = ckm.getVcb() * TComplex::Conjugate(ckm.getVcd());
+    lamst_bd_u = ckm.getVub() * TComplex::Conjugate(ckm.getVud());
+
     // Populate parameterValues from BAT parameters directly
     // This ensures proper mapping regardless of channelParameters ordering
     for (unsigned int i = 0; i < GetNParameters(); ++i)
@@ -3661,36 +3696,24 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
     // Build the amplitude map using physical amplitudes
 
     amplitude_map.clear();
-    amplitudes.clear(); // Clear previous amplitudes
 
     for (const string &channel : channelNamesSU3)
     {
-        // cout << "Calculating amplitude for channel: " << channel << " in loglikelihood" << endl;
-        if (find(vectorMesonChannels.begin(), vectorMesonChannels.end(), channel) != vectorMesonChannels.end())
-        {
-            amplitude_map[channel + "_0"] = make_pair(get_amplitude(channel + "_0"), get_conjugate_amplitude(channel + "_0"));
-            amplitude_map[channel + "_perp"] = make_pair(get_amplitude(channel + "_perp"), get_conjugate_amplitude(channel + "_perp"));
-            amplitude_map[channel + "_paral"] = make_pair(get_amplitude(channel + "_paral"), get_conjugate_amplitude(channel + "_paral"));
-        }
-        else
-        {
-            // Directly store original amplitudes
-            amplitude_map[channel] = make_pair(get_amplitude(channel), get_conjugate_amplitude(channel));
+        compute_decay_amplitudes(channel);
 
-            // For CP observables, add K0s and K0l cases with the same amplitudes as Bdjpsik0
-            if (channel == "Bdjpsik0")
-            {
-                amplitude_map["Bdjpsik0s"] = amplitude_map["Bdjpsik0"];
-                amplitude_map["Bdjpsik0l"] = amplitude_map["Bdjpsik0"];
-                //    cout << "Mapped Bdjpsik0 to Bdjpsik0s and Bdjpsik0l" << endl;
-            }
-            else if (channel == "Bsjpsik0b")
-            {
-                // Also map Bsjpsik0b -> Bsjpsik0s for observables
-                amplitude_map["Bsjpsik0s"] = amplitude_map["Bsjpsik0b"];
-                amplitude_map["Bsjpsik0l"] = amplitude_map["Bsjpsik0b"];
-                //    cout << "Mapped Bsjpsik0b to Bsjpsik0s" << endl;
-            }
+        // For CP observables, add K0s and K0l cases with the same amplitudes as Bdjpsik0
+        if (channel == "Bdjpsik0")
+        {
+            amplitude_map["Bdjpsik0s"] = amplitude_map.at("Bdjpsik0");
+            amplitude_map["Bdjpsik0l"] = amplitude_map.at("Bdjpsik0");
+            //    cout << "Mapped Bdjpsik0 to Bdjpsik0s and Bdjpsik0l" << endl;
+        }
+        else if (channel == "Bsjpsik0b")
+        {
+            // Also map Bsjpsik0b -> Bsjpsik0s for observables
+            amplitude_map["Bsjpsik0s"] = amplitude_map.at("Bsjpsik0b");
+            amplitude_map["Bsjpsik0l"] = amplitude_map.at("Bsjpsik0b");
+            //    cout << "Mapped Bsjpsik0b to Bsjpsik0s" << endl;
         }
     }
 
@@ -3699,10 +3722,10 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
         // compute amplitudes for eta and etaprime final states
         if ((channel.length() >= strlen("eta") && channel.compare(channel.length() - strlen("eta"), strlen("eta"), "eta") == 0))
         {
-            amplitude_map[channel] = make_pair(cos(theta_P) * get_amplitude(channel + "8") - sin(theta_P) * get_amplitude(channel + "1"),
-                                               cos(theta_P) * get_conjugate_amplitude(channel + "8") - sin(theta_P) * get_conjugate_amplitude(channel + "1"));
-            amplitude_map[channel + "p"] = make_pair(sin(theta_P) * get_amplitude(channel + "8") + cos(theta_P) * get_amplitude(channel + "1"),
-                                                     sin(theta_P) * get_conjugate_amplitude(channel + "8") + cos(theta_P) * get_conjugate_amplitude(channel + "1"));
+            amplitude_map[channel] = make_pair(cos(theta_P) * amplitude_map.at(channel + "8").first - sin(theta_P) * amplitude_map.at(channel + "1").first,
+                                               cos(theta_P) * amplitude_map.at(channel + "8").second - sin(theta_P) * amplitude_map.at(channel + "1").second);
+            amplitude_map[channel + "p"] = make_pair(sin(theta_P) * amplitude_map.at(channel + "8").first + cos(theta_P) * amplitude_map.at(channel + "1").first,
+                                                     sin(theta_P) * amplitude_map.at(channel + "8").second + cos(theta_P) * amplitude_map.at(channel + "1").second);
         }
     }
 

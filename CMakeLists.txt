@@ -8,6 +8,12 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Find Boost
+find_package(Boost REQUIRED)
+if(Boost_FOUND)
+    message(STATUS "Boost found: ${Boost_VERSION}")
+endif()
+
 # Find ROOT
 find_package(ROOT REQUIRED COMPONENTS Core RIO Hist Tree MathCore Matrix)
 if(ROOT_FOUND)
@@ -50,6 +56,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ROOT_INCLUDE_DIRS}
     ${BAT_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
 )
 
 # Source files for the library
