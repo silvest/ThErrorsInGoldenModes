@@ -217,7 +217,16 @@ private:
     {
         // For vector channels, check for the _0 polarization suffix since that's how they're stored
         string checkName = isVectorChannel ? addPolarizationSuffix(baseParameterName, "_0") : baseParameterName;
-        if (referenceAmplitudes.count(checkName) || deltaReferenceAmplitudes.find(checkName) != deltaReferenceAmplitudes.end())
+        // Remember we store the reference amplitude in deltaReferenceAmplitudes map without the _re/_im suffix
+        string checkBaseName = baseParameterName;;
+        size_t pos;
+        if ((pos = checkBaseName.find("_re")) != string::npos ||
+            (pos = checkBaseName.find("_im")) != string::npos)
+        {
+            checkBaseName = checkBaseName.substr(0, pos);
+        }
+        checkBaseName = isVectorChannel ? checkBaseName + "_0" : checkBaseName;
+        if (referenceAmplitudes.count(checkName) || deltaReferenceAmplitudes.find(checkBaseName) != deltaReferenceAmplitudes.end())
         {
             if (dsu3_limit > 0.0)
             {
@@ -236,6 +245,11 @@ private:
                 string deltaBase = amplitudeName;
                 string refBase = baseParameterName;
                 size_t pos;
+                // Remove "delta_" prefix for mapping
+                if ((pos = deltaBase.find("delta_")) != string::npos)
+                {
+                    deltaBase = deltaBase.substr(pos + 6); // length of "delta_" is 6
+                }
                 if ((pos = deltaBase.find("_re")) != string::npos ||
                     (pos = deltaBase.find("_im")) != string::npos)
                 {

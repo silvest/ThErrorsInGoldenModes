@@ -1319,12 +1319,12 @@ void goldenmodesB::DefineParameters(const string &channel)
         channelParameters[channel] = params;
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_re", "E2t_ccsd_BJPSIP_re");
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_im", "E2t_ccsd_BJPSIP_im");
-        addSU3BreakingParameter("delta_E2t_ccds_BJPSIP_re", "delta_E2t_ccdd_BJPSIP_re");
-        addSU3BreakingParameter("delta_E2t_ccds_BJPSIP_im", "delta_E2t_ccdd_BJPSIP_im");
+        addSU3BreakingParameter("delta_E2t_ccds_BJPSIP_re", "E2t_ccdd_BJPSIP_re");
+        addSU3BreakingParameter("delta_E2t_ccds_BJPSIP_im", "E2t_ccdd_BJPSIP_im");
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_re", "G2t_scd_BJPSIP_re");
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_im", "G2t_scd_BJPSIP_im");
-        addSU3BreakingParameter("delta_G2t_dcs_BJPSIP_re", "delta_G2t_dcd_BJPSIP_re");
-        addSU3BreakingParameter("delta_G2t_dcs_BJPSIP_im", "delta_G2t_dcd_BJPSIP_im");
+        addSU3BreakingParameter("delta_G2t_dcs_BJPSIP_re", "G2t_dcd_BJPSIP_re");
+        addSU3BreakingParameter("delta_G2t_dcs_BJPSIP_im", "G2t_dcd_BJPSIP_im");
     }
     else if (channel == "Bsjpsieta8")
     {
@@ -1356,12 +1356,12 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_G2t_scs_BJPSIP_im", "G2t_scd_BJPSIP_im");
         addSU3BreakingParameter("delta_G4t_cds_BJPSIP_re", "G4t_cdd_BJPSIP_re");
         addSU3BreakingParameter("delta_G4t_cds_BJPSIP_im", "G4t_cdd_BJPSIP_im");
-        addSU3BreakingParameter("delta_G4t_css_BJPSIP_re", "delta_G4t_cds_BJPSIP_re");
-        addSU3BreakingParameter("delta_G4t_css_BJPSIP_im", "delta_G4t_cds_BJPSIP_im");
+        addSU3BreakingParameter("delta_G4t_css_BJPSIP_re", "G4t_cds_BJPSIP_re");
+        addSU3BreakingParameter("delta_G4t_css_BJPSIP_im", "G4t_cds_BJPSIP_im");
         addSU3BreakingParameter("delta_EA2t_ccds_BJPSIP_re", "EA2t_ccdd_BJPSIP_re");
         addSU3BreakingParameter("delta_EA2t_ccds_BJPSIP_im", "EA2t_ccdd_BJPSIP_im");
-        addSU3BreakingParameter("delta_EA2t_ccss_BJPSIP_re", "delta_EA2t_ccds_BJPSIP_re");
-        addSU3BreakingParameter("delta_EA2t_ccss_BJPSIP_im", "delta_EA2t_ccds_BJPSIP_im");
+        addSU3BreakingParameter("delta_EA2t_ccss_BJPSIP_re", "EA2t_ccds_BJPSIP_re");
+        addSU3BreakingParameter("delta_EA2t_ccss_BJPSIP_im", "EA2t_ccds_BJPSIP_im");
     }
     else if (channel == "Bsjpsieta1")
     {
@@ -1393,12 +1393,12 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_G2t_scs_BJPSIP_im", "G2t_scd_BJPSIP_im");
         addSU3BreakingParameter("delta_G4t_cds_BJPSIP_re", "G4t_cdd_BJPSIP_re");
         addSU3BreakingParameter("delta_G4t_cds_BJPSIP_im", "G4t_cdd_BJPSIP_im");
-        addSU3BreakingParameter("delta_G4t_css_BJPSIP_re", "delta_G4t_cds_BJPSIP_re");
-        addSU3BreakingParameter("delta_G4t_css_BJPSIP_im", "delta_G4t_cds_BJPSIP_im");
+        addSU3BreakingParameter("delta_G4t_css_BJPSIP_re", "G4t_cds_BJPSIP_re");
+        addSU3BreakingParameter("delta_G4t_css_BJPSIP_im", "G4t_cds_BJPSIP_im");
         addSU3BreakingParameter("delta_EA2t_ccds_BJPSIP_re", "EA2t_ccdd_BJPSIP_re");
         addSU3BreakingParameter("delta_EA2t_ccds_BJPSIP_im", "EA2t_ccdd_BJPSIP_im");
-        addSU3BreakingParameter("delta_EA2t_ccss_BJPSIP_re", "delta_EA2t_ccds_BJPSIP_re");
-        addSU3BreakingParameter("delta_EA2t_ccss_BJPSIP_im", "delta_EA2t_ccds_BJPSIP_im");
+        addSU3BreakingParameter("delta_EA2t_ccss_BJPSIP_re", "EA2t_ccds_BJPSIP_re");
+        addSU3BreakingParameter("delta_EA2t_ccss_BJPSIP_im", "EA2t_ccds_BJPSIP_im");
     }
     // Vector channels with helicity amplitudes
     else if (channel == "Bsjpsiphi")
@@ -1588,24 +1588,24 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addSU3BreakingParameter("delta_E2t_ccds_BJPSIV_re", "E2t_ccss_BJPSIV_re", true);
         addSU3BreakingParameter("delta_E2t_ccds_BJPSIV_im", "E2t_ccss_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_re", "delta_E2t_ccds_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_im", "delta_E2t_ccds_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_re", "E2t_ccds_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_im", "E2t_ccds_BJPSIV_im", true);
         addSU3BreakingParameter("delta_G2t_dcs_BJPSIV_re", "G2t_scs_BJPSIV_re", true);
         addSU3BreakingParameter("delta_G2t_dcs_BJPSIV_im", "G2t_scs_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_re", "delta_G2t_dcs_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_im", "delta_G2t_dcs_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_re", "G2t_dcs_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_im", "G2t_dcs_BJPSIV_im", true);
         addSU3BreakingParameter("delta_dP4EW_ucd_BVJPSI_re", "dP4EW_ucs_BVJPSI_re", true);
         addSU3BreakingParameter("delta_dP4EW_ucd_BVJPSI_im", "dP4EW_ucs_BVJPSI_im", true);
         addSU3BreakingParameter("delta_EA2t_ccds_BJPSIV_re", "EA2t_ccss_BJPSIV_re", true);
         addSU3BreakingParameter("delta_EA2t_ccds_BJPSIV_im", "EA2t_ccss_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_EA2t_ccdd_BJPSIV_re", "delta_EA2t_ccds_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_EA2t_ccdd_BJPSIV_im", "delta_EA2t_ccds_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_EA2t_ccdd_BJPSIV_re", "EA2t_ccds_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_EA2t_ccdd_BJPSIV_im", "EA2t_ccds_BJPSIV_im", true);
         addSU3BreakingParameter("delta_EA2_ddcd_BVJPSI_re", "EA2_ddcs_BVJPSI_re", true);
         addSU3BreakingParameter("delta_EA2_ddcd_BVJPSI_im", "EA2_ddcs_BVJPSI_im", true);
         addSU3BreakingParameter("delta_G4t_cds_BJPSIV_re", "G4t_css_BJPSIV_re", true);
         addSU3BreakingParameter("delta_G4t_cds_BJPSIV_im", "G4t_css_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_G4t_cdd_BJPSIV_re", "delta_G4t_cds_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_G4t_cdd_BJPSIV_im", "delta_G4t_cds_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_G4t_cdd_BJPSIV_re", "G4t_cds_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_G4t_cdd_BJPSIV_im", "G4t_cds_BJPSIV_im", true);
     }
     else if (channel == "Bdjpsikst0")
     {
@@ -1671,16 +1671,16 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addSU3BreakingParameter("delta_E2t_ccsd_BJPSIV_re", "E2t_ccss_BJPSIV_re", true);
         addSU3BreakingParameter("delta_E2t_ccsd_BJPSIV_im", "E2t_ccss_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_re", "delta_E2t_ccsd_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_im", "delta_E2t_ccsd_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_re", "E2t_ccsd_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_im", "E2t_ccsd_BJPSIV_im", true);
         addSU3BreakingParameter("delta_P4EW_ucd_BVJPSI_re", "dP4EW_ucs_BVJPSI_re", true);
         addSU3BreakingParameter("delta_P4EW_ucd_BVJPSI_im", "dP4EW_ucs_BVJPSI_im", true);
         addSU3BreakingParameter("delta_EA2_ddcd_BVJPSI_re", "EA2_ddcs_BVJPSI_re", true);
         addSU3BreakingParameter("delta_EA2_ddcd_BVJPSI_im", "EA2_ddcs_BVJPSI_im", true);
         addSU3BreakingParameter("delta_G2t_dcs_BJPSIV_re", "G2t_scs_BJPSIV_re", true);
         addSU3BreakingParameter("delta_G2t_dcs_BJPSIV_im", "G2t_scs_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_re", "delta_G2t_dcs_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_im", "delta_G2t_dcs_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_re", "G2t_dcs_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_im", "G2t_dcs_BJPSIV_im", true);
     }
     else if (channel == "Bdjpsiphi")
     {
@@ -1787,16 +1787,16 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addSU3BreakingParameter("delta_E2t_ccsd_BJPSIV_re", "E2t_ccss_BJPSIV_re", true);
         addSU3BreakingParameter("delta_E2t_ccsd_BJPSIV_im", "E2t_ccss_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_re", "delta_E2t_ccsd_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_im", "delta_E2t_ccsd_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_re", "E2t_ccsd_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_E2t_ccdd_BJPSIV_im", "E2t_ccsd_BJPSIV_im", true);
         addSU3BreakingParameter("delta_dP2EW_dcu_BJPSIV_re", "dP2EW_scu_BJPSIV_re", true);
         addSU3BreakingParameter("delta_dP2EW_dcu_BJPSIV_im", "dP2EW_scu_BJPSIV_im", true);
         addSU3BreakingParameter("delta_EA1_ddcd_BVJPSI_re", "EA1_sdcd_BVJPSI_re", true);
         addSU3BreakingParameter("delta_EA1_ddcd_BVJPSI_im", "EA1_sdcd_BVJPSI_im", true);
         addSU3BreakingParameter("delta_G2t_scd_BJPSIV_re", "G2t_scs_BJPSIV_re", true);
         addSU3BreakingParameter("delta_G2t_scd_BJPSIV_im", "G2t_scs_BJPSIV_im", true);
-        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_re", "delta_G2t_dcs_BJPSIV_re", true);
-        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_im", "delta_G2t_dcs_BJPSIV_im", true);
+        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_re", "G2t_dcs_BJPSIV_re", true);
+        addSU3BreakingParameter("delta_G2t_dcd_BJPSIV_im", "G2t_dcs_BJPSIV_im", true);
     }
     else if (channel == "Bsdspdsm")
     {
@@ -1905,20 +1905,20 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addSU3BreakingParameter("delta_E1t_dccs_BDDb_re", "E1t_sccs_BDDb_re");
         addSU3BreakingParameter("delta_E1t_dccs_BDDb_im", "E1t_sccs_BDDb_im");
-        addSU3BreakingParameter("delta_E1t_dccd_BDDb_re", "delta_E1t_dccs_BDDb_re");
-        addSU3BreakingParameter("delta_E1t_dccd_BDDb_im", "delta_E1t_dccs_BDDb_im");
+        addSU3BreakingParameter("delta_E1t_dccd_BDDb_re", "E1t_dccs_BDDb_re");
+        addSU3BreakingParameter("delta_E1t_dccd_BDDb_im", "E1t_dccs_BDDb_im");
         addSU3BreakingParameter("delta_A2t_cdcs_BDbD_re", "A2t_cscs_BDbD_re");
         addSU3BreakingParameter("delta_A2t_cdcs_BDbD_im", "A2t_cscs_BDbD_im");
-        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_re", "delta_A2t_cdcs_BDbD_re");
-        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_im", "delta_A2t_cdcs_BDbD_im");
+        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_re", "A2t_cdcs_BDbD_re");
+        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_im", "A2t_cdcs_BDbD_im");
         addSU3BreakingParameter("delta_G1t_dcs_BDDb_re", "G1t_scs_BDDb_re");
         addSU3BreakingParameter("delta_G1t_dcs_BDDb_im", "G1t_scs_BDDb_im");
         addSU3BreakingParameter("delta_G3t_cds_BDDb_re", "G3t_css_BDDb_re");
         addSU3BreakingParameter("delta_G3t_cds_BDDb_im", "G3t_css_BDDb_im");
-        addSU3BreakingParameter("delta_G1t_dcd_BDDb_re", "delta_G1t_dcs_BDDb_re");
-        addSU3BreakingParameter("delta_G1t_dcd_BDDb_im", "delta_G1t_dcs_BDDb_im");
-        addSU3BreakingParameter("delta_G3t_cdd_BDDb_re", "delta_G3t_cds_BDDb_re");
-        addSU3BreakingParameter("delta_G3t_cdd_BDDb_im", "delta_G3t_cds_BDDb_im");
+        addSU3BreakingParameter("delta_G1t_dcd_BDDb_re", "G1t_dcs_BDDb_re");
+        addSU3BreakingParameter("delta_G1t_dcd_BDDb_im", "G1t_dcs_BDDb_im");
+        addSU3BreakingParameter("delta_G3t_cdd_BDDb_re", "G3t_cds_BDDb_re");
+        addSU3BreakingParameter("delta_G3t_cdd_BDDb_im", "G3t_cds_BDDb_im");
     }
     else if (channel == "Bdd0d0b")
     {
@@ -1934,16 +1934,16 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addSU3BreakingParameter("delta_A2t_cdcs_BDbD_re", "A2t_cscs_BDbD_re");
         addSU3BreakingParameter("delta_A2t_cdcs_BDbD_im", "A2t_cscs_BDbD_im");
-        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_re", "delta_A2t_cdcs_BDbD_re");
-        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_im", "delta_A2t_cdcs_BDbD_im");
+        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_re", "A2t_cdcs_BDbD_re");
+        addSU3BreakingParameter("delta_A2t_cdcd_BDbD_im", "A2t_cdcs_BDbD_im");
         addSU3BreakingParameter("delta_dP3EW_ucd_BDbD_re", "dP3EW_ucs_BDbD_re");
         addSU3BreakingParameter("delta_dP3EW_ucd_BDbD_im", "dP3EW_ucs_BDbD_im");
         addSU3BreakingParameter("delta_A2_dcdd_BDDb_re", "A2_dcds_BDDb_re");
         addSU3BreakingParameter("delta_A2_dcdd_BDDb_im", "A2_dcds_BDDb_im");
         addSU3BreakingParameter("delta_G3t_cds_BDDb_re", "G3t_css_BDDb_re");
         addSU3BreakingParameter("delta_G3t_cds_BDDb_im", "G3t_css_BDDb_im");
-        addSU3BreakingParameter("delta_G3t_cdd_BDDb_re", "delta_G3t_cds_BDDb_re");
-        addSU3BreakingParameter("delta_G3t_cdd_BDDb_im", "delta_G3t_cds_BDDb_im");
+        addSU3BreakingParameter("delta_G3t_cdd_BDDb_re", "G3t_cds_BDDb_re");
+        addSU3BreakingParameter("delta_G3t_cdd_BDDb_im", "G3t_cds_BDDb_im");
     }
     else if (channel == "Bpdpd0b")
     {
@@ -1959,16 +1959,16 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addSU3BreakingParameter("delta_E1t_dccs_BDDb_re", "E1t_sccs_BDDb_re");
         addSU3BreakingParameter("delta_E1t_dccs_BDDb_im", "E1t_sccs_BDDb_im");
-        addSU3BreakingParameter("delta_E1t_dccd_BDDb_re", "delta_E1t_dccs_BDDb_re");
-        addSU3BreakingParameter("delta_E1t_dccd_BDDb_im", "delta_E1t_dccs_BDDb_im");
+        addSU3BreakingParameter("delta_E1t_dccd_BDDb_re", "E1t_dccs_BDDb_re");
+        addSU3BreakingParameter("delta_E1t_dccd_BDDb_im", "E1t_dccs_BDDb_im");
         addAmplitudeParameter("dP1EW_dcu_BDDb_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP1EW_dcu_BDDb_im", -ewp_limit, ewp_limit);
         addAmplitudeParameter("A1_dcdd_BDDb_re", -10., 11.);
         addAmplitudeParameter("A1_dcdd_BDDb_im", -10., 11.);
         addSU3BreakingParameter("delta_G1t_dcs_BDDb_re", "G1t_scs_BDDb_re");
         addSU3BreakingParameter("delta_G1t_dcs_BDDb_im", "G1t_scs_BDDb_im");
-        addSU3BreakingParameter("delta_G1t_dcd_BDDb_re", "delta_G1t_dcs_BDDb_re");
-        addSU3BreakingParameter("delta_G1t_dcd_BDDb_im", "delta_G1t_dcs_BDDb_im");
+        addSU3BreakingParameter("delta_G1t_dcd_BDDb_re", "G1t_dcs_BDDb_re");
+        addSU3BreakingParameter("delta_G1t_dcd_BDDb_im", "G1t_dcs_BDDb_im");
     }
     else if (channel == "Bpdspd0b")
     {
@@ -2044,8 +2044,8 @@ TComplex goldenmodesB::getPar(const string &baseName) const
     }
 
     // Check if this is a derived amplitude (has a delta parameter)
-    // Look for "delta_<baseName>" in the deltaReferenceAmplitudes map
-    auto deltaIt = deltaReferenceAmplitudes.find("delta_" + baseName);
+    // Look for "<baseName>" in the deltaReferenceAmplitudes map
+    auto deltaIt = deltaReferenceAmplitudes.find(baseName);
     if (deltaIt != deltaReferenceAmplitudes.end())
     {
         // This is a derived amplitude: result = reference * (1 + delta)
@@ -2057,7 +2057,7 @@ TComplex goldenmodesB::getPar(const string &baseName) const
         {
             TComplex delta(delta_real->second, delta_imag->second);
             // Recursively get the reference amplitude (handles chained deltas)
-            TComplex ref = getPar(deltaReferenceAmplitudes.at("delta_" + baseName));
+            TComplex ref = getPar(deltaIt->second);
             return ref * (TComplex(1, 0) + delta);
         }
     }

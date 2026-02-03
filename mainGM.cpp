@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
     model.SetNChains(nChains);
     model.SetNIterationsPreRunMax(nIterationsPreRun); // Pre-run iterations
     model.SetNIterationsRun(nIterationsRun);
-    model.SetProposeMultivariate(true);
+    model.SetProposeMultivariate(false);
     model.SetNIterationsPreRunFactorized(nIterationsPreRunFactorized);
     model.SetNIterationsPreRunCheck(nIterationsUpdateMax);
     model.SetInitialPositionScheme(BCEngineMCMC::kInitCenter);
