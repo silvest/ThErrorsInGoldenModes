@@ -3691,6 +3691,28 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
     {
         const string &paramName = GetParameter(i).GetName();
         SetParameterValue(paramName, parameters[i]);
+        // assign to obs for histogram filling
+        obs[paramName] = parameters[i];
+    }
+    for (const auto &channel : channelNamesSU3)
+    {
+        // fill histos for mod and phase for the effective parameters
+        for (const auto &param : channelParameters[channel])
+        {
+
+            string newStr;
+            size_t length = param.length();
+
+            newStr.reserve(length + 1);
+
+            if (length >= 3 && param.substr(length - 3) == "_re")
+            {
+                newStr.append(param, 0, length - 3); // Append text before "_re"
+                obs[newStr + "_abs"] = sqrt(obs[param + "_re"] * obs[param + "_re"] + obs[newStr + "_im"] * obs[newStr + "_im"]);                    // Append replacement
+                obs[newStr + "_arg"] = atan2(obs[newStr + "_im"], obs[param + "_re"]); // Append replacement
+            }
+
+        }
     }
 
     // Build the amplitude map using physical amplitudes
@@ -3759,7 +3781,7 @@ void goldenmodesB::MCMCUserIterationInterface()
         pars = fMCMCStates.at(i).parameters;
         try
         {
-            LogLikelihood(pars);
+            obs["LogLikelihood"] = LogLikelihood(pars);
         }
         catch (const exception &e)
         {
