@@ -507,7 +507,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     // CMS:2024znt (Run 1+2 combined)
 
     CorrData.push_back(dato(-0.074, 0.023)); // phi_s
-    names.push_back("phi_Bsjpsiphi");
+    names.push_back("phis_Bsjpsiphi");
     CorrData.push_back(dato(1.011, 0.019)); // lambda
     names.push_back("lambda_Bsjpsiphi");
     CorrData.push_back(dato(0.5273, 0.0044)); // f_0
@@ -552,7 +552,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     TMatrixDSym Corr5(5);
 
     CorrData.push_back(dato(-0.087, 0.036, 0.021)); // phi_s
-    names.push_back("phi_Bsjpsiphi");
+    names.push_back("phis_Bsjpsiphi");
     CorrData.push_back(dato(0.2218, 0.0017, 0.0021)); // f_paral
     names.push_back("f_paral_Bsjpsiphi");
     CorrData.push_back(dato(0.5152, 0.0012, 0.0034)); // f_0
@@ -1069,49 +1069,28 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
             histos.createH1D(newStr, 500, 0.0, 0.0);
         }
 
-        // Branching ratio (BR)
-        if (meas.find("BR" + channel) != meas.end())
-        {
-            histos.createH1D("BR_" + channel, 500, 0.0, 0.0);
-        }
-
-        // ACP, C, and S observables
-        if (meas.find("ACP" + channel) != meas.end())
-        {
-            histos.createH1D("ACP_" + channel, 500, 0., 0.);
-        }
-        if (meas.find("C" + channel) != meas.end())
-        {
-            histos.createH1D("C_" + channel, 500, 0.0, 0.0);
-        }
-        if (meas.find("S" + channel) != meas.end())
-        {
-            histos.createH1D("S_" + channel, 500, 0.0, 0.0);
-        }
     }
 
-    for (const auto &channel : channelNames)
+    for (const auto &channel : channels)
     {
 
-        // Branching ratio (BR)
-        if (meas.find("BR" + channel) != meas.end())
-        {
             histos.createH1D("BR_" + channel, 500, 0.0, 0.0);
-        }
 
-        // ACP, C, and S observables
-        if (meas.find("ACP" + channel) != meas.end())
-        {
-            histos.createH1D("ACP_" + channel, 500, 0., 0.);
-        }
-        if (meas.find("C" + channel) != meas.end())
-        {
+            auto parsedChannel = parseChannel(channel);
+
+            if (parsedChannel.first == "Bp")
+            {
+                histos.createH1D("ACP_" + channel, 500, 0.0, 0.0);
+            }
+            else
+            {
+                
             histos.createH1D("C_" + channel, 500, 0.0, 0.0);
-        }
-        if (meas.find("S" + channel) != meas.end())
-        {
+
             histos.createH1D("S_" + channel, 500, 0.0, 0.0);
-        }
+            histos.createH1D("DeltaS_" + channel, 500, 0.0, 0.0);
+            }
+
     }
 
     for (const auto &corr_entry : corrmeas_channels)
@@ -1122,8 +1101,16 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         for (const auto &obs_name : obs_names)
         {
             histos.createH1D(obs_name, 500, 0.0, 0.0);
+            if (obs_name.find("S_") != string::npos || obs_name.find("phis") != string::npos || obs_name.find("2beta") != string::npos)
+            {
+                histos.createH1D("Delta" + obs_name, 500, 0.0, 0.0);
+            }
+
         }
     }
+
+    histos.createH1D("LogLikelihood", 500, 0.0, 0.0);
+
 }
 
 //---------------------------------------------------------------
@@ -1149,8 +1136,8 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addAmplitudeParameter("E2t_ccsd_BJPSIP_re", 0., 10.);
         addAmplitudeParameter("E2t_ccsd_BJPSIP_im", 0., 0.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_re", -10., 11.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_im", -10., 11.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_re", -20., 21.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_im", -20., 21.);
     }
     else if (channel == "Bdjpsip0")
     {
@@ -1809,14 +1796,14 @@ void goldenmodesB::DefineParameters(const string &channel)
             "G3t_css_BDDb_re", "G3t_css_BDDb_im"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E1t_sccs_BDDb_re", 0., 10.);
+        addAmplitudeParameter("E1t_sccs_BDDb_re", 0., 20.);
         addAmplitudeParameter("E1t_sccs_BDDb_im", 0., 0.);
-        addAmplitudeParameter("A2t_cscs_BDbD_re", -10., 11.);
-        addAmplitudeParameter("A2t_cscs_BDbD_im", -10., 11.);
-        addAmplitudeParameter("G1t_scs_BDDb_re", -10., 11.);
-        addAmplitudeParameter("G1t_scs_BDDb_im", -10., 11.);
-        addAmplitudeParameter("G3t_css_BDDb_re", -10., 11.);
-        addAmplitudeParameter("G3t_css_BDDb_im", -10., 11.);
+        addAmplitudeParameter("A2t_cscs_BDbD_re", -20., 21.);
+        addAmplitudeParameter("A2t_cscs_BDbD_im", -20., 21.);
+        addAmplitudeParameter("G1t_scs_BDDb_re", -20., 21.);
+        addAmplitudeParameter("G1t_scs_BDDb_im", -20., 21.);
+        addAmplitudeParameter("G3t_css_BDDb_re", -20., 21.);
+        addAmplitudeParameter("G3t_css_BDDb_im", -20., 21.);
     }
     else if (channel == "Bsdpdsm")
     {
@@ -1858,8 +1845,8 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_A2t_cdcs_BDbD_im", "A2t_cscs_BDbD_im");
         addAmplitudeParameter("dP3EW_ucs_BDbD_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP3EW_ucs_BDbD_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("A2_dcds_BDDb_re", -10., 11.);
-        addAmplitudeParameter("A2_dcds_BDDb_im", -10., 11.);
+        addAmplitudeParameter("A2_dcds_BDDb_re", -20., 21.);
+        addAmplitudeParameter("A2_dcds_BDDb_im", -20., 21.);
         addSU3BreakingParameter("delta_G3t_cds_BDDb_re", "G3t_css_BDDb_re");
         addSU3BreakingParameter("delta_G3t_cds_BDDb_im", "G3t_css_BDDb_im");
     }
@@ -1949,7 +1936,7 @@ void goldenmodesB::DefineParameters(const string &channel)
     {
         // b → c(c̄d), spectator u
         vector<string> params = {
-            "delta_E1t_dccs_BDDb_re", "delta_E1tt_dccs_BDDb_im",
+            "delta_E1t_dccs_BDDb_re", "delta_E1t_dccs_BDDb_im",
             "delta_E1t_dccd_BDDb_re", "delta_E1t_dccd_BDDb_im",
             "dP1EW_dcu_BDDb_re", "dP1EW_dcu_BDDb_im",
             "A1_dcdd_BDDb_re", "A1_dcdd_BDDb_im",
@@ -1963,8 +1950,8 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_E1t_dccd_BDDb_im", "E1t_dccs_BDDb_im");
         addAmplitudeParameter("dP1EW_dcu_BDDb_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP1EW_dcu_BDDb_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("A1_dcdd_BDDb_re", -10., 11.);
-        addAmplitudeParameter("A1_dcdd_BDDb_im", -10., 11.);
+        addAmplitudeParameter("A1_dcdd_BDDb_re", -20., 21.);
+        addAmplitudeParameter("A1_dcdd_BDDb_im", -20., 21.);
         addSU3BreakingParameter("delta_G1t_dcs_BDDb_re", "G1t_scs_BDDb_re");
         addSU3BreakingParameter("delta_G1t_dcs_BDDb_im", "G1t_scs_BDDb_im");
         addSU3BreakingParameter("delta_G1t_dcd_BDDb_re", "G1t_dcs_BDDb_re");
@@ -2714,15 +2701,17 @@ double goldenmodesB::CalculateC(const TComplex &amplitude, const TComplex &conju
 }
 
 // ---------------------------------------------------------------------
-// Function to calculate CP violation parameter S
-double goldenmodesB::CalculateS(const TComplex &amplitude, const TComplex &conjugate_amplitude, const string &channel)
+// Function to calculate CP violation parameter S and Delta S
+pair<double,double> goldenmodesB::CalculateS(const TComplex &amplitude, const TComplex &conjugate_amplitude, const string &channel)
 {
     // Parse the channel to determine the B meson type
     auto parsed = parseChannel(channel);
     string bMeson = parsed.first;
 
+    bool isBd = (bMeson == "Bd");
+
     // Get q/p ratio for Bd or Bs
-    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = isBd? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
 
     // Special case for K0s and K0l channels (apply q/p_KS)
     if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l")
@@ -2745,17 +2734,20 @@ double goldenmodesB::CalculateS(const TComplex &amplitude, const TComplex &conju
     if (amplitude.Rho() == 0)
     {
         cerr << "Error: CalculateS - Zero amplitude for " << channel << ", division by zero detected." << endl;
-        return 0.0; // Return safe value instead of crashing
+        return make_pair(0.,0.); // Return safe value instead of crashing
     }
 
     TComplex lambda = q_p * (conjugate_amplitude / amplitude);
 
     // Compute S observable: S = 2 Im(λ) / (1 + |λ|^2)
     double mod_lambda_squared = lambda.Rho2();
-    return (2.0 * lambda.Im()) / (1.0 + mod_lambda_squared);
+    double S = -(2.0 * lambda.Im()) / (1.0 + mod_lambda_squared);
+    double DeltaS = isBd ? S - sin(2.0 * ckm.get_beta()) : S - sin(-2.0 * ckm.get_betas());
+
+    return make_pair(S, DeltaS);
 }
 
-pair<double, double> goldenmodesB::CalculatePhiAndLambda(const TComplex &amplitude, const TComplex &conjugate_amplitude, const string &channel)
+tuple<double, double, double> goldenmodesB::CalculatePhiAndLambda(const TComplex &amplitude, const TComplex &conjugate_amplitude, const string &channel)
 {
     // Ensure the amplitude is nonzero to avoid division by zero
     if (amplitude.Rho() == 0)
@@ -2767,9 +2759,11 @@ pair<double, double> goldenmodesB::CalculatePhiAndLambda(const TComplex &amplitu
     auto parsed = parseChannel(channel);
     string bMeson = parsed.first;
 
+    bool isBd = (bMeson == "Bd");
+
     // Get q/p ratio for Bd or Bs
-    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
-    double sign = (bMeson == "Bd") ? 1.0 : -1.0;
+    TComplex q_p = isBd ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    double sign = -1.;
 
     // Compute lambda = (q/p) * (A_cp / A_conj)
     TComplex lambda = q_p * (conjugate_amplitude / amplitude);
@@ -2780,7 +2774,10 @@ pair<double, double> goldenmodesB::CalculatePhiAndLambda(const TComplex &amplitu
     // Compute phi = sign * arg(lambda)
     double phi = sign * lambda.Theta();
 
-    return {phi, mod_lambda};
+    //cout << "Channel: " << channel << ", reference angle: " << (isBd ? 2.*ckm.get_beta() : -2.*ckm.get_betas()) << ", calculated phi: " << phi << ", |lambda|: " << mod_lambda << endl;
+
+
+    return make_tuple(phi, mod_lambda, phi - (isBd ? 2.0 * ckm.get_beta() : -2.0 * ckm.get_betas()));
 }
 
 // pair<vector<string>, string> goldenmodesB::extractChannelFromCorrKey(const string &corr_key)
@@ -2933,22 +2930,22 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
             amp_pair = it->second;
         }
 
-        // **Compute ACP, C, and S only if they exist in meas**
+        // **Compute ACP, C, and S only if they exist in meas and are not already computed**
         if (meas.find("ACP" + channel) != meas.end())
         {
             double acp;
             if (is_vector_channel)
             {
                 // Compute average over polarizations for ACP
-                double acp_0 = CalculateAcp(amp0_pair.first, amp0_pair.second);
-                double acp_paral = CalculateAcp(ampparal_pair.first, ampparal_pair.second);
-                double acp_perp = CalculateAcp(ampperp_pair.first, ampperp_pair.second);
+                double acp_0 = (obs.find("ACP_" + channel + "_0") != obs.end()) ? obs["ACP_" + channel + "_0"] : CalculateAcp(amp0_pair.first, amp0_pair.second);
+                double acp_paral = (obs.find("ACP_" + channel + "_paral") != obs.end()) ? obs["ACP_" + channel + "_paral"] : CalculateAcp(ampparal_pair.first, ampparal_pair.second);
+                double acp_perp = (obs.find("ACP_" + channel + "_perp") != obs.end()) ? obs["ACP_" + channel + "_perp"] : CalculateAcp(ampperp_pair.first, ampperp_pair.second);
                 auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
                 acp = acp_0 * polfracs["f_0"] + acp_paral * polfracs["f_paral"] + acp_perp * polfracs["f_perp"];
             }
             else
             {
-                acp = CalculateAcp(amp_pair.first, amp_pair.second);
+                acp = (obs.find("ACP_" + channel) != obs.end()) ? obs["ACP_" + channel] : CalculateAcp(amp_pair.first, amp_pair.second);
             }
             obs["ACP_" + channel] = acp;
 
@@ -2964,15 +2961,15 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
             if (is_vector_channel)
             {
                 // Compute average over polarizations for C
-                double c_0 = CalculateC(amp0_pair.first, amp0_pair.second, channel);
-                double c_paral = CalculateC(ampparal_pair.first, ampparal_pair.second, channel);
-                double c_perp = CalculateC(ampperp_pair.first, ampperp_pair.second, channel);
+                double c_0 = (obs.find("C_" + channel + "_0") != obs.end()) ? obs["C_" + channel + "_0"] : CalculateC(amp0_pair.first, amp0_pair.second, channel);
+                double c_paral = (obs.find("C_" + channel + "_paral") != obs.end()) ? obs["C_" + channel + "_paral"] : CalculateC(ampparal_pair.first, ampparal_pair.second, channel);
+                double c_perp = (obs.find("C_" + channel + "_perp") != obs.end()) ? obs["C_" + channel + "_perp"] : CalculateC(ampperp_pair.first, ampperp_pair.second, channel);
                 auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
                 c = c_0 * polfracs["f_0"] + c_paral * polfracs["f_paral"] + c_perp * polfracs["f_perp"];
             }
             else
             {
-                c = CalculateC(amp_pair.first, amp_pair.second, channel);
+                c = (obs.find("C_" + channel) != obs.end()) ? obs["C_" + channel] : CalculateC(amp_pair.first, amp_pair.second, channel);
             }
             obs["C_" + channel] = c;
 
@@ -2984,21 +2981,27 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
 
         if (meas.find("S" + channel) != meas.end())
         {
-            double s;
+            double s, delta_s;
             if (is_vector_channel)
             {
                 // Compute average over polarizations for S
-                double s_0 = CalculateS(amp0_pair.first, amp0_pair.second, channel);
-                double s_paral = CalculateS(ampparal_pair.first, ampparal_pair.second, channel);
-                double s_perp = CalculateS(ampperp_pair.first, ampperp_pair.second, channel);
+                auto s_0 = (obs.find("S_" + channel + "_0") != obs.end() && obs.find("DeltaS_" + channel + "_0") != obs.end()) ? make_pair(obs["S_" + channel + "_0"], obs["DeltaS_" + channel + "_0"]) : CalculateS(amp0_pair.first, amp0_pair.second, channel);
+                auto s_paral = (obs.find("S_" + channel + "_paral") != obs.end() && obs.find("DeltaS_" + channel + "_paral") != obs.end()) ? make_pair(obs["S_" + channel + "_paral"], obs["DeltaS_" + channel + "_paral"]) : CalculateS(ampparal_pair.first, ampparal_pair.second, channel);
+                auto s_perp = (obs.find("S_" + channel + "_perp") != obs.end() && obs.find("DeltaS_" + channel + "_perp") != obs.end()) ? make_pair(obs["S_" + channel + "_perp"], obs["DeltaS_" + channel + "_perp"]) : CalculateS(ampperp_pair.first, ampperp_pair.second, channel);
                 auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
-                s = s_0 * polfracs["f_0"] + s_paral * polfracs["f_paral"] + s_perp * polfracs["f_perp"];
+                s = s_0.first * polfracs["f_0"] + s_paral.first * polfracs["f_paral"] + s_perp.first * polfracs["f_perp"];
+                delta_s = s_0.second * polfracs["f_0"] + s_paral.second * polfracs["f_paral"] + s_perp.second * polfracs["f_perp"];
             }
             else
             {
-                s = CalculateS(amp_pair.first, amp_pair.second, channel);
+                auto s_pair = (obs.find("S" + channel) != obs.end() && obs.find("DeltaS" + channel) != obs.end()) ? make_pair(obs["S" + channel], obs["DeltaS" + channel]) : CalculateS(amp_pair.first, amp_pair.second, channel);
+                s = s_pair.first;
+                delta_s = s_pair.second;
             }
             obs["S_" + channel] = s;
+            obs["DeltaS_" + channel] = delta_s;
+//            cout << "Channel: " << channel << " S: " << obs["S_" + channel] << " DeltaS: " << obs["DeltaS_" + channel] << endl;
+
 
             double observed = meas.at("S" + channel).getMean();
             double uncertainty = meas.at("S" + channel).getSigma();
@@ -3015,9 +3018,9 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
         if (is_vector_channel)
         {
             // For vector meson channels, use the sum over polarizations for BR
-            br_predicted += CalculateBR(amp0_pair.first, amp0_pair.second, channel);
-            br_predicted += CalculateBR(ampparal_pair.first, ampparal_pair.second, channel);
-            br_predicted += CalculateBR(ampperp_pair.first, ampperp_pair.second, channel);
+            br_predicted += (obs.find("BR_" + channel + "_0") != obs.end()) ? obs["BR_" + channel + "_0"] : CalculateBR(amp0_pair.first, amp0_pair.second, channel);
+            br_predicted += (obs.find("BR_" + channel + "_paral") != obs.end()) ? obs["BR_" + channel + "_paral"] : CalculateBR(ampparal_pair.first, ampparal_pair.second, channel);
+            br_predicted += (obs.find("BR_" + channel + "_perp") != obs.end()) ? obs["BR_" + channel + "_perp"] : CalculateBR(ampperp_pair.first, ampperp_pair.second, channel);
         }
         else
         {
@@ -3033,12 +3036,12 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
                 br_obsKey = "BR_" + channel;
                 br_measKey = "BR" + channel;
             }
-            br_predicted = CalculateBR(amp_pair.first, amp_pair.second, channel_for_br);
+            br_predicted = (obs.find(br_obsKey) != obs.end()) ? obs[br_obsKey] : CalculateBR(amp_pair.first, amp_pair.second, channel_for_br);
         }
+        obs[br_obsKey] = br_predicted;
+
         if (meas.find(br_measKey) != meas.end())
         {
-            obs[br_obsKey] = br_predicted;
-
             double observed = meas.at(br_measKey).getMean();
             double uncertainty = meas.at(br_measKey).getSigma();
             double diff = br_predicted - observed;
@@ -3364,30 +3367,37 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
 
                 else if (obs_name.rfind("S", 0) == 0)
                 {
-                    double s_value;
+                    double s_value, delta_S;
                     if (is_vector_channel && !is_polarized_measurement)
                     {
                         // Average over polarizations for S
-                        double s_0 = CalculateS(amp0_pair.first, amp0_pair.second, basechannel);
-                        double s_paral = CalculateS(ampparal_pair.first, ampparal_pair.second, basechannel);
-                        double s_perp = CalculateS(ampperp_pair.first, ampperp_pair.second, basechannel);
+                        auto s_0 = CalculateS(amp0_pair.first, amp0_pair.second, basechannel);
+                        auto s_paral = CalculateS(ampparal_pair.first, ampparal_pair.second, basechannel);
+                        auto s_perp = CalculateS(ampperp_pair.first, ampperp_pair.second, basechannel);
                         auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
-                        s_value = s_0 * polfracs["f_0"] + s_paral * polfracs["f_paral"] + s_perp * polfracs["f_perp"];
+                        s_value = s_0.first * polfracs["f_0"] + s_paral.first * polfracs["f_paral"] + s_perp.first * polfracs["f_perp"];
+                        delta_S = s_0.second * polfracs["f_0"] + s_paral.second * polfracs["f_paral"] + s_perp.second * polfracs["f_perp"];
                     }
                     else if (is_vector_channel && is_polarized_measurement)
                     {
                         // Polarized measurement for vector meson channel
                         if (obs_name.find("0") != string::npos)
                         {
-                            s_value = CalculateS(amp0_pair.first, amp0_pair.second, basechannel);
+                            auto s_pair = CalculateS(amp0_pair.first, amp0_pair.second, basechannel);
+                            s_value = s_pair.first;
+                            delta_S = s_pair.second;
                         }
                         else if (obs_name.find("paral") != string::npos)
                         {
-                            s_value = CalculateS(ampparal_pair.first, ampparal_pair.second, basechannel);
+                            auto s_pair = CalculateS(ampparal_pair.first, ampparal_pair.second, basechannel);
+                            s_value = s_pair.first;
+                            delta_S = s_pair.second;
                         }
                         else if (obs_name.find("perp") != string::npos)
                         {
-                            s_value = CalculateS(ampperp_pair.first, ampperp_pair.second, basechannel);
+                            auto s_pair = CalculateS(ampperp_pair.first, ampperp_pair.second, basechannel);
+                            s_value = s_pair.first;
+                            delta_S = s_pair.second;
                         }
                         else
                         {
@@ -3397,11 +3407,14 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                     }
                     else
                     {
-                        s_value = CalculateS(amp_pair.first, amp_pair.second, basechannel);
+                        auto s_pair = CalculateS(amp_pair.first, amp_pair.second, basechannel);
+                        s_value = s_pair.first;
+                        delta_S = s_pair.second;
                     }
                     obs[obs_name] = s_value;
+                    obs["DeltaS_" + obs_name.substr(1)] = delta_S;
                 }
-                else if (obs_name.rfind("phi", 0) == 0)
+                else if (obs_name.rfind("phis", 0) == 0)
                 {
                     if (is_vector_channel && !is_polarized_measurement)
                     {
@@ -3411,31 +3424,36 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                         auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
                         auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
 
-                        double phi_0 = phi_lambda_0.first;
-                        double phi_paral = phi_lambda_paral.first;
-                        double phi_perp = phi_lambda_perp.first;
+                        double phi_0 = get<0>(phi_lambda_0);
+                        double phi_paral = get<0>(phi_lambda_paral);
+                        double phi_perp = get<0>(phi_lambda_perp);
 
                         double phi_avg = phi_0 * polfracs["f_0"] + phi_paral * polfracs["f_paral"] + phi_perp * polfracs["f_perp"];
+                        double delta_phi_avg = get<2>(phi_lambda_0) * polfracs["f_0"] + get<2>(phi_lambda_paral) * polfracs["f_paral"] + get<2>(phi_lambda_perp) * polfracs["f_perp"];
                         obs[obs_name] = phi_avg;
+                        obs["Delta" + obs_name] = delta_phi_avg;
                     }
                     else if (is_vector_channel && is_polarized_measurement)
                     {
                         // Polarized measurement for vector meson channel
-                        double phi_pol;
+                        double phi_pol, delta_phi_pol;
                         if (obs_name.find("0") != string::npos)
                         {
                             auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
-                            phi_pol = phi_lambda_0.first;
+                            phi_pol = get<0>(phi_lambda_0);
+                            delta_phi_pol = get<2>(phi_lambda_0);
                         }
                         else if (obs_name.find("paral") != string::npos)
                         {
                             auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
-                            phi_pol = phi_lambda_paral.first;
+                            phi_pol = get<0>(phi_lambda_paral);
+                            delta_phi_pol = get<2>(phi_lambda_paral);
                         }
                         else if (obs_name.find("perp") != string::npos)
                         {
                             auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
-                            phi_pol = phi_lambda_perp.first;
+                            phi_pol = get<0>(phi_lambda_perp);
+                            delta_phi_pol = get<2>(phi_lambda_perp);
                         }
                         else
                         {
@@ -3443,13 +3461,16 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                             continue;
                         }
                         obs[obs_name] = phi_pol;
+                        obs["Delta" + obs_name] = delta_phi_pol;
                     }
                     else
                     {
                         // Non-vector meson channel
                         auto phi_lambda_result = CalculatePhiAndLambda(amp_pair.first, amp_pair.second, basechannel);
-                        double phi = phi_lambda_result.first;
+                        double phi = get<0>(phi_lambda_result);
+                        double delta_phi = get<2>(phi_lambda_result);
                         obs[obs_name] = phi;
+                        obs["Delta" + obs_name] = delta_phi;
                     }
                 }
                 else if (obs_name.rfind("lambda", 0) == 0)
@@ -3462,9 +3483,9 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                         auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
                         auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
 
-                        double lambda_0 = phi_lambda_0.second;
-                        double lambda_paral = phi_lambda_paral.second;
-                        double lambda_perp = phi_lambda_perp.second;
+                        double lambda_0 = get<1>(phi_lambda_0);
+                        double lambda_paral = get<1>(phi_lambda_paral);
+                        double lambda_perp = get<1>(phi_lambda_perp);
 
                         double lambda_avg = lambda_0 * polfracs["f_0"] + lambda_paral * polfracs["f_paral"] + lambda_perp * polfracs["f_perp"];
                         obs[obs_name] = lambda_avg;
@@ -3476,17 +3497,17 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                         if (obs_name.find("0") != string::npos)
                         {
                             auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
-                            lambda_pol = phi_lambda_0.second;
+                            lambda_pol =get<1>(phi_lambda_0);
                         }
                         else if (obs_name.find("paral") != string::npos)
                         {
                             auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
-                            lambda_pol = phi_lambda_paral.second;
+                            lambda_pol = get<1>(phi_lambda_paral);
                         }
                         else if (obs_name.find("perp") != string::npos)
                         {
                             auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
-                            lambda_pol = phi_lambda_perp.second;
+                            lambda_pol = get<1>(phi_lambda_perp);
                         }
                         else
                         {
@@ -3499,7 +3520,7 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                     {
                         // Non-vector meson channel
                         auto phi_lambda_result = CalculatePhiAndLambda(amp_pair.first, amp_pair.second, basechannel);
-                        double lambda_val = phi_lambda_result.second;
+                        double lambda_val = get<1>(phi_lambda_result);
                         obs[obs_name] = lambda_val;
                     }
                 }
@@ -3522,21 +3543,26 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                     else if (is_vector_channel && is_polarized_measurement)
                     {
                         // Polarized measurement for vector meson channel
-                        double twobeta_pol;
+                        double twobeta_pol, delta_twobeta_pol;
                         if (obs_name.find("0") != string::npos)
                         {
                             auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
-                            twobeta_pol = phi_lambda_0.first;
+                            twobeta_pol = get<0>(phi_lambda_0);
+                            delta_twobeta_pol = get<2>(phi_lambda_0);
                         }
                         else if (obs_name.find("paral") != string::npos)
                         {
-                            double phi_lambda_paral = remainder(CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel).first - CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel).first, 2. * M_PI);
-                            twobeta_pol = phi_lambda_paral;
+                            auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
+                            auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
+                            twobeta_pol = remainder(get<0>(phi_lambda_paral) - get<0>(phi_lambda_0), 2. * M_PI);
+                            delta_twobeta_pol = remainder(get<2>(phi_lambda_paral) + get<2>(phi_lambda_0), 2. * M_PI);
                         }
                         else if (obs_name.find("perp") != string::npos)
                         {
-                            double phi_lambda_perp = remainder(CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel).first - CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel).first, 2. * M_PI);
-                            twobeta_pol = phi_lambda_perp;
+                            auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
+                            auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
+                            twobeta_pol = remainder(get<0>(phi_lambda_perp) - get<0>(phi_lambda_0), 2. * M_PI);
+                            delta_twobeta_pol = remainder(get<2>(phi_lambda_perp) + get<2>(phi_lambda_0), 2. * M_PI);
                         }
                         else
                         {
@@ -3544,13 +3570,18 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                             continue;
                         }
                         obs[obs_name] = twobeta_pol;
+                        obs["Delta" + obs_name] = delta_twobeta_pol;
                     }
                     else
                     {
                         // Non-vector meson channel
                         auto phi_lambda_result = CalculatePhiAndLambda(amp_pair.first, amp_pair.second, basechannel);
-                        double phi_s = phi_lambda_result.first;
+                        double phi_s = get<0>(phi_lambda_result);
+                        double delta_phi_s = get<2>(phi_lambda_result);
+
                         obs[obs_name] = phi_s;
+                        obs["Delta" + obs_name] = delta_phi_s;
+
                     }
                 }
                 else if (obs_name.rfind("alpha_", 0) == 0)
@@ -3565,17 +3596,17 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                         double alpha_pol;
                         if (obs_name.find("0") != string::npos)
                         {
-                            double lambda = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel).second;
+                            double lambda = get<1>(CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel));
                             alpha_pol = (1. - lambda) / (1. + lambda);
                         }
                         else if (obs_name.find("paral") != string::npos)
                         {
-                            double lambda = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel).second;
+                            double lambda = get<1>(CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel));
                             alpha_pol = (1. - lambda) / (1. + lambda);
                         }
                         else if (obs_name.find("perp") != string::npos)
                         {
-                            double lambda = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel).second;
+                            double lambda = get<1>(CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel));
                             alpha_pol = (1. - lambda) / (1. + lambda);
                         }
                         else
@@ -3739,7 +3770,7 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
         }
     }
 
-    for (const string &channel : channelNames)
+    for (const string &channel : channels)
     {
         // compute amplitudes for eta and etaprime final states
         if ((channel.length() >= strlen("eta") && channel.compare(channel.length() - strlen("eta"), strlen("eta"), "eta") == 0))
@@ -3761,6 +3792,85 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
             return log(0.);
         }
     }
+
+    // Calculate BRs, polarization fractions, CP asymmetries, etc., and fill obs map
+    for (const string &channel : channels)
+    {
+        auto ch = parseChannel(channel);
+
+        bool is_vector_channel = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), channel) != vectorMesonChannels.end();
+
+        // Branching Ratio
+        double br = CalculateBR(amplitude_map[channel].first, amplitude_map[channel].second, channel);
+        obs["BR_" + channel] = br;
+        // Polarization fractions and phases for vector meson channels
+        if (is_vector_channel)
+        {
+            auto pol_params = CalculatePolarizations(amplitude_map[channel + "_0"], amplitude_map[channel + "_paral"], amplitude_map[channel + "_perp"]);
+            obs["f_0_" + channel] = pol_params.at("f_0");
+            obs["f_paral_" + channel] = pol_params.at("f_paral");
+            obs["f_perp_" + channel] = pol_params.at("f_perp");
+            obs["delta_paral_" + channel] = pol_params.at("delta_paral");
+            obs["delta_perp_" + channel] = pol_params.at("delta_perp");
+        }
+        // Direct CP Asymmetry for charged B decays
+        if (ch.first == "Bp")
+        {
+            if (is_vector_channel)
+            {
+                // Average over polarizations for ACP in vector meson channels
+                double acp_0 = CalculateAcp(amplitude_map[channel + "_0"].first, amplitude_map[channel + "_0"].second);
+                obs["ACP_" + channel + "_0"] = acp_0;
+                double acp_paral = CalculateAcp(amplitude_map[channel + "_paral"].first, amplitude_map[channel + "_paral"].second);
+                obs["ACP_" + channel + "_paral"] = acp_paral;
+                double acp_perp = CalculateAcp(amplitude_map[channel + "_perp"].first, amplitude_map[channel + "_perp"].second);
+                obs["ACP_" + channel + "_perp"] = acp_perp;
+                double acp_avg = acp_0 * obs["f_0_" + channel] + acp_paral * obs["f_paral_" + channel] + acp_perp * obs["f_perp_" + channel];
+                obs["ACP_" + channel] = acp_avg;
+            }
+            else
+            {
+                double acp = CalculateAcp(amplitude_map[channel].first, amplitude_map[channel].second);
+                obs["ACP_" + channel] = acp;
+            }
+        }
+        // S and C parameters for neutral B decays
+        if (ch.first == "Bd" || ch.first == "Bs")
+        {
+            if (is_vector_channel)
+            {
+                // Average over polarizations for S and C in vector meson channels
+                double c_0 = CalculateC(amplitude_map[channel + "_0"].first, amplitude_map[channel + "_0"].second, channel);
+                auto s_0 = CalculateS(amplitude_map[channel + "_0"].first, amplitude_map[channel + "_0"].second, channel);
+                double c_paral = CalculateC(amplitude_map[channel + "_paral"].first, amplitude_map[channel + "_paral"].second, channel);
+                auto s_paral = CalculateS(amplitude_map[channel + "_paral"].first, amplitude_map[channel + "_paral"].second, channel);
+                double c_perp = CalculateC(amplitude_map[channel + "_perp"].first, amplitude_map[channel + "_perp"].second, channel);
+                auto s_perp = CalculateS(amplitude_map[channel + "_perp"].first, amplitude_map[channel + "_perp"].second, channel);
+
+                double c_avg = c_0 * obs["f_0_" + channel] + c_paral * obs["f_paral_" + channel] + c_perp * obs["f_perp_" + channel];
+                double s_avg = s_0.first * obs["f_0_" + channel] + s_paral.first * obs["f_paral_" + channel] + s_perp.first * obs["f_perp_" + channel];
+                double delta_S_avg = s_0.second * obs["f_0_" + channel] + s_paral.second * obs["f_paral_" + channel] + s_perp.second * obs["f_perp_" + channel];
+
+                obs["C_" + channel] = c_avg;
+                obs["S_" + channel] = s_avg;
+                obs["DeltaS_" + channel] = delta_S_avg;
+            }
+            else
+            {
+                double c_param = CalculateC(amplitude_map[channel].first, amplitude_map[channel].second, channel);
+                auto s_pair = CalculateS(amplitude_map[channel].first, amplitude_map[channel].second, channel);
+                obs["C_" + channel] = c_param;
+                obs["S_" + channel] = s_pair.first;
+                obs["DeltaS_" + channel] = s_pair.second;
+            }
+
+            // auto phi_lambda = CalculatePhiAndLambda(amplitude_map[channel].first, amplitude_map[channel].second, channel);
+            // obs["phi_" + channel] = get<0>(phi_lambda);
+            // obs["lambda_" + channel] = get<1>(phi_lambda);
+            // obs["Deltaphi_" + channel] = get<2>(phi_lambda);
+        }
+    }
+
 
     // Add contributions from uncorrelated and correlated observables
     ll += Calculate_UncorrelatedObservables(amplitude_map);

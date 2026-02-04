@@ -11,7 +11,10 @@
         "--flagBJPSIV",
         "--flagBDDb",
         "--dsu3_limit",
-        "1."
+        "1.",
+        "--Univariate",
+        "--nPreRun",
+        "10",
       ],
       "cwd": "${workspaceFolder}/build",
       "stopAtEntry": false,

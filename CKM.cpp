@@ -198,3 +198,24 @@ void CKMParameters::printParameters() const {
     std::cout << "Rho: " << sampledValues[2] << std::endl;
     std::cout << "Eta: " << sampledValues[3] << std::endl;
 }
+
+const double CKMParameters::get_beta() const
+{
+    return (-(V[1][0]*TComplex::Conjugate(V[1][2])/(V[2][0]*TComplex::Conjugate(V[2][2])))).Theta();
+}
+
+const double CKMParameters::get_gamma() const
+{
+    return (-(V[0][0]*TComplex::Conjugate(V[0][2])/(V[1][0]*TComplex::Conjugate(V[1][2])))).Theta();
+}
+
+const double CKMParameters::get_alpha() const 
+{
+    return (-(V[2][0]*TComplex::Conjugate(V[2][2])/(V[0][0]*TComplex::Conjugate(V[0][2])))).Theta();
+}
+
+const double CKMParameters::get_betas() const 
+{
+    return (-(V[2][1]*TComplex::Conjugate(V[2][2])/(V[1][1]*TComplex::Conjugate(V[1][2])))).Theta();
+}
+

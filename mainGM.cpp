@@ -19,11 +19,13 @@ int main(int argc, char* argv[]) {
     bool flagBJPSIV = false;
     bool flagBJPSIP = false;
     bool flagBDDb = false;
+    bool Univariate = false;
+
     double dsu3_limit = 0.2;
     double ewp_limit = 0.0;
     int nIterationsPreRun = 100000;
     int nIterationsRun = 10000;
-    int nIterationsPreRunFactorized = 1000;
+    int nIterationsPreRunFactorized = 10000;
     int nIterationsUpdateMax = 100;
     int nChains = 10;
 
@@ -52,6 +54,9 @@ int main(int argc, char* argv[]) {
         else if (strcmp(argv[i], "--nChains") == 0 && i + 1 < argc) {
              nChains = atoi(argv[++i]);
         }
+        else if (strcmp(argv[i], "--Univariate") == 0) {
+            Univariate = true;
+        }
         else if (strcmp(argv[i], "--help") == 0) {
             cout << "Usage: " << argv[0] << " [options]\n"
                  << "Options:\n"
@@ -64,9 +69,10 @@ int main(int argc, char* argv[]) {
                  << "  --nPreRun <value>               Set number of pre-run iterations (default: 100000)\n"
                  << "  --nRun <value>                  Set number of run iterations (default: 10000)\n"
                  << "  --nPreRunFactorized <value>     Set number of factorized pre-run iterations (default: 1000)\n"
-                 << "  --nUpdateMax <value>            Set max number of update iterations (default: 100)\n"
-                 << "  --nChains <value>               Set number of chains (default: 10)\n"
-                 << "  --help                          Show this help message\n";
+                  "  --nUpdateMax value            Set max number of update iterations (default: 100)\n"
+                  "  --nChains value               Set number of chains (default: 10)\n"
+                  "  --Univariate                   Enable univariate mode\n"
+                  "  --help                          Show this help message\n";
             return 0;
         }
     }
@@ -95,10 +101,16 @@ int main(int argc, char* argv[]) {
     model.SetNChains(nChains);
     model.SetNIterationsPreRunMax(nIterationsPreRun); // Pre-run iterations
     model.SetNIterationsRun(nIterationsRun);
-    model.SetProposeMultivariate(false);
+    if (Univariate) {
+        model.SetProposeMultivariate(false);
+    } else {
+        model.SetProposeMultivariate(true);
+    }
     model.SetNIterationsPreRunFactorized(nIterationsPreRunFactorized);
     model.SetNIterationsPreRunCheck(nIterationsUpdateMax);
     model.SetInitialPositionScheme(BCEngineMCMC::kInitCenter);
+//    model.WriteMarkovChain(outputFileName+"markov_chain.root", "RECREATE", true, true);
+
     
     // Start time measurement
     auto start = chrono::high_resolution_clock::now();

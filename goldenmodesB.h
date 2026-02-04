@@ -140,8 +140,8 @@ public:
     double CalculateAcp(const TComplex &amplitude, const TComplex &conjugate_amplitude) const;
     double CalculateAlpha(const TComplex &amplitude, const TComplex &conjugate_amplitude, const string &channel);
     double CalculateC(const TComplex &amplitude, const TComplex &conjugate_amplitude, const string &channel);
-    double CalculateS(const TComplex &amplitude, const TComplex &conjugate_amplitude, const string &channel);
-    pair<double, double> CalculatePhiAndLambda(const TComplex &amplitude, const TComplex &conjugate_amplitude, const string &channel);
+    pair<double,double> CalculateS(const TComplex &amplitude, const TComplex &conjugate_amplitude, const string &channel);
+    tuple<double, double, double> CalculatePhiAndLambda(const TComplex &amplitude, const TComplex &conjugate_amplitude, const string &channel);
     pair<vector<string>, string> extractChannelFromCorrKey(const string &corr_key);
     map<string, double> getPolarizationParams(const string &channel, const map<string, pair<TComplex, TComplex>> &amplitude_map);
 

@@ -26,6 +26,31 @@ public:
     // Helper function to compute the CKM matrix from angles (Wolfenstein parameters)
     void computeCKMfromAngles(double lambda, double A, double rho, double eta);
 
+     /**
+     * @brief The %CKM angle @f$\beta@f$.
+     * @return @f$\beta@f$ in radians
+     */
+    const double get_beta() const;
+
+    /**
+     * @brief The %CKM angle @f$\gamma@f$.
+     * @return @f$\gamma@f$ in radians
+     */
+    const double get_gamma() const;
+
+    /**
+     * @brief The %CKM angle @f$\alpha@f$.
+     * @return @f$\alpha@f$ in radians
+     */
+    const double get_alpha() const;
+
+    /**
+     * @brief The %CKM angle @f$\beta_s@f$.
+     * @return @f$\beta_s@f$ in radians
+     */
+    const double get_betas() const;
+    
+
     // Print sampled CKM parameters
     void printParameters() const;
     // Access CKM matrix elements (direct values)

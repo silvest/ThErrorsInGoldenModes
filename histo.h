@@ -55,6 +55,9 @@ struct Histos {
             if (obs.find(p.first) != obs.end()) {
                 p.second->Fill(obs[p.first]);
             }
+            else {
+                std::cout << "Observable " << p.first << " not found in obs for filling histogram!" << std::endl;
+            }
         }
     }
 
