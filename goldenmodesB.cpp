@@ -66,10 +66,10 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     DeclareParameters(); // Ensure parameters are defined
 
     // Add CKM parameters directly in the constructor
-    AddParameter("CKM_Vud", 0.97415, 0.97447);         // Vud parameter
-    AddParameter("CKM_Vcb", 0.04046, 0.04194);         // Vcb parameter
-    AddParameter("CKM_Vub", 0.00349, 0.00419);         // Vub parameter
-    AddParameter("CKM_gamma", 1.12224671, 1.22347581); // gamma parameter (in rad)
+    AddParameter("CKM_Vud", 0.97432-5*0.00015, 0.97432+5*0.00015);         // Vud parameter - 5 sigma range
+    AddParameter("CKM_Vcb", 0.04118-5*0.00076, 0.04118+5*0.00076);         // Vcb parameter - 5 sigma range
+    AddParameter("CKM_Vub", 0.00382-5*0.00034, 0.00382+5*0.00034);         // Vub parameter - 5 sigma range
+    AddParameter("CKM_gamma", 30./180.0 * M_PI, 90./180.0 * M_PI);         // gamma parameter (in rad)
 
     // Add mixing angle between eta1 and eta8
     AddParameter("theta_P", -30. / 180.0 * M_PI, 0.); // in rad
