@@ -3554,20 +3554,20 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                     {
                         // Polarized measurement for vector meson channel
                         double twobeta_pol, delta_twobeta_pol;
-                        if (obs_name.find("0") != string::npos)
+                        if (obs_name.find("_0") != string::npos)
                         {
                             auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
                             twobeta_pol = get<0>(phi_lambda_0);
                             delta_twobeta_pol = get<2>(phi_lambda_0);
                         }
-                        else if (obs_name.find("paral") != string::npos)
+                        else if (obs_name.find("_paral") != string::npos)
                         {
                             auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
                             auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
                             twobeta_pol = remainder(get<0>(phi_lambda_paral) - get<0>(phi_lambda_0), 2. * M_PI);
                             delta_twobeta_pol = remainder(get<2>(phi_lambda_paral) + get<2>(phi_lambda_0), 2. * M_PI);
                         }
-                        else if (obs_name.find("perp") != string::npos)
+                        else if (obs_name.find("_perp") != string::npos)
                         {
                             auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
                             auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
