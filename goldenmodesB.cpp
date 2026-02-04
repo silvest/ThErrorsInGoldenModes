@@ -1122,6 +1122,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         }
     }
 
+    histos.createH1D("2beta", 500, 0.0, 0.0);
+    histos.createH1D("phis", 500, 0.0, 0.0);
+
     histos.createH1D("LogLikelihood", 500, 0.0, 0.0);
 }
 
@@ -3711,6 +3714,9 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
     // Unpack CKM parameters and compute CKM elements
     vector<double> ckmParams(parameters.end() - 5, parameters.end() - 1);
     ckm.computeCKM(ckmParams[0], ckmParams[1], ckmParams[2], ckmParams[3], true);
+
+    obs["2beta"] = ckm.get_beta() * 2.0;
+    obs["phis"] = ckm.get_betas() * -2.0;
 
     // eta-eta' mixing angle
     double theta_P = parameters.back();
