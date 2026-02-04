@@ -1072,14 +1072,17 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
             if (length >= 3 && param.substr(length - 3) == "_re")
             {
                 newStr.append(param, 0, length - 3); // Append text before "_re"
-                newStr += "_abs";                    // Append replacement
+                // strip the possible trailing "delta_" from the parameter name to get the full parameter
+                newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0);                                                            // Remove "delta_" if it exists at the start
+                histos.createH1D(newStr + "_abs", 500, 0.0, 0.0);    
             }
             else if (length >= 3 && param.substr(length - 3) == "_im")
             {
                 newStr.append(param, 0, length - 3); // Append text before "_im"
-                newStr += "_arg";                    // Append replacement
+                newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0);                                                            // Remove "delta_" if it exists at the start
+                histos.createH1D(newStr + "_arg", 500, 0.0, 0.0);    
             }
-            histos.createH1D(newStr, 500, 0.0, 0.0);
+
         }
     }
 
@@ -3745,8 +3748,10 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
             if (length >= 3 && param.substr(length - 3) == "_re")
             {
                 newStr.append(param, 0, length - 3);                                                                              // Append text before "_re"
-                obs[newStr + "_abs"] = sqrt(obs[param + "_re"] * obs[param + "_re"] + obs[newStr + "_im"] * obs[newStr + "_im"]); // Append replacement
-                obs[newStr + "_arg"] = atan2(obs[newStr + "_im"], obs[param + "_re"]);                                            // Append replacement
+                // strip the possible trailing "delta_" from the parameter name to get the full parameter
+                newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0);                                                            // Remove "delta_" if it exists at the start
+                obs[newStr + "_abs"] = getPar(newStr).Rho(); // Append replacement
+                obs[newStr + "_arg"] = getPar(newStr).Theta();                                            // Append replacement
             }
         }
     }
