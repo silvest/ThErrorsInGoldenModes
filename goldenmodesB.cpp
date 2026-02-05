@@ -2859,7 +2859,7 @@ pair<double, double> goldenmodesB::CalculateS(const TComplex &amplitude, const T
     // Compute S observable: S = 2 Im(λ) / (1 + |λ|^2)
     double mod_lambda_squared = lambda.Rho2();
     double S = -(2.0 * lambda.Im()) / (1.0 + mod_lambda_squared);
-    double DeltaS = isBd ? S - sin(getParameterValue("myphid")) : S - sin(getParameterValue("myphis"));
+    double DeltaS = isBd ? S + sin(getParameterValue("myphid")) : S + sin(getParameterValue("myphis"));
 
     return make_pair(S, DeltaS);
 }
