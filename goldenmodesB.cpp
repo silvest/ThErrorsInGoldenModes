@@ -65,11 +65,16 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     DeclareParameters(); // Ensure parameters are defined
 
+    // Add delta phi parameters for Bd and Bs mixing to allow for NP contributions and/or to decorrelate from CKM fit
+    AddParameter("myphid", -M_PI, M_PI); // in rad
+    AddParameter("myphis", -M_PI, M_PI); // in rad
+
+
     // Add CKM parameters directly in the constructor
     AddParameter("CKM_Vud", 0.97432-5*0.00015, 0.97432+5*0.00015);         // Vud parameter - 5 sigma range
     AddParameter("CKM_Vcb", 0.04118-5*0.00076, 0.04118+5*0.00076);         // Vcb parameter - 5 sigma range
     AddParameter("CKM_Vub", 0.00382-5*0.00034, 0.00382+5*0.00034);         // Vub parameter - 5 sigma range
-    AddParameter("CKM_gamma", 30./180.0 * M_PI, 90./180.0 * M_PI);         // gamma parameter (in rad)
+    AddParameter("CKM_gamma", (65.7-5*2.5)/180.0 * M_PI, (65.7+5*2.5)/180.0 * M_PI);         // gamma parameter (in rad) - 5 sigma range
 
     // Add mixing angle between eta1 and eta8
     AddParameter("theta_P", -30. / 180.0 * M_PI, 0.); // in rad
@@ -1124,6 +1129,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     histos.createH1D("2beta", 500, 0.0, 0.0);
     histos.createH1D("phis", 500, 0.0, 0.0);
+    histos.createH1D("myphis", 500, 0.0, 0.0);
+    histos.createH1D("myphid", 500, 0.0, 0.0);
 
     histos.createH1D("LogLikelihood", 500, 0.0, 0.0);
 }
@@ -2682,7 +2689,7 @@ double goldenmodesB::CalculateC(const TComplex &amplitude, const TComplex &conju
     string bMeson = parsed.first;
 
     // Get q/p ratio for Bd or Bs
-    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() * TComplex::Exp(TComplex(0, getParameterValue("myphid"))) : ckm.get_q_p_Bs() * TComplex::Exp(TComplex(0, getParameterValue("myphis")));
 
     // Special case for K0s and K0l channels: apply q/p_KS, taking into account that the minus sign for the KL is compensated by the CP eigenvalue
     if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l")
@@ -2726,7 +2733,7 @@ pair<double, double> goldenmodesB::CalculateS(const TComplex &amplitude, const T
     bool isBd = (bMeson == "Bd");
 
     // Get q/p ratio for Bd or Bs
-    TComplex q_p = isBd ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = isBd ? ckm.get_q_p_Bd() * TComplex::Exp(TComplex(0, getParameterValue("myphid"))) : ckm.get_q_p_Bs() * TComplex::Exp(TComplex(0, getParameterValue("myphis")));
 
     // Special case for K0s and K0l channels (apply q/p_KS)
     if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l")
@@ -2757,7 +2764,7 @@ pair<double, double> goldenmodesB::CalculateS(const TComplex &amplitude, const T
     // Compute S observable: S = 2 Im(λ) / (1 + |λ|^2)
     double mod_lambda_squared = lambda.Rho2();
     double S = -(2.0 * lambda.Im()) / (1.0 + mod_lambda_squared);
-    double DeltaS = isBd ? S - sin(2.0 * ckm.get_beta()) : S - sin(-2.0 * ckm.get_betas());
+    double DeltaS = isBd ? S - sin(2.0 * ckm.get_beta() - getParameterValue("myphid")) : S - sin(-2.0 * ckm.get_betas() - getParameterValue("myphis"));
 
     return make_pair(S, DeltaS);
 }
@@ -2777,7 +2784,7 @@ tuple<double, double, double> goldenmodesB::CalculatePhiAndLambda(const TComplex
     bool isBd = (bMeson == "Bd");
 
     // Get q/p ratio for Bd or Bs
-    TComplex q_p = isBd ? ckm.get_q_p_Bd() : ckm.get_q_p_Bs();
+    TComplex q_p = isBd ? ckm.get_q_p_Bd() * TComplex::Exp(TComplex(0, getParameterValue("myphid"))) : ckm.get_q_p_Bs() * TComplex::Exp(TComplex(0, getParameterValue("myphis")));
     double sign = -1.;
 
     // Compute lambda = (q/p) * (A_cp / A_conj)
@@ -2791,7 +2798,7 @@ tuple<double, double, double> goldenmodesB::CalculatePhiAndLambda(const TComplex
 
     // cout << "Channel: " << channel << ", reference angle: " << (isBd ? 2.*ckm.get_beta() : -2.*ckm.get_betas()) << ", calculated phi: " << phi << ", |lambda|: " << mod_lambda << endl;
 
-    return make_tuple(phi, mod_lambda, phi - (isBd ? 2.0 * ckm.get_beta() : -2.0 * ckm.get_betas()));
+    return make_tuple(phi, mod_lambda, phi - (isBd ? 2.0 * ckm.get_beta() - getParameterValue("myphid") : -2.0 * ckm.get_betas() - getParameterValue("myphis")));
 }
 
 // pair<vector<string>, string> goldenmodesB::extractChannelFromCorrKey(const string &corr_key)

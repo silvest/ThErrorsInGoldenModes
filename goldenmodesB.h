@@ -161,6 +161,7 @@ private:
     TComplex lamst_bs_u;
     TComplex lamst_bd_c;
     TComplex lamst_bd_u;
+    bool useCKM;
 
     string addPolarizationSuffix(string amplitude, string suffix) const
     {
