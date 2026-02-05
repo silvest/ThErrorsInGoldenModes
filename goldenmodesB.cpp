@@ -66,8 +66,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     DeclareParameters(); // Ensure parameters are defined
 
     // Add delta phi parameters for Bd and Bs mixing to allow for NP contributions and/or to decorrelate from CKM fit
-    AddParameter("myphid", -M_PI, M_PI); // in rad
-    AddParameter("myphis", -M_PI, M_PI); // in rad
+    AddParameter("myphid", -M_PI/2., M_PI/2.); // in rad
+    AddParameter("myphis", -M_PI/2., M_PI/2.); // in rad
 
 
     // Add CKM parameters directly in the constructor
