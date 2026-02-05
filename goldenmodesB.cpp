@@ -2111,11 +2111,15 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
     TComplex amp_paral, ampc_paral;
     TComplex amp_perp, ampc_perp;
 
+    //Normalize the amplitudes by lam_bd_c for Bd mesons and by lam_bs_c for Bs mesons, so that we can factor out the mixing phase in the time-dependent CP asymmetries 
+
     if (channel == "Bdjpsik0")
     {
         // Bd→J/ψ K⁰: b→c(c̄s), spectator d
         amp = lam_bs_c * getPar("E2t_ccsd_BJPSIP") - lam_bs_u * getPar("G2t_scd_BJPSIP");
+        amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = lamst_bs_c * getPar("E2t_ccsd_BJPSIP") - lamst_bs_u * getPar("G2t_scd_BJPSIP");
+        ampc /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdjpsip0")
@@ -2124,9 +2128,11 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp = (lam_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI")) -
                lam_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") + getPar("G2t_dcd_BJPSIP"))) /
               sqrt(2.);
+              amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI")) -
                 lamst_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") + getPar("G2t_dcd_BJPSIP"))) /
                sqrt(2.);
+                ampc /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdjpsieta8")
@@ -2135,9 +2141,11 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp = ((lam_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") - 2. * getPar("EA2t_ccsd_BJPSIP"))) +
                lam_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") + 2. * getPar("G4t_csd_BJPSIP"))) /
               sqrt(6.);
+              amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = ((lamst_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") - 2. * getPar("EA2t_ccsd_BJPSIP"))) +
                 lamst_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") + 2. * getPar("G4t_csd_BJPSIP"))) /
                sqrt(6.);
+                ampc /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdjpsieta1")
@@ -2146,9 +2154,11 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp = ((lam_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") + getPar("EA2t_ccsd_BJPSIP"))) +
                lam_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") - getPar("G4t_csd_BJPSIP"))) /
               sqrt(3.);
+                amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = ((lamst_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") + getPar("EA2t_ccsd_BJPSIP"))) +
                 lamst_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") - getPar("G4t_csd_BJPSIP"))) /
                sqrt(3.);
+                ampc /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bpjpsikp")
@@ -2173,14 +2183,18 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
     {
         // Bs→J/ψ π⁰: b→c(c̄s), spectator s
         amp = -(lam_bs_c * getPar("dP4EW_ucs_BPJPSI") + lam_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI"))) / sqrt(2.);
+        amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = -(lamst_bs_c * getPar("dP4EW_ucs_BPJPSI") + lamst_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI"))) / sqrt(2.);
+        ampc /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsik0b")
     {
         // Bs→J/ψ \bar{K}⁰: b→c(c̄d), spectator s
         amp = lam_bd_c * getPar("E2t_ccds_BJPSIP") - lam_bd_u * getPar("G2t_dcs_BJPSIP");
+        amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = lamst_bd_c * getPar("E2t_ccds_BJPSIP") - lamst_bd_u * getPar("G2t_dcs_BJPSIP");
+        ampc /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsieta8")
@@ -2189,9 +2203,11 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp = ((lam_bs_c * (-2. * getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") - 2. * getPar("EA2t_ccss_BJPSIP"))) +
                lam_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") + 2. * getPar("G4t_css_BJPSIP"))) /
               sqrt(6.);
+                amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = ((lamst_bs_c * (-2. * getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") - 2. * getPar("EA2t_ccss_BJPSIP"))) +
                 lamst_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") + 2. * getPar("G4t_css_BJPSIP"))) /
                sqrt(6.);
+                ampc /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsieta1")
@@ -2200,9 +2216,11 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp = ((lam_bs_c * (getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") + getPar("EA2t_ccss_BJPSIP"))) +
                lam_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") - getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") - getPar("G4t_css_BJPSIP"))) /
               sqrt(3.);
+                amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = ((lamst_bs_c * (getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") + getPar("EA2t_ccss_BJPSIP"))) +
                 lamst_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") - getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") - getPar("G4t_css_BJPSIP"))) /
                sqrt(3.);
+                ampc /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsiphi")
@@ -2210,16 +2228,22 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         // Bs→J/ψ φ: b→c(c̄s), spectator s
         amp_0 = -lam_bs_c * (getPar("E2t_ccss_BJPSIV_0") + getPar("EA2t_ccss_BJPSIV_0")) +
                 lam_bs_u * (getPar("G2t_scs_BJPSIV_0") + getPar("G4t_css_BJPSIV_0"));
+                amp_0 /= lam_bs_c; // Normalize by lam_bs_c
         ampc_0 = -lamst_bs_c * (getPar("E2t_ccss_BJPSIV_0") + getPar("EA2t_ccss_BJPSIV_0")) +
                  lamst_bs_u * (getPar("G2t_scs_BJPSIV_0") + getPar("G4t_css_BJPSIV_0"));
+                ampc_0 /= lamst_bs_c; // Normalize by lamst_bs_c
         amp_paral = -lam_bs_c * (getPar("E2t_ccss_BJPSIV_paral") + getPar("EA2t_ccss_BJPSIV_paral")) +
                     lam_bs_u * (getPar("G2t_scs_BJPSIV_paral") + getPar("G4t_css_BJPSIV_paral"));
+                    amp_paral /= lam_bs_c; // Normalize by lam_bs_c
         ampc_paral = -lamst_bs_c * (getPar("E2t_ccss_BJPSIV_paral") + getPar("EA2t_ccss_BJPSIV_paral")) +
                      lamst_bs_u * (getPar("G2t_scs_BJPSIV_paral") + getPar("G4t_css_BJPSIV_paral"));
+                        ampc_paral /= lamst_bs_c; // Normalize by lamst_bs_c
         amp_perp = -lam_bs_c * (getPar("E2t_ccss_BJPSIV_perp") + getPar("EA2t_ccss_BJPSIV_perp")) +
                    lam_bs_u * (getPar("G2t_scs_BJPSIV_perp") + getPar("G4t_css_BJPSIV_perp"));
+                    amp_perp /= lam_bs_c; // Normalize by lam_bs_c
         ampc_perp = -lamst_bs_c * (getPar("E2t_ccss_BJPSIV_perp") + getPar("EA2t_ccss_BJPSIV_perp")) +
                     lamst_bs_u * (getPar("G2t_scs_BJPSIV_perp") + getPar("G4t_css_BJPSIV_perp"));
+                        ampc_perp /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2230,21 +2254,27 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp_0 = (lam_bs_c * (2. * getPar("EA2t_ccds_BJPSIV_0") + getPar("dP4EW_ucs_BVJPSI_0")) +
                  lam_bs_u * (getPar("EA2_ddcs_BVJPSI_0") + getPar("dP4EW_ucs_BVJPSI_0") - 2. * getPar("G4t_cds_BJPSIV_0"))) /
                 sqrt(2.);
+        amp_0 /= lam_bs_c; // Normalize by lam_bs_c
         ampc_0 = (lamst_bs_c * (2. * getPar("EA2t_ccds_BJPSIV_0") + getPar("dP4EW_ucs_BVJPSI_0")) +
                   lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_0") + getPar("dP4EW_ucs_BVJPSI_0") - 2. * getPar("G4t_cds_BJPSIV_0"))) /
                  sqrt(2.);
+        ampc_0 /= lamst_bs_c; // Normalize by lamst_bs_c
         amp_paral = (lam_bs_c * (2. * getPar("EA2t_ccds_BJPSIV_paral") + getPar("dP4EW_ucs_BVJPSI_paral")) +
                      lam_bs_u * (getPar("EA2_ddcs_BVJPSI_paral") + getPar("dP4EW_ucs_BVJPSI_paral") - 2. * getPar("G4t_cds_BJPSIV_paral"))) /
                     sqrt(2.);
+        amp_paral /= lam_bs_c; // Normalize by lam_bs_c
         ampc_paral = (lamst_bs_c * (2. * getPar("EA2t_ccds_BJPSIV_paral") + getPar("dP4EW_ucs_BVJPSI_paral")) +
                       lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_paral") + getPar("dP4EW_ucs_BVJPSI_paral") - 2. * getPar("G4t_cds_BJPSIV_paral"))) /
                      sqrt(2.);
+        ampc_paral /= lamst_bs_c; // Normalize by lamst_bs_c
         amp_perp = (lam_bs_c * (2. * getPar("EA2t_ccds_BJPSIV_perp") + getPar("dP4EW_ucs_BVJPSI_perp")) +
                     lam_bs_u * (getPar("EA2_ddcs_BVJPSI_perp") + getPar("dP4EW_ucs_BVJPSI_perp") - 2. * getPar("G4t_cds_BJPSIV_perp"))) /
                    sqrt(2.);
+        amp_perp /= lam_bs_c; // Normalize by lam_bs_c
         ampc_perp = (lamst_bs_c * (2. * getPar("EA2t_ccds_BJPSIV_perp") + getPar("dP4EW_ucs_BVJPSI_perp")) +
                      lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_perp") + getPar("dP4EW_ucs_BVJPSI_perp") - 2. * getPar("G4t_cds_BJPSIV_perp"))) /
                     sqrt(2.);
+        ampc_perp /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2253,11 +2283,17 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
     {
         // Bs→J/ψ \bar{K}*: b→c(c̄d), spectator s
         amp_0 = -lam_bd_c * getPar("E2t_ccds_BJPSIV_0") - lam_bd_u * getPar("G2t_dcs_BJPSIV_0");
+        amp_0 /= lam_bs_c; // Normalize by lam_bs_c
         ampc_0 = -lamst_bd_c * getPar("E2t_ccds_BJPSIV_0") - lamst_bd_u * getPar("G2t_dcs_BJPSIV_0");
+        ampc_0 /= lamst_bs_c; // Normalize by lamst_bs_c
         amp_paral = -lam_bd_c * getPar("E2t_ccds_BJPSIV_paral") - lam_bd_u * getPar("G2t_dcs_BJPSIV_paral");
+        amp_paral /= lam_bs_c; // Normalize by lam_bs_c
         ampc_paral = -lamst_bd_c * getPar("E2t_ccds_BJPSIV_paral") - lamst_bd_u * getPar("G2t_dcs_BJPSIV_paral");
+        ampc_paral /= lamst_bs_c; // Normalize by lamst_bs_c
         amp_perp = -lam_bd_c * getPar("E2t_ccds_BJPSIV_perp") - lam_bd_u * getPar("G2t_dcs_BJPSIV_perp");
+        amp_perp /= lam_bs_c; // Normalize by lam_bs_c
         ampc_perp = -lamst_bd_c * getPar("E2t_ccds_BJPSIV_perp") - lamst_bd_u * getPar("G2t_dcs_BJPSIV_perp");
+        ampc_perp /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2266,11 +2302,17 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
     {
         // Bs→J/ψ \rho⁰: b→c(c̄s), spectator s
         amp_0 = -(lam_bs_c * getPar("dP4EW_ucs_BVJPSI_0") + lam_bs_u * (getPar("EA2_ddcs_BVJPSI_0") + getPar("dP4EW_ucs_BVJPSI_0"))) / sqrt(2.);
+        amp_0 /= lam_bs_c; // Normalize by lam_bs_c
         ampc_0 = -(lamst_bs_c * getPar("dP4EW_ucs_BVJPSI_0") + lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_0") + getPar("dP4EW_ucs_BVJPSI_0"))) / sqrt(2.);
+        ampc_0 /= lamst_bs_c; // Normalize by lamst_bs_c
         amp_paral = -(lam_bs_c * getPar("dP4EW_ucs_BVJPSI_paral") + lam_bs_u * (getPar("EA2_ddcs_BVJPSI_paral") + getPar("dP4EW_ucs_BVJPSI_paral"))) / sqrt(2.);
+        amp_paral /= lam_bs_c; // Normalize by lam_bs_c
         ampc_paral = -(lamst_bs_c * getPar("dP4EW_ucs_BVJPSI_paral") + lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_paral") + getPar("dP4EW_ucs_BVJPSI_paral"))) / sqrt(2.);
+        ampc_paral /= lamst_bs_c; // Normalize by lamst_bs_c
         amp_perp = -(lam_bs_c * getPar("dP4EW_ucs_BVJPSI_perp") + lam_bs_u * (getPar("EA2_ddcs_BVJPSI_perp") + getPar("dP4EW_ucs_BVJPSI_perp"))) / sqrt(2.);
+        amp_perp /= lam_bs_c; // Normalize by lam_bs_c
         ampc_perp = -(lamst_bs_c * getPar("dP4EW_ucs_BVJPSI_perp") + lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_perp") + getPar("dP4EW_ucs_BVJPSI_perp"))) / sqrt(2.);
+        ampc_perp /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2281,21 +2323,27 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp_0 = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + 2. * getPar("EA2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) +
                  lam_bd_u * (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") - getPar("G2t_dcd_BJPSIV_0") - 2. * getPar("G4t_cdd_BJPSIV_0"))) /
                 sqrt(2.);
+                amp_0 /= lam_bd_c; // Normalize by lam_bd_c
         ampc_0 = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + 2. * getPar("EA2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) +
                   lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") - getPar("G2t_dcd_BJPSIV_0") - 2. * getPar("G4t_cdd_BJPSIV_0"))) /
                  sqrt(2.);
+                    ampc_0 /= lamst_bd_c; // Normalize by lamst_bd_c
         amp_paral = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + 2. * getPar("EA2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) +
                      lam_bd_u * (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") - getPar("G2t_dcd_BJPSIV_paral") - 2. * getPar("G4t_cdd_BJPSIV_paral"))) /
                     sqrt(2.);
+                    amp_paral /= lam_bd_c; // Normalize by lam_bd_c
         ampc_paral = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + 2. * getPar("EA2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) +
                       lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") - getPar("G2t_dcd_BJPSIV_paral") - 2. * getPar("G4t_cdd_BJPSIV_paral"))) /
                      sqrt(2.);
+                        ampc_paral /= lamst_bd_c; // Normalize by lamst_bd_c
         amp_perp = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + 2. * getPar("EA2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) +
                     lam_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") - getPar("G2t_dcd_BJPSIV_perp") - 2. * getPar("G4t_cdd_BJPSIV_perp"))) /
                    sqrt(2.);
+                        amp_perp /= lam_bd_c; // Normalize by lam_bd_c
         ampc_perp = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + 2. * getPar("EA2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) +
                      lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") - getPar("G2t_dcd_BJPSIV_perp") - 2. * getPar("G4t_cdd_BJPSIV_perp"))) /
                     sqrt(2.);
+                        ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2304,11 +2352,17 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
     {
         // Bd→J/ψ K*: b→c(c̄s), spectator d
         amp_0 = lam_bs_c * getPar("E2t_ccsd_BJPSIV_0") - lam_bs_u * getPar("G2t_scd_BJPSIV_0");
+        amp_0 /= lam_bd_c; // Normalize by lam_bd_c 
         ampc_0 = lamst_bs_c * getPar("E2t_ccsd_BJPSIV_0") - lamst_bs_u * getPar("G2t_scd_BJPSIV_0");
+        ampc_0 /= lamst_bd_c; // Normalize by lamst_bd_c
         amp_paral = lam_bs_c * getPar("E2t_ccsd_BJPSIV_paral") - lam_bs_u * getPar("G2t_scd_BJPSIV_paral");
+        amp_paral /= lam_bd_c; // Normalize by lam_bd_c
         ampc_paral = lamst_bs_c * getPar("E2t_ccsd_BJPSIV_paral") - lamst_bs_u * getPar("G2t_scd_BJPSIV_paral");
+        ampc_paral /= lamst_bd_c; // Normalize by lamst_bd_c
         amp_perp = lam_bs_c * getPar("E2t_ccsd_BJPSIV_perp") - lam_bs_u * getPar("G2t_scd_BJPSIV_perp");
+        amp_perp /= lam_bd_c; // Normalize by lam_bd_c
         ampc_perp = lamst_bs_c * getPar("E2t_ccsd_BJPSIV_perp") - lamst_bs_u * getPar("G2t_scd_BJPSIV_perp");
+        ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2319,21 +2373,27 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp_0 = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) -
                  lam_bd_u * (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") + getPar("G2t_dcd_BJPSIV_0"))) /
                 sqrt(2.);
+                    amp_0 /= lam_bd_c; // Normalize by lam_bd_c
         ampc_0 = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) -
                   lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") + getPar("G2t_dcd_BJPSIV_0"))) /
                  sqrt(2.);
+                    ampc_0 /= lamst_bd_c; // Normalize by lamst_bd_c
         amp_paral = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) -
                      lam_bd_u * (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") + getPar("G2t_dcd_BJPSIV_paral"))) /
                     sqrt(2.);
+                    amp_paral /= lam_bd_c; // Normalize by lam_bd_c
         ampc_paral = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) -
                       lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") + getPar("G2t_dcd_BJPSIV_paral"))) /
                      sqrt(2.);
+                        ampc_paral /= lamst_bd_c; // Normalize by lamst_bd_c
         amp_perp = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) -
                     lam_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") + getPar("G2t_dcd_BJPSIV_perp"))) /
                    sqrt(2.);
+                    amp_perp /= lam_bd_c; // Normalize by lam_bd_c
         ampc_perp = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) -
                      lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") + getPar("G2t_dcd_BJPSIV_perp"))) /
                     sqrt(2.);
+                        ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2347,6 +2407,12 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         ampc_paral = -lamst_bd_c * getPar("EA2t_ccsd_BJPSIV_paral") - lamst_bd_u * getPar("G4t_csd_BJPSIV_paral");
         amp_perp = -lam_bd_c * getPar("EA2t_ccsd_BJPSIV_perp") - lam_bd_u * getPar("G4t_csd_BJPSIV_perp");
         ampc_perp = -lamst_bd_c * getPar("EA2t_ccsd_BJPSIV_perp") - lamst_bd_u * getPar("G4t_csd_BJPSIV_perp");
+        amp_0 /= lam_bd_c; // Normalize by lam_bd_c
+        ampc_0 /= lamst_bd_c; // Normalize by lamst_bd_c
+        amp_paral /= lam_bd_c; // Normalize by lam_bd_c
+        ampc_paral /= lamst_bd_c; // Normalize by lamst_bd_c
+        amp_perp /= lam_bd_c; // Normalize by lam_bd_c
+        ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2393,21 +2459,27 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
     {
         // b → c(c̄s), spectator s
         amp = lam_bs_c * (getPar("E1t_sccs_BDDb") + getPar("A2t_cscs_BDbD")) - lam_bs_u * (getPar("G1t_scs_BDDb") + getPar("G3t_css_BDDb"));
+        amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = lamst_bs_c * (getPar("E1t_sccs_BDDb") + getPar("A2t_cscs_BDbD")) - lamst_bs_u * (getPar("G1t_scs_BDDb") + getPar("G3t_css_BDDb"));
+        ampc /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsdpdsm")
     {
         // b → c(c̄d), spectator s
         amp = lam_bd_c * (getPar("E1t_dccs_BDDb")) - lam_bs_u * (getPar("G1t_dcs_BDDb"));
+        amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = lamst_bd_c * (getPar("E1t_dccs_BDDb")) - lamst_bs_u * (getPar("G1t_dcs_BDDb"));
+        ampc /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsdpdm")
     {
         // b → c(c̄s), spectator s
         amp = lam_bs_c * (getPar("A2t_cdcs_BDbD")) - lam_bs_u * (getPar("G3t_cds_BDDb"));
+        amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = lamst_bs_c * (getPar("A2t_cdcs_BDbD")) - lamst_bs_u * (getPar("G3t_cds_BDDb"));
+        ampc /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsd0d0b")
@@ -2415,22 +2487,28 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         // b → c(c̄s), spectator s
         amp = -lam_bs_c * (getPar("A2t_cdcs_BDbD") + getPar("dP3EW_ucs_BDbD")) -
               lam_bs_u * (getPar("A2_dcds_BDDb") + getPar("dP3EW_ucs_BDbD") - getPar("G3t_cds_BDDb"));
+        amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = -lamst_bs_c * (getPar("A2t_cdcs_BDbD") + getPar("dP3EW_ucs_BDbD")) -
                lamst_bs_u * (getPar("A2_dcds_BDDb") + getPar("dP3EW_ucs_BDbD") - getPar("G3t_cds_BDDb"));
+        ampc /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bddspdsm")
     {
         // b → c(c̄d), spectator d
         amp = lam_bd_c * (getPar("A2t_cscd_BDbD")) - lam_bd_u * (getPar("G3t_csd_BDDb"));
+        amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = lamst_bd_c * (getPar("A2t_cscd_BDbD")) - lamst_bd_u * (getPar("G3t_csd_BDDb"));
+        ampc /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bddspdm")
     {
         // b → c(c̄s), spectator d
         amp = lam_bs_c * (getPar("E1t_sccd_BDDb")) - lam_bs_u * (getPar("G1t_scd_BDDb"));
+        amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = lamst_bs_c * (getPar("E1t_sccd_BDDb")) - lamst_bs_u * (getPar("G1t_scd_BDDb"));
+        ampc /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bddpdm")
@@ -2438,8 +2516,10 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         // b → c(c̄d), spectator d
         amp = lam_bd_c * (getPar("E1t_dccd_BDDb") + getPar("A2t_cdcd_BDbD")) -
               lam_bd_u * (getPar("G1t_dcd_BDDb") + getPar("G3t_cdd_BDDb"));
+        amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = lamst_bd_c * (getPar("E1t_dccd_BDDb") + getPar("A2t_cdcd_BDbD")) -
                lamst_bd_u * (getPar("G1t_dcd_BDDb") + getPar("G3t_cdd_BDDb"));
+        ampc /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdd0d0b")
@@ -2449,6 +2529,8 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
               lam_bd_u * (getPar("A2_dcdd_BDDb") + getPar("dP3EW_ucd_BDbD") - getPar("G3t_cdd_BDDb"));
         ampc = -lamst_bd_c * (getPar("A2t_cdcd_BDbD") + getPar("dP3EW_ucd_BDbD")) -
                lamst_bd_u * (getPar("A2_dcdd_BDDb") + getPar("dP3EW_ucd_BDbD") - getPar("G3t_cdd_BDDb"));
+        amp /= lam_bd_c; // Normalize by lam_bd_c
+        ampc /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bpdpd0b")
@@ -2646,6 +2728,18 @@ double goldenmodesB::CalculateBR(TComplex amplitude, TComplex amplitude_conj, co
     // Compute the magnitude of the final-state momentum
     double p = sqrt(mass_term1 * mass_term2) / (2.0 * m_B);
 
+    // add the CKM factor we divided out in the amplitude calculation
+    if (bMeson == "Bd")
+    {
+        amplitude *= lam_bd_c; // Use lam_bd_c for Bd decays
+        amplitude_conj *= lamst_bd_c; // Use lamst_bd_c for conjugate amplitude
+    }
+    else if (bMeson == "Bs")
+    {
+        amplitude *= lam_bs_c; // Use lam_bs_c for Bs decays
+        amplitude_conj *= lamst_bs_c; // Use lamst_bs_c for conjugate amplitude
+    }
+
     // Compute the CP-averaged decay width (Γ)
     double decay_width = (G_F * G_F / (32.0 * M_PI * h_t)) * (p / (m_B * m_B)) * (0.5 * (amplitude.Rho2() + amplitude_conj.Rho2()));
 
@@ -2688,8 +2782,9 @@ double goldenmodesB::CalculateC(const TComplex &amplitude, const TComplex &conju
     auto parsed = parseChannel(channel);
     string bMeson = parsed.first;
 
-    // Get q/p ratio for Bd or Bs
-    TComplex q_p = (bMeson == "Bd") ? ckm.get_q_p_Bd() * TComplex::Exp(TComplex(0, getParameterValue("myphid"))) : ckm.get_q_p_Bs() * TComplex::Exp(TComplex(0, getParameterValue("myphis")));
+    // Having factored out the right CKM element in the amplitude calculation, here we just have 2beta or 2betas plus possible NP phase
+
+    TComplex q_p = (bMeson == "Bd") ? TComplex::Exp(TComplex(0, - getParameterValue("myphid"))) : TComplex::Exp(TComplex(0, getParameterValue("myphis")));
 
     // Special case for K0s and K0l channels: apply q/p_KS, taking into account that the minus sign for the KL is compensated by the CP eigenvalue
     if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l")
@@ -2732,8 +2827,8 @@ pair<double, double> goldenmodesB::CalculateS(const TComplex &amplitude, const T
 
     bool isBd = (bMeson == "Bd");
 
-    // Get q/p ratio for Bd or Bs
-    TComplex q_p = isBd ? ckm.get_q_p_Bd() * TComplex::Exp(TComplex(0, getParameterValue("myphid"))) : ckm.get_q_p_Bs() * TComplex::Exp(TComplex(0, getParameterValue("myphis")));
+    // Having factored out the right CKM element in the amplitude calculation, here we just have 2beta or 2betas plus possible NP phase
+    TComplex q_p = isBd ? TComplex::Exp(TComplex(0, - getParameterValue("myphid"))) : TComplex::Exp(TComplex(0, getParameterValue("myphis")));
 
     // Special case for K0s and K0l channels (apply q/p_KS)
     if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l")
@@ -2764,7 +2859,7 @@ pair<double, double> goldenmodesB::CalculateS(const TComplex &amplitude, const T
     // Compute S observable: S = 2 Im(λ) / (1 + |λ|^2)
     double mod_lambda_squared = lambda.Rho2();
     double S = -(2.0 * lambda.Im()) / (1.0 + mod_lambda_squared);
-    double DeltaS = isBd ? S - sin(2.0 * ckm.get_beta() - getParameterValue("myphid")) : S - sin(-2.0 * ckm.get_betas() - getParameterValue("myphis"));
+    double DeltaS = isBd ? S - sin(getParameterValue("myphid")) : S - sin(getParameterValue("myphis"));
 
     return make_pair(S, DeltaS);
 }
@@ -2783,8 +2878,8 @@ tuple<double, double, double> goldenmodesB::CalculatePhiAndLambda(const TComplex
 
     bool isBd = (bMeson == "Bd");
 
-    // Get q/p ratio for Bd or Bs
-    TComplex q_p = isBd ? ckm.get_q_p_Bd() * TComplex::Exp(TComplex(0, getParameterValue("myphid"))) : ckm.get_q_p_Bs() * TComplex::Exp(TComplex(0, getParameterValue("myphis")));
+    // Having factored out the right CKM element in the amplitude calculation, here we just have 2beta or 2betas plus possible NP phase. 
+    TComplex q_p = isBd ? TComplex::Exp(TComplex(0, - getParameterValue("myphid"))) : TComplex::Exp(TComplex(0, getParameterValue("myphis")));
     double sign = -1.;
 
     // Compute lambda = (q/p) * (A_cp / A_conj)
@@ -2798,7 +2893,7 @@ tuple<double, double, double> goldenmodesB::CalculatePhiAndLambda(const TComplex
 
     // cout << "Channel: " << channel << ", reference angle: " << (isBd ? 2.*ckm.get_beta() : -2.*ckm.get_betas()) << ", calculated phi: " << phi << ", |lambda|: " << mod_lambda << endl;
 
-    return make_tuple(phi, mod_lambda, phi - (isBd ? 2.0 * ckm.get_beta() - getParameterValue("myphid") : -2.0 * ckm.get_betas() - getParameterValue("myphis")));
+    return make_tuple(phi, mod_lambda, phi - (isBd ? getParameterValue("myphid") : getParameterValue("myphis")));
 }
 
 // pair<vector<string>, string> goldenmodesB::extractChannelFromCorrKey(const string &corr_key)
