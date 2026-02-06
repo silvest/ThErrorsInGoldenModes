@@ -309,15 +309,15 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         ////////////////////////////
 
         // BR measurements
-        data.push_back(dato(10.32e-3, 0.07e-3, 0.24e-3)); // BELLE:2019xld
-        data.push_back(dato(9.4e-3, 0.7e-3, 0.8e-3));     // Belle:2019avj
-        data.push_back(dato(8.9e-3, 0.6e-3, 0.5e-3));     // Belle:2017psv
-        data.push_back(dato(8.1e-3, 1.3e-3, 0.7e-3));     // BaBar:2005pcw
-        data.push_back(dato(10.61e-3, 0.15e-3, 0.48e-3)); // BaBar:2004htr
-        data.push_back(dato(10.4e-3, 1.1e-3, 0.1e-3));    // BaBar:2005sdl
-        data.push_back(dato(10.2e-3, 0.8e-3, 0.7e-3));    // CLEO:1997ilq
-        data.push_back(dato(9.24e-3, 3.04e-3, 0.05e-3));  // CLEO:1991roe
-        data.push_back(dato(8.09e-3, 3.50e-3, 0.04e-3));  // ARGUS:1990jet
+        data.push_back(dato(10.32e-4, 0.07e-4, 0.24e-4)); // BELLE:2019xld
+        data.push_back(dato(9.4e-4, 0.7e-4, 0.8e-4));     // Belle:2019avj
+        data.push_back(dato(8.9e-4, 0.6e-4, 0.5e-4));     // Belle:2017psv
+        data.push_back(dato(8.1e-4, 1.3e-4, 0.7e-4));     // BaBar:2005pcw
+        data.push_back(dato(10.61e-4, 0.15e-4, 0.48e-4)); // BaBar:2004htr
+        data.push_back(dato(10.4e-4, 1.1e-4, 0.1e-4));    // BaBar:2005sdl
+        data.push_back(dato(10.2e-4, 0.8e-4, 0.7e-4));    // CLEO:1997ilq
+        data.push_back(dato(9.24e-4, 3.04e-4, 0.05e-4));  // CLEO:1991roe
+        data.push_back(dato(8.09e-4, 3.50e-4, 0.04e-4));  // ARGUS:1990jet
 
         pdgaverage.setData(data);
         pdgaverage.setName("BRBpjpsikp");
