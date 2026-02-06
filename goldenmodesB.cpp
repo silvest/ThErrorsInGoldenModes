@@ -1158,8 +1158,8 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addAmplitudeParameter("E2t_ccsd_BJPSIP_re", 0., 5.);
         addAmplitudeParameter("E2t_ccsd_BJPSIP_im", 0., 0.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_re", -10., 11.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_im", -10., 11.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_re", -5., 6.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_im", -5., 6.);
     }
     else if (channel == "Bdjpsip0")
     {
@@ -3883,7 +3883,7 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
         {
             // Also map Bsjpsik0b -> Bsjpsik0s for observables
             amplitude_map["Bsjpsik0s"] = make_pair(amplitude_map.at("Bsjpsik0b").first / sqrt(2.), amplitude_map.at("Bsjpsik0b").second / sqrt(2.));
-            amplitude_map["Bsjpsik0l"] = make_pair(amplitude_map.at("Bsjpsik0b").first / sqrt(2.), amplitude_map.at("Bsjpsik0b").second / sqrt(2.));
+            amplitude_map["Bsjpsik0l"] = make_pair(-amplitude_map.at("Bsjpsik0b").first / sqrt(2.), -amplitude_map.at("Bsjpsik0b").second / sqrt(2.));
             //    cout << "Mapped Bsjpsik0b to Bsjpsik0s" << endl;
         }
     }
