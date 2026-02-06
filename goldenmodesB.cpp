@@ -3875,15 +3875,15 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
         // For CP observables, add K0s and K0l cases with the same amplitudes as Bdjpsik0
         if (channel == "Bdjpsik0")
         {
-            amplitude_map["Bdjpsik0s"] = amplitude_map.at("Bdjpsik0");
-            amplitude_map["Bdjpsik0l"] = amplitude_map.at("Bdjpsik0");
+            amplitude_map["Bdjpsik0s"] = make_pair(amplitude_map.at("Bdjpsik0").first / sqrt(2.), amplitude_map.at("Bdjpsik0").second / sqrt(2.)); 
+            amplitude_map["Bdjpsik0l"] = make_pair(amplitude_map.at("Bdjpsik0").first / sqrt(2.), amplitude_map.at("Bdjpsik0").second / sqrt(2.));
             //    cout << "Mapped Bdjpsik0 to Bdjpsik0s and Bdjpsik0l" << endl;
         }
         else if (channel == "Bsjpsik0b")
         {
             // Also map Bsjpsik0b -> Bsjpsik0s for observables
-            amplitude_map["Bsjpsik0s"] = amplitude_map.at("Bsjpsik0b");
-            amplitude_map["Bsjpsik0l"] = amplitude_map.at("Bsjpsik0b");
+            amplitude_map["Bsjpsik0s"] = make_pair(amplitude_map.at("Bsjpsik0b").first / sqrt(2.), amplitude_map.at("Bsjpsik0b").second / sqrt(2.));
+            amplitude_map["Bsjpsik0l"] = make_pair(amplitude_map.at("Bsjpsik0b").first / sqrt(2.), amplitude_map.at("Bsjpsik0b").second / sqrt(2.));
             //    cout << "Mapped Bsjpsik0b to Bsjpsik0s" << endl;
         }
     }
