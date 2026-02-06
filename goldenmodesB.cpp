@@ -1156,10 +1156,10 @@ void goldenmodesB::DefineParameters(const string &channel)
         };
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccsd_BJPSIP_re", 0., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIP_re", 0., 50.);
         addAmplitudeParameter("E2t_ccsd_BJPSIP_im", 0., 0.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_re", -20., 21.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_im", -20., 21.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_re", -50., 51.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_im", -50., 51.);
     }
     else if (channel == "Bdjpsip0")
     {
@@ -1176,8 +1176,8 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -10., 11.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -10., 11.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -50., 51.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -50., 51.);
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_re", "E2t_ccsd_BJPSIP_re");
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_im", "E2t_ccsd_BJPSIP_im");
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_re", "G2t_scd_BJPSIP_re");
@@ -1208,16 +1208,16 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_im", "E2t_ccsd_BJPSIP_im");
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -10., 11.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -10., 11.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -50., 51.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -50., 51.);
         addSU3BreakingParameter("delta_EA2t_ccsd_BJPSIP_re", "EA2t_ccdd_BJPSIP_re");
         addSU3BreakingParameter("delta_EA2t_ccsd_BJPSIP_im", "EA2t_ccdd_BJPSIP_im");
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -10., 11.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -10., 11.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -50., 51.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -50., 51.);
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_re", "G2t_scd_BJPSIP_re");
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_im", "G2t_scd_BJPSIP_im");
-        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -10., 11.);
-        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -10., 11.);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -50., 51.);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -50., 51.);
         addSU3BreakingParameter("delta_G4t_csd_BJPSIP_re", "G4t_cdd_BJPSIP_re");
         addSU3BreakingParameter("delta_G4t_csd_BJPSIP_im", "G4t_cdd_BJPSIP_im");
     }
@@ -1246,16 +1246,16 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_im", "E2t_ccsd_BJPSIP_im");
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -10., 11.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -10., 11.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -50., 51.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -50., 51.);
         addSU3BreakingParameter("delta_EA2t_ccsd_BJPSIP_re", "EA2t_ccdd_BJPSIP_re");
         addSU3BreakingParameter("delta_EA2t_ccsd_BJPSIP_im", "EA2t_ccdd_BJPSIP_im");
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -10., 11.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -10., 11.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -50., 51.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -50., 51.);
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_re", "G2t_scd_BJPSIP_re");
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_im", "G2t_scd_BJPSIP_im");
-        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -10., 11.);
-        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -10., 11.);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -50., 51.);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -50., 51.);
         addSU3BreakingParameter("delta_G4t_csd_BJPSIP_re", "G4t_cdd_BJPSIP_re");
         addSU3BreakingParameter("delta_G4t_csd_BJPSIP_im", "G4t_cdd_BJPSIP_im");
     }
@@ -1273,12 +1273,12 @@ void goldenmodesB::DefineParameters(const string &channel)
         channelParameters[channel] = params;
         addAmplitudeParameter("E2t_ccsd_BJPSIP_re", 0., 10.);
         addAmplitudeParameter("E2t_ccsd_BJPSIP_im", 0., 0.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_re", -10., 11.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_im", -10., 11.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_re", -50., 51.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_im", -50., 51.);
         addAmplitudeParameter("dP2EW_scu_BPJPSI_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP2EW_scu_BPJPSI_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("EA1_sdcd_BPJPSI_re", -10., 11.);
-        addAmplitudeParameter("EA1_sdcd_BPJPSI_im", -10., 11.);
+        addAmplitudeParameter("EA1_sdcd_BPJPSI_re", -50., 51.);
+        addAmplitudeParameter("EA1_sdcd_BPJPSI_im", -50., 51.);
     }
     else if (channel == "Bpjpsipp")
     {
@@ -1441,12 +1441,12 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addAmplitudeParameter("E2t_ccss_BJPSIV_re", 0., 10., true);
         addAmplitudeParameter("E2t_ccss_BJPSIV_im", 0., 0., true);
-        addAmplitudeParameter("G2t_scs_BJPSIV_re", -10., 11., true);
-        addAmplitudeParameter("G2t_scs_BJPSIV_im", -10., 11., true);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_re", -10., 11., true);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_im", -10., 11., true);
-        addAmplitudeParameter("G4t_css_BJPSIV_re", -10., 11., true);
-        addAmplitudeParameter("G4t_css_BJPSIV_im", -10., 11., true);
+        addAmplitudeParameter("G2t_scs_BJPSIV_re", -50., 51., true);
+        addAmplitudeParameter("G2t_scs_BJPSIV_im", -50., 51., true);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_re", -50., 51., true);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_im", -50., 51., true);
+        addAmplitudeParameter("G4t_css_BJPSIV_re", -50., 51., true);
+        addAmplitudeParameter("G4t_css_BJPSIV_im", -50., 51., true);
     }
     else if (channel == "Bsjpsiom")
     {
@@ -1482,8 +1482,8 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_G4t_cds_BJPSIV_im", "G4t_css_BJPSIV_im", true);
         addAmplitudeParameter("dP4EW_ucs_BVJPSI_re", -ewp_limit, ewp_limit, true);
         addAmplitudeParameter("dP4EW_ucs_BVJPSI_im", -ewp_limit, ewp_limit, true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -10., 11., true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -10., 11., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -50., 51., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -50., 51., true);
     }
     else if (channel == "Bsjpsikbst0")
     {
@@ -1526,8 +1526,8 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addAmplitudeParameter("dP4EW_ucs_BVJPSI_re", -ewp_limit, ewp_limit, true);
         addAmplitudeParameter("dP4EW_ucs_BVJPSI_im", -ewp_limit, ewp_limit, true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -10., 11., true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -10., 11., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -50., 51., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -50., 51., true);
     }
     else if (channel == "Bdjpsiom")
     {
@@ -1747,8 +1747,8 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_E2t_ccsd_BJPSIV_im", "E2t_ccss_BJPSIV_im", true);
         addAmplitudeParameter("dP2EW_scu_BJPSIV_re", -ewp_limit, ewp_limit, true);
         addAmplitudeParameter("dP2EW_scu_BJPSIV_im", -ewp_limit, ewp_limit, true);
-        addAmplitudeParameter("EA1_sdcd_BVJPSI_re", -10., 11., true);
-        addAmplitudeParameter("EA1_sdcd_BVJPSI_im", -10., 11., true);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_re", -50., 51., true);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_im", -50., 51., true);
         addSU3BreakingParameter("delta_G2t_scd_BJPSIV_re", "G2t_scs_BJPSIV_re", true);
         addSU3BreakingParameter("delta_G2t_scd_BJPSIV_im", "G2t_scs_BJPSIV_im", true);
     }
