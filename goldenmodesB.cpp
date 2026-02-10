@@ -238,8 +238,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         data.clear();
 
         // SBdjpsip0
-        data.push_back(dato(-0.59, 0.19, 0.03)); ////Belle:2018nxw
-        data.push_back(dato(-0.88, 0.17, 0.03)); // Belle-II:2024hqw
+        data.push_back(dato(0.59, 0.19, 0.03)); ////Belle:2018nxw
+        data.push_back(dato(0.88, 0.17, 0.03)); // Belle-II:2024hqw
 
         pdgaverage.setData(data);
         pdgaverage.setName("SBdjpsip0");
@@ -251,7 +251,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         // Bdjpsip0 : C and S observables from BaBar:2008kfx
         CorrData.push_back(dato(-0.20, 0.19, 0.03)); // C observable
         names.push_back("CBdjpsip0");
-        CorrData.push_back(dato(-1.23, 0.21, 0.04)); // S observable
+        CorrData.push_back(dato(1.23, 0.21, 0.04)); // S observable
         names.push_back("SBdjpsip0");
 
         // Populate the correlation matrix
@@ -1063,6 +1063,8 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
     // Create histograms for all observables
 
+    vector<string> paramsfor2dhistos;
+
     for (const auto &channel : channelNamesSU3)
     {
         // create histos for mod and phase as well as real and imaginary parts for the effective parameters
@@ -1079,17 +1081,27 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
                 newStr.append(param, 0, length - 3); // Append text before "_re"
                 // strip the possible trailing "delta_" from the parameter name to get the full parameter
                 newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0);                                                            // Remove "delta_" if it exists at the start
-                histos.createH1D(newStr + "_abs", 500, 0.0, 0.0);    
+                histos.createH1D(newStr + "_abs", 500, 0.0, 0.0);   
+                paramsfor2dhistos.push_back(newStr + "_abs"); 
             }
             else if (length >= 3 && param.substr(length - 3) == "_im")
             {
                 newStr.append(param, 0, length - 3); // Append text before "_im"
                 newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0);                                                            // Remove "delta_" if it exists at the start
-                histos.createH1D(newStr + "_arg", 500, 0.0, 0.0);    
+                histos.createH1D(newStr + "_arg", 500, 0.0, 0.0);
+                paramsfor2dhistos.push_back(newStr + "_arg");    
             }
 
         }
     }
+
+    for (size_t i = 0; i < paramsfor2dhistos.size(); ++i)
+        for (size_t j = i + 1; j < paramsfor2dhistos.size(); ++j)
+        {
+            const auto &param = paramsfor2dhistos[i];
+            const auto &param2 = paramsfor2dhistos[j];
+            histos.createH2D(param, param2, 500, 0.0, 0.0, 500, 0.0, 0.0);
+        }    
 
     for (const auto &channel : channels)
     {
@@ -1176,8 +1188,8 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -10., 11.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -10., 11.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -4., 5.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -4., 5.);
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_re", "E2t_ccsd_BJPSIP_re");
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_im", "E2t_ccsd_BJPSIP_im");
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_re", "G2t_scd_BJPSIP_re");
@@ -1208,16 +1220,16 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_im", "E2t_ccsd_BJPSIP_im");
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -10., 11.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -10., 11.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -4., 5.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -4., 5.);
         addSU3BreakingParameter("delta_EA2t_ccsd_BJPSIP_re", "EA2t_ccdd_BJPSIP_re");
         addSU3BreakingParameter("delta_EA2t_ccsd_BJPSIP_im", "EA2t_ccdd_BJPSIP_im");
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -10., 11.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -10., 11.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -4., 5.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -4., 5.);
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_re", "G2t_scd_BJPSIP_re");
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_im", "G2t_scd_BJPSIP_im");
-        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -10., 11.);
-        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -10., 11.);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -4., 5.);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -4., 5.);
         addSU3BreakingParameter("delta_G4t_csd_BJPSIP_re", "G4t_cdd_BJPSIP_re");
         addSU3BreakingParameter("delta_G4t_csd_BJPSIP_im", "G4t_cdd_BJPSIP_im");
     }
@@ -1246,16 +1258,16 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_E2t_ccdd_BJPSIP_im", "E2t_ccsd_BJPSIP_im");
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -10., 11.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -10., 11.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -4., 5.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -4., 5.);
         addSU3BreakingParameter("delta_EA2t_ccsd_BJPSIP_re", "EA2t_ccdd_BJPSIP_re");
         addSU3BreakingParameter("delta_EA2t_ccsd_BJPSIP_im", "EA2t_ccdd_BJPSIP_im");
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -10., 11.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -10., 11.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -4., 5.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -4., 5.);
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_re", "G2t_scd_BJPSIP_re");
         addSU3BreakingParameter("delta_G2t_dcd_BJPSIP_im", "G2t_scd_BJPSIP_im");
-        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -10., 11.);
-        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -10., 11.);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -4., 5.);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -4., 5.);
         addSU3BreakingParameter("delta_G4t_csd_BJPSIP_re", "G4t_cdd_BJPSIP_re");
         addSU3BreakingParameter("delta_G4t_csd_BJPSIP_im", "G4t_cdd_BJPSIP_im");
     }
@@ -1277,8 +1289,8 @@ void goldenmodesB::DefineParameters(const string &channel)
         addAmplitudeParameter("G2t_scd_BJPSIP_im", -10., 11.);
         addAmplitudeParameter("dP2EW_scu_BPJPSI_re", -ewp_limit, ewp_limit);
         addAmplitudeParameter("dP2EW_scu_BPJPSI_im", -ewp_limit, ewp_limit);
-        addAmplitudeParameter("EA1_sdcd_BPJPSI_re", -10., 11.);
-        addAmplitudeParameter("EA1_sdcd_BPJPSI_im", -10., 11.);
+        addAmplitudeParameter("EA1_sdcd_BPJPSI_re", -4., 5.);
+        addAmplitudeParameter("EA1_sdcd_BPJPSI_im", -4., 5.);
     }
     else if (channel == "Bpjpsipp")
     {
@@ -1443,10 +1455,10 @@ void goldenmodesB::DefineParameters(const string &channel)
         addAmplitudeParameter("E2t_ccss_BJPSIV_im", 0., 0., true);
         addAmplitudeParameter("G2t_scs_BJPSIV_re", -10., 11., true);
         addAmplitudeParameter("G2t_scs_BJPSIV_im", -10., 11., true);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_re", -10., 11., true);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_im", -10., 11., true);
-        addAmplitudeParameter("G4t_css_BJPSIV_re", -10., 11., true);
-        addAmplitudeParameter("G4t_css_BJPSIV_im", -10., 11., true);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_re", -4., 5., true);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_im", -4., 5., true);
+        addAmplitudeParameter("G4t_css_BJPSIV_re", -4., 5., true);
+        addAmplitudeParameter("G4t_css_BJPSIV_im", -4., 5., true);
     }
     else if (channel == "Bsjpsiom")
     {
@@ -1482,8 +1494,8 @@ void goldenmodesB::DefineParameters(const string &channel)
         addSU3BreakingParameter("delta_G4t_cds_BJPSIV_im", "G4t_css_BJPSIV_im", true);
         addAmplitudeParameter("dP4EW_ucs_BVJPSI_re", -ewp_limit, ewp_limit, true);
         addAmplitudeParameter("dP4EW_ucs_BVJPSI_im", -ewp_limit, ewp_limit, true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -10., 11., true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -10., 11., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -4., 5., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -4., 5., true);
     }
     else if (channel == "Bsjpsikbst0")
     {
@@ -1526,8 +1538,8 @@ void goldenmodesB::DefineParameters(const string &channel)
 
         addAmplitudeParameter("dP4EW_ucs_BVJPSI_re", -ewp_limit, ewp_limit, true);
         addAmplitudeParameter("dP4EW_ucs_BVJPSI_im", -ewp_limit, ewp_limit, true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -10., 11., true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -10., 11., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -4., 5., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -4., 5., true);
     }
     else if (channel == "Bdjpsiom")
     {
@@ -2859,7 +2871,7 @@ pair<double, double> goldenmodesB::CalculateS(const TComplex &amplitude, const T
     // Compute S observable: S = 2 Im(λ) / (1 + |λ|^2)
     double mod_lambda_squared = lambda.Rho2();
     double S = -(2.0 * lambda.Im()) / (1.0 + mod_lambda_squared);
-    double DeltaS = isBd ? S + sin(getParameterValue("myphid")) : S + sin(getParameterValue("myphis"));
+    double DeltaS = isBd ? S - sin(getParameterValue("myphid")) : S + sin(getParameterValue("myphis"));
 
     return make_pair(S, DeltaS);
 }
