@@ -24,7 +24,7 @@ class goldenmodesB : public BCModel
 {
 public:
     // Constructors and destructor
-    goldenmodesB(double &dsu3_limit, double &ewp_limit, bool BJPSIP = true, bool BJPSIV = true, bool BDDb = true);
+    goldenmodesB(double &dsu3_limit, double &ewp_limit, bool BJPSIP = true, bool BJPSIV = true, bool BDDb = true, bool Debug = false);
     ~goldenmodesB();
     // map to store all the parameters used in amplitudes
     map<string, vector<string>> channelParameters;
@@ -162,6 +162,7 @@ private:
     TComplex lamst_bd_c;
     TComplex lamst_bd_u;
     bool useCKM;
+    bool Debug;
 
     string addPolarizationSuffix(string amplitude, string suffix) const
     {
@@ -227,7 +228,7 @@ private:
             checkBaseName = checkBaseName.substr(0, pos);
         }
         checkBaseName = isVectorChannel ? checkBaseName + "_0" : checkBaseName;
-        if (referenceAmplitudes.count(checkName) || deltaReferenceAmplitudes.find(checkBaseName) != deltaReferenceAmplitudes.end())
+        if (referenceAmplitudes.count(checkName) || referenceAmplitudes.count("R_" + checkName) || deltaReferenceAmplitudes.find(checkBaseName) != deltaReferenceAmplitudes.end())
         {
             if (dsu3_limit > 0.0)
             {

@@ -20,6 +20,7 @@ int main(int argc, char* argv[]) {
     bool flagBJPSIP = false;
     bool flagBDDb = false;
     bool Univariate = false;
+    bool Debug = false;
 
     double dsu3_limit = 0.2;
     double ewp_limit = 0.0;
@@ -57,6 +58,9 @@ int main(int argc, char* argv[]) {
         else if (strcmp(argv[i], "--Univariate") == 0) {
             Univariate = true;
         }
+        else if (strcmp(argv[i], "--DEBUG") == 0) {
+            Debug = true;
+        }
         else if (strcmp(argv[i], "--help") == 0) {
             cout << "Usage: " << argv[0] << " [options]\n"
                  << "Options:\n"
@@ -69,10 +73,11 @@ int main(int argc, char* argv[]) {
                  << "  --nPreRun <value>               Set number of pre-run iterations (default: 100000)\n"
                  << "  --nRun <value>                  Set number of run iterations (default: 10000)\n"
                  << "  --nPreRunFactorized <value>     Set number of factorized pre-run iterations (default: 1000)\n"
-                  "  --nUpdateMax value            Set max number of update iterations (default: 100)\n"
-                  "  --nChains value               Set number of chains (default: 10)\n"
-                  "  --Univariate                   Enable univariate mode\n"
-                  "  --help                          Show this help message\n";
+                 << "  --nUpdateMax value            Set max number of update iterations (default: 100)\n"
+                 << "  --nChains value               Set number of chains (default: 10)\n"
+                 << "  --Univariate                   Enable univariate mode\n"
+                 << "  --DEBUG                        Enable debug mode\n"
+                 << "  --help                          Show this help message\n";
             return 0;
         }
     }
@@ -87,6 +92,7 @@ int main(int argc, char* argv[]) {
     cout << "nIterationsRun: " << nIterationsRun << endl;
     cout << "nIterationsPreRunFactorized: " << nIterationsPreRunFactorized << endl;
     cout << "nIterationsUpdateMax: " << nIterationsUpdateMax << endl;
+    cout << "Debug: " << (Debug ? "true" : "false") << endl;
     // Initialize MPI
     MPI_Init(NULL, NULL);
     // Initialize BAT logging
@@ -94,7 +100,7 @@ int main(int argc, char* argv[]) {
     BCLog::SetLogLevelScreen(BCLog::summary);
 
     // Create an instance of the BqDqDqbar model
-    goldenmodesB model(dsu3_limit, ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb);
+    goldenmodesB model(dsu3_limit, ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, Debug);
     cout << "Model constructed correctly" << endl;
 
     // Set the number of chains, pre-run, and run iterations
