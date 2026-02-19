@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cctype>
 #include <stdexcept>
+#include <regex>
 #include <TRandom3.h>
 #include <cmath>
 #include <TMatrixD.h>
@@ -66,15 +67,14 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
     DeclareParameters(); // Ensure parameters are defined
 
     // Add delta phi parameters for Bd and Bs mixing to allow for NP contributions and/or to decorrelate from CKM fit
-    AddParameter("myphid", -M_PI/2., M_PI/2.); // in rad
-    AddParameter("myphis", -M_PI/2., M_PI/2.); // in rad
-
+    AddParameter("myphid", -M_PI / 2., M_PI / 2.); // in rad
+    AddParameter("myphis", -M_PI / 2., M_PI / 2.); // in rad
 
     // Add CKM parameters directly in the constructor
-    AddParameter("CKM_Vud", 0.97432-5*0.00015, 0.97432+5*0.00015);         // Vud parameter - 5 sigma range
-    AddParameter("CKM_Vcb", 0.04118-5*0.00076, 0.04118+5*0.00076);         // Vcb parameter - 5 sigma range
-    AddParameter("CKM_Vub", 0.00382-5*0.00034, 0.00382+5*0.00034);         // Vub parameter - 5 sigma range
-    AddParameter("CKM_gamma", (65.7-5*2.5)/180.0 * M_PI, (65.7+5*2.5)/180.0 * M_PI);         // gamma parameter (in rad) - 5 sigma range
+    AddParameter("CKM_Vud", 0.97432 - 5 * 0.00015, 0.97432 + 5 * 0.00015);                       // Vud parameter - 5 sigma range
+    AddParameter("CKM_Vcb", 0.04118 - 5 * 0.00076, 0.04118 + 5 * 0.00076);                       // Vcb parameter - 5 sigma range
+    AddParameter("CKM_Vub", 0.00382 - 5 * 0.00034, 0.00382 + 5 * 0.00034);                       // Vub parameter - 5 sigma range
+    AddParameter("CKM_gamma", (65.7 - 5 * 2.5) / 180.0 * M_PI, (65.7 + 5 * 2.5) / 180.0 * M_PI); // gamma parameter (in rad) - 5 sigma range
 
     // Add mixing angle between eta1 and eta8
     AddParameter("theta_P", -30. / 180.0 * M_PI, 0.); // in rad
@@ -425,10 +425,6 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         // BRBsjpsieta
         meas.insert(pair<string, dato>("BRBsjpsieta", dato(5.27e-4, 0.50e-4, 0.25e-4, 0.97e-4))); // Chang:2012gnb with symmetrized errors
 
-        // Ratios of BRs
-
-        meas.insert(pair<string, dato>("R_Bsjpsieta_Bsjpsiphi", dato(4.50e-1, 0.14e-1, 0.16e-1, 0.13e-1))); // LHCb:2025sgp
-
         /////////////////////////////
         // Bsjpsietap
         /////////////////////////////
@@ -446,11 +442,16 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
         data.clear();
     }
-    if (BJPSIP || BJPSIV)
+    if (BJPSIP && BJPSIV)
     {
 
         // R_Bsjpsietap_Bsjpsiphi
-        meas.insert(pair<string, dato>("R_Bsjpsietap_Bsjpsiphi", dato(0.370, 0.013, 0.018, 0.011))); // LHCb:2025sgp
+        meas.insert(pair<string, dato>("R_Bsjpsietap_Bsjpsiphi", dato(0.370, 0.013, 0.018, 0.011)));        // LHCb:2025sgp
+        meas.insert(pair<string, dato>("R_Bsjpsieta_Bsjpsiphi", dato(4.50e-1, 0.14e-1, 0.16e-1, 0.13e-1))); // LHCb:2025sgp
+    }
+
+    if (BJPSIV)
+    {
 
         /////////////////////////////
         // Bsjpsiphi
@@ -467,16 +468,12 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
         meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
         data.clear();
-    }
-
-    if (BJPSIV)
-    {
 
         // Correlated data sets for polarization fractions and CP asymmetries
 
         // LHCb:2023sim (Run 1+2 combined)
 
-        CorrData.push_back(dato(-0.044, 0.020)); // phi_s
+        CorrData.push_back(dato(-0.044, 0.020, 0., 0., 0., true)); // phi_s
         names.push_back("phis_Bsjpsiphi");
         CorrData.push_back(dato(0.990, 0.010)); // lambda
         names.push_back("lambda_Bsjpsiphi");
@@ -484,9 +481,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         names.push_back("f_perp_Bsjpsiphi");
         CorrData.push_back(dato(0.5175, 0.0035)); // f_0
         names.push_back("f_0_Bsjpsiphi");
-        CorrData.push_back(dato(2.924, 0.076)); // delta_perp - delta_0
+        CorrData.push_back(dato(2.924, 0.076, 0., 0., 0., true)); // delta_perp - delta_0
         names.push_back("delta_perp_Bsjpsiphi");
-        CorrData.push_back(dato(3.150, 0.062)); // delta_paral - delta_0
+        CorrData.push_back(dato(3.150, 0.062, 0., 0., 0., true)); // delta_paral - delta_0
         names.push_back("delta_paral_Bsjpsiphi");
 
         // Populate the correlation matrix
@@ -521,7 +518,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
 
         // CMS:2024znt (Run 1+2 combined)
 
-        CorrData.push_back(dato(-0.074, 0.023)); // phi_s
+        CorrData.push_back(dato(-0.074, 0.023, 0., 0., 0., true)); // phi_s
         names.push_back("phis_Bsjpsiphi");
         CorrData.push_back(dato(1.011, 0.019)); // lambda
         names.push_back("lambda_Bsjpsiphi");
@@ -529,9 +526,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         names.push_back("f_0_Bsjpsiphi");
         CorrData.push_back(dato(0.2417, 0.0036)); // f_perp
         names.push_back("f_perp_Bsjpsiphi");
-        CorrData.push_back(dato(3.152, 0.077)); // delta_paral - delta_0
+        CorrData.push_back(dato(3.152, 0.077, 0. , 0., 0., true)); // delta_paral - delta_0
         names.push_back("delta_paral_Bsjpsiphi");
-        CorrData.push_back(dato(2.940, 0.098)); // delta_perp - delta_0
+        CorrData.push_back(dato(2.940, 0.098, 0. , 0., 0., true)); // delta_perp - delta_0
         names.push_back("delta_perp_Bsjpsiphi");
 
         // Populate the correlation matrix
@@ -566,15 +563,15 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         // phi and lambda for ATLAS:2020lbz (Run 1+2 combined)
         TMatrixDSym Corr5(5);
 
-        CorrData.push_back(dato(-0.087, 0.036, 0.021)); // phi_s
+        CorrData.push_back(dato(-0.087, 0.036, 0.021, 0., 0., true)); // phi_s
         names.push_back("phis_Bsjpsiphi");
         CorrData.push_back(dato(0.2218, 0.0017, 0.0021)); // f_paral
         names.push_back("f_paral_Bsjpsiphi");
         CorrData.push_back(dato(0.5152, 0.0012, 0.0034)); // f_0
         names.push_back("f_0_Bsjpsiphi");
-        CorrData.push_back(dato(3.03, 0.10, 0.05)); // delta_perp - delta_0
+        CorrData.push_back(dato(3.03, 0.10, 0.05, 0., 0., true)); // delta_perp - delta_0
         names.push_back("delta_perp_Bsjpsiphi");
-        CorrData.push_back(dato(2.95, 0.05, 0.09)); // delta_par - delta_0
+        CorrData.push_back(dato(2.95, 0.05, 0.09, 0., 0., true)); // delta_par - delta_0
         names.push_back("delta_paral_Bsjpsiphi");
         Corr5(1, 1) = Corr5(0, 0) = Corr5(2, 2) = Corr5(3, 3) = Corr5(4, 4) = 1.;
         Corr5(1, 0) = Corr5(0, 1) = -0.003;
@@ -617,9 +614,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         names.push_back("ACP_paral_Bsjpsikbst0");
         CorrData.push_back(dato(0.060, 0.059)); // A_CP_perp
         names.push_back("ACP_perp_Bsjpsikbst0");
-        CorrData.push_back(dato(2.879, 0.087)); // delta_paral - delta_0
+        CorrData.push_back(dato(2.879, 0.087, 0. , 0., 0., true)); // delta_paral - delta_0
         names.push_back("delta_paral_Bsjpsikbst0");
-        CorrData.push_back(dato(0.057, 0.068)); // delta_perp - delta_0
+        CorrData.push_back(dato(0.057, 0.068, 0. , 0., 0., true)); // delta_perp - delta_0
         names.push_back("delta_perp_Bsjpsikbst0");
         CorrData.push_back(dato(0.534, 0.015)); // f_0
         names.push_back("f_0_Bsjpsikbst0");
@@ -677,15 +674,15 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         meas.insert(pair<string, dato>("BRBdjpsiom", dato(2.16e-5, 0.30e-5, 0.14e-5))); // Belle-II:2024fgp
 
         // Ratios of BRs
-        //  R_Bdjpsiom_Bdjpsirho from LHCb:2012cw
-        meas.insert(pair<string, dato>("R_Bdjpsiom_Bdjpsirho", dato(0.86, 0.19, 0.10))); // LHCb:2012cw
+        //  R_Bdjpsiom_Bdjpsirho0 from LHCb:2012cw
+        meas.insert(pair<string, dato>("R_Bdjpsiom_Bdjpsirho0", dato(0.86, 0.19, 0.10))); // LHCb:2012cw
 
         // Transversity fractions and phases from LHCb:2014vbo
-        meas.insert(pair<string, dato>("f_0_Bdjpsiom", dato(0.405, 0.14, 0.035)));                                                   // LHCb:2014vbo
-        meas.insert(pair<string, dato>("f_paral_Bdjpsiom", dato(0.58, 0.135, 0.035)));                                               // LHCb:2014vbo
-        meas.insert(pair<string, dato>("delta_paral_Bdjpsiom-delta_0_Bdjpsirho0", dato(123.5 / 180. * M_PI, 13.7 / 180. * M_PI)));   // LHCb:2014vbo
-        meas.insert(pair<string, dato>("delta_perp_Bdjpsiom-delta_perp_Bdjpsirho0", dato(227.4 / 180. * M_PI, 84.9 / 180. * M_PI))); // LHCb:2014vbo
-        meas.insert(pair<string, dato>("delta_0_Bdjpsiom-delta_0_Bdjpsirho0", dato(268.8 / 180. * M_PI, 11.9 / 180. * M_PI)));       // LHCb:2014vbo
+        meas.insert(pair<string, dato>("f_0_Bdjpsiom", dato(0.405, 0.14, 0.035)));                                                         // LHCb:2014vbo
+        meas.insert(pair<string, dato>("f_paral_Bdjpsiom", dato(0.58, 0.135, 0.035)));                                                     // LHCb:2014vbo
+        meas.insert(pair<string, dato>("Delta_delta_paral_Bdjpsiom-delta_0_Bdjpsirho0", dato(123.5 / 180. * M_PI, 13.7 / 180. * M_PI, 0. , 0., 0., true)));   // LHCb:2014vbo
+        meas.insert(pair<string, dato>("Delta_delta_perp_Bdjpsiom-delta_perp_Bdjpsirho0", dato(227.4 / 180. * M_PI, 84.9 / 180. * M_PI, 0., 0., 0., true))); // LHCb:2014vbo
+        meas.insert(pair<string, dato>("Delta_delta_0_Bdjpsiom-delta_0_Bdjpsirho0", dato(268.8 / 180. * M_PI, 11.9 / 180. * M_PI, 0., 0., 0., true)));       // LHCb:2014vbo
 
         /////////////////////////////
         // Bdjpsikst0
@@ -756,25 +753,25 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         data.clear();
 
         // delta_paral Bdjpsikst0
-        data.push_back(dato(-2.69, 0.08, 0.11)); // D0:2008nly
-        data.push_back(dato(-2.93, 0.08, 0.04)); // BaBar:2007rbr
+        data.push_back(dato(-2.69, 0.08, 0.11, 0., 0., true)); // D0:2008nly
+        data.push_back(dato(-2.93, 0.08, 0.04, 0., 0., true)); // BaBar:2007rbr
 
         pdgaverage.setData(data);
         pdgaverage.setName("delta_paral_Bdjpsikst0");
         pdgaverage.CalculateAverage();
 
-        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty(), 0., 0., 0., true)));
         data.clear();
 
         // delta_perp Bdjpsikst0
-        data.push_back(dato(3.21, 0.06, 0.06)); // D0:2008nly
-        data.push_back(dato(2.91, 0.05, 0.03)); // BaBar:2007rbr
+        data.push_back(dato(3.21, 0.06, 0.06, 0., 0., true)); // D0:2008nly
+        data.push_back(dato(2.91, 0.05, 0.03, 0., 0., true)); // BaBar:2007rbr
 
         pdgaverage.setData(data);
         pdgaverage.setName("delta_perp_Bdjpsikst0");
         pdgaverage.CalculateAverage();
 
-        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty(), 0., 0., 0., true)));
         data.clear();
 
         // Polarization fractions and phases from LHCb:2013vga
@@ -784,9 +781,9 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
         names.push_back("f_paral_Bdjpsikst0");
         CorrData.push_back(dato(0.201, sqrt(0.004 * 0.004 + 0.008 * 0.008))); // f_perp
         names.push_back("f_perp_Bdjpsikst0");
-        CorrData.push_back(dato(-2.94, sqrt(0.02 * 0.02 + 0.03 * 0.03))); // delta_paral - delta_0
+        CorrData.push_back(dato(-2.94, sqrt(0.02 * 0.02 + 0.03 * 0.03), 0. , 0., 0., true)); // delta_paral - delta_0
         names.push_back("delta_paral_Bdjpsikst0");
-        CorrData.push_back(dato(2.94, sqrt(0.02 * 0.02 + 0.02 * 0.02))); // delta_perp - delta_0
+        CorrData.push_back(dato(2.94, sqrt(0.02 * 0.02 + 0.02 * 0.02), 0., 0., 0., true)); // delta_perp - delta_0
         names.push_back("delta_perp_Bdjpsikst0");
 
         // Populate the correlation matrix
@@ -1080,18 +1077,17 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
             {
                 newStr.append(param, 0, length - 3); // Append text before "_re"
                 // strip the possible trailing "delta_" from the parameter name to get the full parameter
-                newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0);                                                            // Remove "delta_" if it exists at the start
-                histos.createH1D(newStr + "_abs", 500, 0.0, 0.0);   
-                paramsfor2dhistos.push_back(newStr + "_abs"); 
+                newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0); // Remove "delta_" if it exists at the start
+                histos.createH1D(newStr + "_abs", 500, 0.0, 0.0);
+                paramsfor2dhistos.push_back(newStr + "_abs");
             }
             else if (length >= 3 && param.substr(length - 3) == "_im")
             {
-                newStr.append(param, 0, length - 3); // Append text before "_im"
-                newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0);                                                            // Remove "delta_" if it exists at the start
+                newStr.append(param, 0, length - 3);                 // Append text before "_im"
+                newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0); // Remove "delta_" if it exists at the start
                 histos.createH1D(newStr + "_arg", 500, 0.0, 0.0);
-                paramsfor2dhistos.push_back(newStr + "_arg");    
+                paramsfor2dhistos.push_back(newStr + "_arg");
             }
-
         }
     }
 
@@ -1101,7 +1097,7 @@ goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJP
             const auto &param = paramsfor2dhistos[i];
             const auto &param2 = paramsfor2dhistos[j];
             histos.createH2D(param, param2, 500, 0.0, 0.0, 500, 0.0, 0.0);
-        }    
+        }
 
     for (const auto &channel : channels)
     {
@@ -1859,7 +1855,7 @@ void goldenmodesB::DefineParameters(const string &channel)
             "delta_A2t_cdcs_BDbD_re", "delta_A2t_cdcs_BDbD_im",
             "delta_G3_cds_BDDb_re", "delta_G3_cds_BDDb_im"};
         channelParameters[channel] = params;
-            
+
         addSU3BreakingParameter("delta_A2t_cdcs_BDbD_re", "A2t_cscs_BDbD_re");
         addSU3BreakingParameter("delta_A2t_cdcs_BDbD_im", "A2t_cscs_BDbD_im");
         addSU3BreakingParameter("delta_G3_cds_BDDb_re", "G3t_css_BDDb_re");
@@ -2090,23 +2086,23 @@ TComplex goldenmodesB::getPar(const string &baseName) const
             refName = "E2t_ccsd_BJPSIP";
         else if (baseName.find("BJPSIV_0") != string::npos || baseName.find("BVJPSI_0") != string::npos)
             refName = "E2t_ccss_BJPSIV_0";
-            else if (baseName.find("BJPSIV_paral") != string::npos || baseName.find("BVJPSI_paral") != string::npos)
-            {
-                refName = "E2t_ccss_BJPSIV_paral";
-            }
-            else if (baseName.find("BJPSIV_perp") != string::npos || baseName.find("BVJPSI_perp") != string::npos)
-            {
-                refName = "E2t_ccss_BJPSIV_perp";
-            }
+        else if (baseName.find("BJPSIV_paral") != string::npos || baseName.find("BVJPSI_paral") != string::npos)
+        {
+            refName = "E2t_ccss_BJPSIV_paral";
+        }
+        else if (baseName.find("BJPSIV_perp") != string::npos || baseName.find("BVJPSI_perp") != string::npos)
+        {
+            refName = "E2t_ccss_BJPSIV_perp";
+        }
         else if (baseName.find("DDb") != string::npos || baseName.find("DbD") != string::npos)
         {
             refName = "E1t_sccs_BDDb";
         }
         else
-            {
-                cerr << "Error: Cannot determine base parameter for amplitude " << baseName << " so cannot define ratio parameter." << endl;
-                exit(1);
-            }        
+        {
+            cerr << "Error: Cannot determine base parameter for amplitude " << baseName << " so cannot define ratio parameter." << endl;
+            exit(1);
+        }
         if (Debug)
         {
             cout << "Parameter " << baseName << " is a ratio with reference " << refName << " and ratio R = " << R << endl;
@@ -2136,12 +2132,14 @@ TComplex goldenmodesB::getPar(const string &baseName) const
             TComplex delta(delta_real->second, delta_imag->second);
             // Recursively get the reference amplitude (handles chained deltas)
             TComplex ref = getPar(deltaIt->second);
-            if (Debug)            {
+            if (Debug)
+            {
                 cout << "Parameter " << baseName << " is a derived amplitude with reference " << deltaIt->second << " and delta = " << delta << endl;
                 cout << "Recursively getting reference parameter " << deltaIt->second << endl;
             }
             TComplex result = ref * (TComplex(1, 0) + delta);
-            if (Debug)            {
+            if (Debug)
+            {
                 cout << "Reference amplitude " << deltaIt->second << " = " << ref << endl;
                 cout << "Calculating " << baseName << " = " << ref << " * (1 + " << delta << ") = " << result << endl;
             }
@@ -2189,7 +2187,7 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
     TComplex amp_paral, ampc_paral;
     TComplex amp_perp, ampc_perp;
 
-    //Normalize the amplitudes by lam_bd_c for Bd mesons and by lam_bs_c for Bs mesons, so that we can factor out the mixing phase in the time-dependent CP asymmetries 
+    // Normalize the amplitudes by lam_bd_c for Bd mesons and by lam_bs_c for Bs mesons, so that we can factor out the mixing phase in the time-dependent CP asymmetries
 
     if (channel == "Bdjpsik0")
     {
@@ -2206,11 +2204,11 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp = (lam_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI")) -
                lam_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") + getPar("G2t_dcd_BJPSIP"))) /
               sqrt(2.);
-              amp /= lam_bd_c; // Normalize by lam_bd_c
+        amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI")) -
                 lamst_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") + getPar("G2t_dcd_BJPSIP"))) /
                sqrt(2.);
-                ampc /=  lamst_bd_c; // Normalize by lamst_bd_c
+        ampc /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdjpsieta8")
@@ -2219,11 +2217,11 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp = ((lam_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") - 2. * getPar("EA2t_ccsd_BJPSIP"))) +
                lam_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") + 2. * getPar("G4t_csd_BJPSIP"))) /
               sqrt(6.);
-              amp /= lam_bd_c; // Normalize by lam_bd_c
+        amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = ((lamst_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") - 2. * getPar("EA2t_ccsd_BJPSIP"))) +
                 lamst_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") + 2. * getPar("G4t_csd_BJPSIP"))) /
                sqrt(6.);
-                ampc = amp / lamst_bd_c; // Normalize by lamst_bd_c
+        ampc = amp / lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdjpsieta1")
@@ -2232,11 +2230,11 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp = ((lam_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") + getPar("EA2t_ccsd_BJPSIP"))) +
                lam_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") - getPar("G4t_csd_BJPSIP"))) /
               sqrt(3.);
-                amp /= lam_bd_c; // Normalize by lam_bd_c
+        amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = ((lamst_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") + getPar("EA2t_ccsd_BJPSIP"))) +
                 lamst_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") - getPar("G4t_csd_BJPSIP"))) /
                sqrt(3.);
-                ampc /= lamst_bd_c; // Normalize by lamst_bd_c
+        ampc /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bpjpsikp")
@@ -2281,11 +2279,11 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp = ((lam_bs_c * (-2. * getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") - 2. * getPar("EA2t_ccss_BJPSIP"))) +
                lam_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") + 2. * getPar("G4t_css_BJPSIP"))) /
               sqrt(6.);
-                amp /= lam_bs_c; // Normalize by lam_bs_c
+        amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = ((lamst_bs_c * (-2. * getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") - 2. * getPar("EA2t_ccss_BJPSIP"))) +
                 lamst_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") + 2. * getPar("G4t_css_BJPSIP"))) /
                sqrt(6.);
-                ampc /= lamst_bs_c; // Normalize by lamst_bs_c
+        ampc /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsieta1")
@@ -2294,11 +2292,11 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp = ((lam_bs_c * (getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") + getPar("EA2t_ccss_BJPSIP"))) +
                lam_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") - getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") - getPar("G4t_css_BJPSIP"))) /
               sqrt(3.);
-                amp /= lam_bs_c; // Normalize by lam_bs_c
+        amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = ((lamst_bs_c * (getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") + getPar("EA2t_ccss_BJPSIP"))) +
                 lamst_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") - getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") - getPar("G4t_css_BJPSIP"))) /
                sqrt(3.);
-                ampc /= lamst_bs_c; // Normalize by lamst_bs_c
+        ampc /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsiphi")
@@ -2306,22 +2304,22 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         // Bs→J/ψ φ: b→c(c̄s), spectator s
         amp_0 = -lam_bs_c * (getPar("E2t_ccss_BJPSIV_0") + getPar("EA2t_ccss_BJPSIV_0")) +
                 lam_bs_u * (getPar("G2t_scs_BJPSIV_0") + getPar("G4t_css_BJPSIV_0"));
-                amp_0 /= lam_bs_c; // Normalize by lam_bs_c
+        amp_0 /= lam_bs_c; // Normalize by lam_bs_c
         ampc_0 = -lamst_bs_c * (getPar("E2t_ccss_BJPSIV_0") + getPar("EA2t_ccss_BJPSIV_0")) +
                  lamst_bs_u * (getPar("G2t_scs_BJPSIV_0") + getPar("G4t_css_BJPSIV_0"));
-                ampc_0 /= lamst_bs_c; // Normalize by lamst_bs_c
+        ampc_0 /= lamst_bs_c; // Normalize by lamst_bs_c
         amp_paral = -lam_bs_c * (getPar("E2t_ccss_BJPSIV_paral") + getPar("EA2t_ccss_BJPSIV_paral")) +
                     lam_bs_u * (getPar("G2t_scs_BJPSIV_paral") + getPar("G4t_css_BJPSIV_paral"));
-                    amp_paral /= lam_bs_c; // Normalize by lam_bs_c
+        amp_paral /= lam_bs_c; // Normalize by lam_bs_c
         ampc_paral = -lamst_bs_c * (getPar("E2t_ccss_BJPSIV_paral") + getPar("EA2t_ccss_BJPSIV_paral")) +
                      lamst_bs_u * (getPar("G2t_scs_BJPSIV_paral") + getPar("G4t_css_BJPSIV_paral"));
-                        ampc_paral /= lamst_bs_c; // Normalize by lamst_bs_c
+        ampc_paral /= lamst_bs_c; // Normalize by lamst_bs_c
         amp_perp = -lam_bs_c * (getPar("E2t_ccss_BJPSIV_perp") + getPar("EA2t_ccss_BJPSIV_perp")) +
                    lam_bs_u * (getPar("G2t_scs_BJPSIV_perp") + getPar("G4t_css_BJPSIV_perp"));
-                    amp_perp /= lam_bs_c; // Normalize by lam_bs_c
+        amp_perp /= lam_bs_c; // Normalize by lam_bs_c
         ampc_perp = -lamst_bs_c * (getPar("E2t_ccss_BJPSIV_perp") + getPar("EA2t_ccss_BJPSIV_perp")) +
                     lamst_bs_u * (getPar("G2t_scs_BJPSIV_perp") + getPar("G4t_css_BJPSIV_perp"));
-                        ampc_perp /= lamst_bs_c; // Normalize by lamst_bs_c
+        ampc_perp /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2401,27 +2399,27 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp_0 = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + 2. * getPar("EA2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) +
                  lam_bd_u * (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") - getPar("G2t_dcd_BJPSIV_0") - 2. * getPar("G4t_cdd_BJPSIV_0"))) /
                 sqrt(2.);
-                amp_0 /= lam_bd_c; // Normalize by lam_bd_c
+        amp_0 /= lam_bd_c; // Normalize by lam_bd_c
         ampc_0 = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + 2. * getPar("EA2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) +
                   lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") - getPar("G2t_dcd_BJPSIV_0") - 2. * getPar("G4t_cdd_BJPSIV_0"))) /
                  sqrt(2.);
-                    ampc_0 /= lamst_bd_c; // Normalize by lamst_bd_c
+        ampc_0 /= lamst_bd_c; // Normalize by lamst_bd_c
         amp_paral = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + 2. * getPar("EA2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) +
                      lam_bd_u * (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") - getPar("G2t_dcd_BJPSIV_paral") - 2. * getPar("G4t_cdd_BJPSIV_paral"))) /
                     sqrt(2.);
-                    amp_paral /= lam_bd_c; // Normalize by lam_bd_c
+        amp_paral /= lam_bd_c; // Normalize by lam_bd_c
         ampc_paral = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + 2. * getPar("EA2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) +
                       lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") - getPar("G2t_dcd_BJPSIV_paral") - 2. * getPar("G4t_cdd_BJPSIV_paral"))) /
                      sqrt(2.);
-                        ampc_paral /= lamst_bd_c; // Normalize by lamst_bd_c
+        ampc_paral /= lamst_bd_c; // Normalize by lamst_bd_c
         amp_perp = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + 2. * getPar("EA2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) +
                     lam_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") - getPar("G2t_dcd_BJPSIV_perp") - 2. * getPar("G4t_cdd_BJPSIV_perp"))) /
                    sqrt(2.);
-                        amp_perp /= lam_bd_c; // Normalize by lam_bd_c
+        amp_perp /= lam_bd_c; // Normalize by lam_bd_c
         ampc_perp = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + 2. * getPar("EA2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) +
                      lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") - getPar("G2t_dcd_BJPSIV_perp") - 2. * getPar("G4t_cdd_BJPSIV_perp"))) /
                     sqrt(2.);
-                        ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
+        ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2430,7 +2428,7 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
     {
         // Bd→J/ψ K*: b→c(c̄s), spectator d
         amp_0 = lam_bs_c * getPar("E2t_ccsd_BJPSIV_0") - lam_bs_u * getPar("G2t_scd_BJPSIV_0");
-        amp_0 /= lam_bd_c; // Normalize by lam_bd_c 
+        amp_0 /= lam_bd_c; // Normalize by lam_bd_c
         ampc_0 = lamst_bs_c * getPar("E2t_ccsd_BJPSIV_0") - lamst_bs_u * getPar("G2t_scd_BJPSIV_0");
         ampc_0 /= lamst_bd_c; // Normalize by lamst_bd_c
         amp_paral = lam_bs_c * getPar("E2t_ccsd_BJPSIV_paral") - lam_bs_u * getPar("G2t_scd_BJPSIV_paral");
@@ -2451,27 +2449,27 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         amp_0 = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) -
                  lam_bd_u * (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") + getPar("G2t_dcd_BJPSIV_0"))) /
                 sqrt(2.);
-                    amp_0 /= lam_bd_c; // Normalize by lam_bd_c
+        amp_0 /= lam_bd_c; // Normalize by lam_bd_c
         ampc_0 = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) -
                   lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") + getPar("G2t_dcd_BJPSIV_0"))) /
                  sqrt(2.);
-                    ampc_0 /= lamst_bd_c; // Normalize by lamst_bd_c
+        ampc_0 /= lamst_bd_c; // Normalize by lamst_bd_c
         amp_paral = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) -
                      lam_bd_u * (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") + getPar("G2t_dcd_BJPSIV_paral"))) /
                     sqrt(2.);
-                    amp_paral /= lam_bd_c; // Normalize by lam_bd_c
+        amp_paral /= lam_bd_c; // Normalize by lam_bd_c
         ampc_paral = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) -
                       lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") + getPar("G2t_dcd_BJPSIV_paral"))) /
                      sqrt(2.);
-                        ampc_paral /= lamst_bd_c; // Normalize by lamst_bd_c
+        ampc_paral /= lamst_bd_c; // Normalize by lamst_bd_c
         amp_perp = (lam_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) -
                     lam_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") + getPar("G2t_dcd_BJPSIV_perp"))) /
                    sqrt(2.);
-                    amp_perp /= lam_bd_c; // Normalize by lam_bd_c
+        amp_perp /= lam_bd_c; // Normalize by lam_bd_c
         ampc_perp = (lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) -
                      lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") + getPar("G2t_dcd_BJPSIV_perp"))) /
                     sqrt(2.);
-                        ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
+        ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2485,12 +2483,12 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
         ampc_paral = -lamst_bd_c * getPar("EA2t_ccsd_BJPSIV_paral") - lamst_bd_u * getPar("G4t_csd_BJPSIV_paral");
         amp_perp = -lam_bd_c * getPar("EA2t_ccsd_BJPSIV_perp") - lam_bd_u * getPar("G4t_csd_BJPSIV_perp");
         ampc_perp = -lamst_bd_c * getPar("EA2t_ccsd_BJPSIV_perp") - lamst_bd_u * getPar("G4t_csd_BJPSIV_perp");
-        amp_0 /= lam_bd_c; // Normalize by lam_bd_c
-        ampc_0 /= lamst_bd_c; // Normalize by lamst_bd_c
-        amp_paral /= lam_bd_c; // Normalize by lam_bd_c
+        amp_0 /= lam_bd_c;        // Normalize by lam_bd_c
+        ampc_0 /= lamst_bd_c;     // Normalize by lamst_bd_c
+        amp_paral /= lam_bd_c;    // Normalize by lam_bd_c
         ampc_paral /= lamst_bd_c; // Normalize by lamst_bd_c
-        amp_perp /= lam_bd_c; // Normalize by lam_bd_c
-        ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
+        amp_perp /= lam_bd_c;     // Normalize by lam_bd_c
+        ampc_perp /= lamst_bd_c;  // Normalize by lamst_bd_c
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2607,7 +2605,7 @@ void goldenmodesB::compute_decay_amplitudes(const string &channel)
               lam_bd_u * (getPar("A2_dcdd_BDDb") + getPar("dP3EW_ucd_BDbD") - getPar("G3t_cdd_BDDb"));
         ampc = -lamst_bd_c * (getPar("A2t_cdcd_BDbD") + getPar("dP3EW_ucd_BDbD")) -
                lamst_bd_u * (getPar("A2_dcdd_BDDb") + getPar("dP3EW_ucd_BDbD") - getPar("G3t_cdd_BDDb"));
-        amp /= lam_bd_c; // Normalize by lam_bd_c
+        amp /= lam_bd_c;    // Normalize by lam_bd_c
         ampc /= lamst_bd_c; // Normalize by lamst_bd_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
@@ -2809,12 +2807,12 @@ double goldenmodesB::CalculateBR(TComplex amplitude, TComplex amplitude_conj, co
     // add the CKM factor we divided out in the amplitude calculation
     if (bMeson == "Bd")
     {
-        amplitude *= lam_bd_c; // Use lam_bd_c for Bd decays
+        amplitude *= lam_bd_c;        // Use lam_bd_c for Bd decays
         amplitude_conj *= lamst_bd_c; // Use lamst_bd_c for conjugate amplitude
     }
     else if (bMeson == "Bs")
     {
-        amplitude *= lam_bs_c; // Use lam_bs_c for Bs decays
+        amplitude *= lam_bs_c;        // Use lam_bs_c for Bs decays
         amplitude_conj *= lamst_bs_c; // Use lamst_bs_c for conjugate amplitude
     }
 
@@ -2862,7 +2860,7 @@ double goldenmodesB::CalculateC(const TComplex &amplitude, const TComplex &conju
 
     // Having factored out the right CKM element in the amplitude calculation, here we just have 2beta or 2betas plus possible NP phase
 
-    TComplex q_p = (bMeson == "Bd") ? TComplex::Exp(TComplex(0, - getParameterValue("myphid"))) : TComplex::Exp(TComplex(0, getParameterValue("myphis")));
+    TComplex q_p = (bMeson == "Bd") ? TComplex::Exp(TComplex(0, -getParameterValue("myphid"))) : TComplex::Exp(TComplex(0, getParameterValue("myphis")));
 
     // Special case for K0s and K0l channels: apply q/p_KS, taking into account that the minus sign for the KL is compensated by the CP eigenvalue
     if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l")
@@ -2906,7 +2904,7 @@ pair<double, double> goldenmodesB::CalculateS(const TComplex &amplitude, const T
     bool isBd = (bMeson == "Bd");
 
     // Having factored out the right CKM element in the amplitude calculation, here we just have 2beta or 2betas plus possible NP phase
-    TComplex q_p = isBd ? TComplex::Exp(TComplex(0, - getParameterValue("myphid"))) : TComplex::Exp(TComplex(0, getParameterValue("myphis")));
+    TComplex q_p = isBd ? TComplex::Exp(TComplex(0, -getParameterValue("myphid"))) : TComplex::Exp(TComplex(0, getParameterValue("myphis")));
 
     // Special case for K0s and K0l channels (apply q/p_KS)
     if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l")
@@ -2956,8 +2954,8 @@ tuple<double, double, double> goldenmodesB::CalculatePhiAndLambda(const TComplex
 
     bool isBd = (bMeson == "Bd");
 
-    // Having factored out the right CKM element in the amplitude calculation, here we just have 2beta or 2betas plus possible NP phase. 
-    TComplex q_p = isBd ? TComplex::Exp(TComplex(0, - getParameterValue("myphid"))) : TComplex::Exp(TComplex(0, getParameterValue("myphis")));
+    // Having factored out the right CKM element in the amplitude calculation, here we just have 2beta or 2betas plus possible NP phase.
+    TComplex q_p = isBd ? TComplex::Exp(TComplex(0, -getParameterValue("myphid"))) : TComplex::Exp(TComplex(0, getParameterValue("myphis")));
     double sign = -1.;
 
     // Compute lambda = (q/p) * (A_cp / A_conj)
@@ -3073,8 +3071,9 @@ map<string, double> goldenmodesB::CalculatePolarizations(
     double f_paral = norm_Aparal / norm_amp;
 
     // Calculate CP-averaged relative phases
-    double delta_paral = remainder((amp_paral.Theta() + conj_amp_paral.Theta()) / 2. - (amp_0.Theta() + conj_amp_0.Theta()) / 2., 2. * M_PI);
-    double delta_perp = remainder((amp_perp.Theta() + conj_amp_perp.Theta()) / 2. - (amp_0.Theta() + conj_amp_0.Theta()) / 2., 2. * M_PI);
+    double delta_0 = remainder((amp_0.Theta() + conj_amp_0.Theta()) / 2., 2. * M_PI); // Reference phase for A0
+    double delta_paral = remainder((amp_paral.Theta() + conj_amp_paral.Theta()) / 2., 2. * M_PI);
+    double delta_perp = remainder((amp_perp.Theta() + conj_amp_perp.Theta()) / 2., 2. * M_PI);
 
     // Store the results in the map
     polarization_pars["f_0"] = f_0;
@@ -3082,6 +3081,7 @@ map<string, double> goldenmodesB::CalculatePolarizations(
     polarization_pars["f_paral"] = f_paral;
     polarization_pars["delta_paral"] = delta_paral;
     polarization_pars["delta_perp"] = delta_perp;
+    polarization_pars["delta_0"] = delta_0;
 
     return polarization_pars;
 }
@@ -3094,155 +3094,7 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
     pair<TComplex, TComplex> amp0_pair;
     pair<TComplex, TComplex> ampparal_pair;
     pair<TComplex, TComplex> ampperp_pair;
-    for (const auto &channel : channels)
-    {
 
-        bool is_vector_channel = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), channel) != vectorMesonChannels.end(); // is a vector meson channel
-        // cout << "Calculating uncorrelated observables for channel: " << channel << (is_vector_channel ? " which is a vector channel " : "") << endl;
-        if (is_vector_channel)
-        {
-            auto it0 = amplitude_map.find(channel + "_0");
-            auto itparal = amplitude_map.find(channel + "_paral");
-            auto itperp = amplitude_map.find(channel + "_perp");
-            if (it0 == amplitude_map.end() || itparal == amplitude_map.end() || itperp == amplitude_map.end())
-            {
-                cerr << "Warning: Polarized amplitudes not found for " << channel << endl;
-                continue;
-            }
-            amp0_pair = it0->second;
-            ampparal_pair = itparal->second;
-            ampperp_pair = itperp->second;
-        }
-        else
-        {
-            auto it = amplitude_map.find(channel);
-            if (it == amplitude_map.end())
-            {
-                cerr << "Warning: Amplitude not found for channel " << channel << " in Calculate_UncorrelatedObservables" << endl;
-                continue;
-            }
-            amp_pair = it->second;
-        }
-
-        // **Compute ACP, C, and S only if they exist in meas and are not already computed**
-        if (meas.find("ACP" + channel) != meas.end())
-        {
-            double acp;
-            if (is_vector_channel)
-            {
-                // Compute average over polarizations for ACP
-                double acp_0 = (obs.find("ACP_" + channel + "_0") != obs.end()) ? obs["ACP_" + channel + "_0"] : CalculateAcp(amp0_pair.first, amp0_pair.second);
-                double acp_paral = (obs.find("ACP_" + channel + "_paral") != obs.end()) ? obs["ACP_" + channel + "_paral"] : CalculateAcp(ampparal_pair.first, ampparal_pair.second);
-                double acp_perp = (obs.find("ACP_" + channel + "_perp") != obs.end()) ? obs["ACP_" + channel + "_perp"] : CalculateAcp(ampperp_pair.first, ampperp_pair.second);
-                auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
-                acp = acp_0 * polfracs["f_0"] + acp_paral * polfracs["f_paral"] + acp_perp * polfracs["f_perp"];
-            }
-            else
-            {
-                acp = (obs.find("ACP_" + channel) != obs.end()) ? obs["ACP_" + channel] : CalculateAcp(amp_pair.first, amp_pair.second);
-            }
-            obs["ACP_" + channel] = acp;
-
-            double observed = meas.at("ACP" + channel).getMean();
-            double uncertainty = meas.at("ACP" + channel).getSigma();
-            double diff = acp - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
-        }
-
-        if (meas.find("C" + channel) != meas.end())
-        {
-            double c;
-            if (is_vector_channel)
-            {
-                // Compute average over polarizations for C
-                double c_0 = (obs.find("C_" + channel + "_0") != obs.end()) ? obs["C_" + channel + "_0"] : CalculateC(amp0_pair.first, amp0_pair.second, channel);
-                double c_paral = (obs.find("C_" + channel + "_paral") != obs.end()) ? obs["C_" + channel + "_paral"] : CalculateC(ampparal_pair.first, ampparal_pair.second, channel);
-                double c_perp = (obs.find("C_" + channel + "_perp") != obs.end()) ? obs["C_" + channel + "_perp"] : CalculateC(ampperp_pair.first, ampperp_pair.second, channel);
-                auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
-                c = c_0 * polfracs["f_0"] + c_paral * polfracs["f_paral"] + c_perp * polfracs["f_perp"];
-            }
-            else
-            {
-                c = (obs.find("C_" + channel) != obs.end()) ? obs["C_" + channel] : CalculateC(amp_pair.first, amp_pair.second, channel);
-            }
-            obs["C_" + channel] = c;
-
-            double observed = meas.at("C" + channel).getMean();
-            double uncertainty = meas.at("C" + channel).getSigma();
-            double diff = c - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
-        }
-
-        if (meas.find("S" + channel) != meas.end())
-        {
-            double s, delta_s;
-            if (is_vector_channel)
-            {
-                // Compute average over polarizations for S
-                auto s_0 = (obs.find("S_" + channel + "_0") != obs.end() && obs.find("DeltaS_" + channel + "_0") != obs.end()) ? make_pair(obs["S_" + channel + "_0"], obs["DeltaS_" + channel + "_0"]) : CalculateS(amp0_pair.first, amp0_pair.second, channel);
-                auto s_paral = (obs.find("S_" + channel + "_paral") != obs.end() && obs.find("DeltaS_" + channel + "_paral") != obs.end()) ? make_pair(obs["S_" + channel + "_paral"], obs["DeltaS_" + channel + "_paral"]) : CalculateS(ampparal_pair.first, ampparal_pair.second, channel);
-                auto s_perp = (obs.find("S_" + channel + "_perp") != obs.end() && obs.find("DeltaS_" + channel + "_perp") != obs.end()) ? make_pair(obs["S_" + channel + "_perp"], obs["DeltaS_" + channel + "_perp"]) : CalculateS(ampperp_pair.first, ampperp_pair.second, channel);
-                auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
-                s = s_0.first * polfracs["f_0"] + s_paral.first * polfracs["f_paral"] + s_perp.first * polfracs["f_perp"];
-                delta_s = s_0.second * polfracs["f_0"] + s_paral.second * polfracs["f_paral"] + s_perp.second * polfracs["f_perp"];
-            }
-            else
-            {
-                auto s_pair = (obs.find("S" + channel) != obs.end() && obs.find("DeltaS" + channel) != obs.end()) ? make_pair(obs["S" + channel], obs["DeltaS" + channel]) : CalculateS(amp_pair.first, amp_pair.second, channel);
-                s = s_pair.first;
-                delta_s = s_pair.second;
-            }
-            obs["S_" + channel] = s;
-            obs["DeltaS_" + channel] = delta_s;
-            //            cout << "Channel: " << channel << " S: " << obs["S_" + channel] << " DeltaS: " << obs["DeltaS_" + channel] << endl;
-
-            double observed = meas.at("S" + channel).getMean();
-            double uncertainty = meas.at("S" + channel).getSigma();
-            double diff = s - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
-        }
-
-        // **Compute and store branching ratios if they exist in meas**
-
-        string br_obsKey;
-        string br_measKey;
-        string channel_for_br = channel;
-        double br_predicted = 0.0;
-        if (is_vector_channel)
-        {
-            // For vector meson channels, use the sum over polarizations for BR
-            br_predicted += (obs.find("BR_" + channel + "_0") != obs.end()) ? obs["BR_" + channel + "_0"] : CalculateBR(amp0_pair.first, amp0_pair.second, channel);
-            br_predicted += (obs.find("BR_" + channel + "_paral") != obs.end()) ? obs["BR_" + channel + "_paral"] : CalculateBR(ampparal_pair.first, ampparal_pair.second, channel);
-            br_predicted += (obs.find("BR_" + channel + "_perp") != obs.end()) ? obs["BR_" + channel + "_perp"] : CalculateBR(ampperp_pair.first, ampperp_pair.second, channel);
-        }
-        else
-        {
-            if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l")
-            {
-                br_obsKey = "BR_Bdjpsik0";
-                br_measKey = "BRBdjpsik0";
-                channel_for_br = "Bdjpsik0";             // Use the non-rotated state for BR
-                amp_pair = amplitude_map.at("Bdjpsik0"); // Use the non-rotated stated for BR
-            }
-            else
-            {
-                br_obsKey = "BR_" + channel;
-                br_measKey = "BR" + channel;
-            }
-            br_predicted = (obs.find(br_obsKey) != obs.end()) ? obs[br_obsKey] : CalculateBR(amp_pair.first, amp_pair.second, channel_for_br);
-        }
-        obs[br_obsKey] = br_predicted;
-
-        if (meas.find(br_measKey) != meas.end())
-        {
-            double observed = meas.at(br_measKey).getMean();
-            double uncertainty = meas.at(br_measKey).getSigma();
-            double diff = br_predicted - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
-        }
-    }
-
-    // **Handle BR Ratios (`R_`)**
     vector<pair<string, pair<string, string>>> br_ratios = {
         {"R_Bpjpsipp_Bpjpsikp", {"Bpjpsipp", "Bpjpsikp"}},
         {"R_Bdjpsiom_Bdjpsirho0", {"Bdjpsiom", "Bdjpsirho0"}},
@@ -3252,183 +3104,745 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
         {"R_Bdjpsietap_Bdjpsieta", {"Bdjpsietap", "Bdjpsieta"}},
         {"R_Bsjpsieta_Bsjpsiphi", {"Bsjpsieta", "Bsjpsiphi"}},
         {"R_Bsjpsietap_Bsjpsieta", {"Bsjpsietap", "Bsjpsieta"}},
-        {"R_Bsjpsietap_Bsjpsieta", {"Bsjpsietap", "Bsjpsieta"}},
         {"R_Bsjpsietap_Bsjpsiphi", {"Bsjpsietap", "Bsjpsiphi"}}};
-
-    for (const auto &[ratioKey, rchannels] : br_ratios)
-    {
-        if (find(channels.begin(), channels.end(), rchannels.first) == channels.end() ||
-            find(channels.begin(), channels.end(), rchannels.second) == channels.end())
-        {
-            continue; // Skip if either channel is not in the list
-        }
-        double BR1, BR2;
-        bool is_vector_channel1 = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), rchannels.first) != vectorMesonChannels.end();  // channel1 is a vector meson channel
-        bool is_vector_channel2 = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), rchannels.second) != vectorMesonChannels.end(); // channel2 is a vector meson channel
-        if (is_vector_channel1)
-        {
-            if (obs.find("BR_" + rchannels.first + "_0") != obs.end() &&
-                obs.find("BR_" + rchannels.first + "_paral") != obs.end() &&
-                obs.find("BR_" + rchannels.first + "_perp") != obs.end())
-            {
-                BR1 = obs["BR_" + rchannels.first + "_0"];
-                BR1 += obs["BR_" + rchannels.first + "_paral"];
-                BR1 += obs["BR_" + rchannels.first + "_perp"];
-            }
-            else
-            {
-                // Compute BR from amplitudes if not already computed
-                auto it0 = amplitude_map.find(rchannels.first + "_0");
-                auto itparal = amplitude_map.find(rchannels.first + "_paral");
-                auto itperp = amplitude_map.find(rchannels.first + "_perp");
-                if (it0 == amplitude_map.end() || itparal == amplitude_map.end() || itperp == amplitude_map.end())
-                {
-                    cerr << "Warning: Polarized amplitudes not found for " << rchannels.first << endl;
-                    continue;
-                }
-                obs["BR_" + rchannels.first + "_0"] = CalculateBR(it0->second.first, it0->second.second, rchannels.first);
-                BR1 += obs["BR_" + rchannels.first + "_0"];
-                obs["BR_" + rchannels.first + "_paral"] = CalculateBR(itparal->second.first, itparal->second.second, rchannels.first);
-                BR1 += obs["BR_" + rchannels.first + "_paral"];
-                obs["BR_" + rchannels.first + "_perp"] = CalculateBR(itperp->second.first, itperp->second.second, rchannels.first);
-                BR1 += obs["BR_" + rchannels.first + "_perp"];
-            }
-        }
-        else if (obs.find("BR_" + rchannels.first) != obs.end())
-        {
-            // cout << "Using precomputed BR for " << rchannels.first << " equal to " << obs["BR_" + rchannels.first] << endl;
-            BR1 = obs["BR_" + rchannels.first];
-        }
-        else
-        {
-            if (amplitude_map.find(rchannels.first) != amplitude_map.end())
-                obs["BR_" + rchannels.first] = CalculateBR(amplitude_map.at(rchannels.first).first, amplitude_map.at(rchannels.first).second, rchannels.first);
-            else
-            {
-                cerr << "Warning: Polarized amplitudes not found for " << rchannels.first << endl;
-                continue;
-            }
-        }
-        if (is_vector_channel2)
-        {
-            if (obs.find("BR_" + rchannels.second + "_0") != obs.end() &&
-                obs.find("BR_" + rchannels.second + "_paral") != obs.end() &&
-                obs.find("BR_" + rchannels.second + "_perp") != obs.end())
-            {
-                BR2 = obs["BR_" + rchannels.second + "_0"];
-                BR2 += obs["BR_" + rchannels.second + "_paral"];
-                BR2 += obs["BR_" + rchannels.second + "_perp"];
-            }
-            else
-            {
-                // Compute BR from amplitudes if not already computed
-                auto it0 = amplitude_map.find(rchannels.second + "_0");
-                auto itparal = amplitude_map.find(rchannels.second + "_paral");
-                auto itperp = amplitude_map.find(rchannels.second + "_perp");
-                if (it0 == amplitude_map.end() || itparal == amplitude_map.end() || itperp == amplitude_map.end())
-                {
-                    cerr << "Warning: Polarized amplitudes not found for " << rchannels.second << endl;
-                    continue;
-                }
-                obs["BR_" + rchannels.second + "_0"] = CalculateBR(it0->second.first, it0->second.second, rchannels.second);
-                BR2 += obs["BR_" + rchannels.second + "_0"];
-                obs["BR_" + rchannels.second + "_paral"] = CalculateBR(itparal->second.first, itparal->second.second, rchannels.second);
-                BR2 += obs["BR_" + rchannels.second + "_paral"];
-                obs["BR_" + rchannels.second + "_perp"] = CalculateBR(itperp->second.first, itperp->second.second, rchannels.second);
-                BR2 += obs["BR_" + rchannels.second + "_perp"];
-            }
-        }
-        else if (obs.find("BR_" + rchannels.second) != obs.end())
-        {
-            // cout << "Using precomputed BR for " << rchannels.second << " equal to " << obs["BR_" + rchannels.second] << endl;
-            BR2 = obs["BR_" + rchannels.second];
-        }
-        else
-        {
-            if (amplitude_map.find(rchannels.second) != amplitude_map.end())
-                obs["BR_" + rchannels.second] = CalculateBR(amplitude_map.at(rchannels.second).first, amplitude_map.at(rchannels.second).second, rchannels.second);
-            else
-            {
-                cerr << "Warning: Polarized amplitudes not found for " << rchannels.second << endl;
-                continue;
-            }
-            BR2 = obs["BR_" + rchannels.second];
-        }
-        if (BR1 != 0 && BR2 != 0)
-        {
-            double R_predicted = BR1 / BR2;
-            obs[ratioKey] = R_predicted;
-
-            if (meas.find(ratioKey) != meas.end())
-            {
-                double observed = meas.at(ratioKey).getMean();
-                double uncertainty = meas.at(ratioKey).getSigma();
-                double diff = R_predicted - observed;
-                ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
-            }
-        }
-        else
-        {
-            cerr << "Error: zero BR in " << ratioKey << ": " << BR1 << " / " << BR2 << endl;
-        }
-    }
 
     // **Handle Delta A (`deltaA_`)**
     // Format: {ratioKey, {channel1, channel2}} - using channel names, not ACP keys
     vector<pair<string, pair<string, string>>> deltaA_ratios = {
         {"deltaA_Bpjpsipp_Bpjpsikp", {"Bpjpsipp", "Bpjpsikp"}}};
 
-    for (const auto &[deltaAKey, channelPair] : deltaA_ratios)
+    // Handle differences of phases among different channels from Dalitz analyses
+    vector<pair<string, pair<string, string>>> phase_differences = {
+        {"Delta_delta_paral_Bdjpsiom-delta_0_Bdjpsirho0", {"delta_paral_Bdjpsiom", "delta_0_Bdjpsirho0"}},
+        {"Delta_delta_perp_Bdjpsiom-delta_perp_Bdjpsirho0", {"delta_perp_Bdjpsiom", "delta_perp_Bdjpsirho0"}},
+        {"Delta_delta_0_Bdjpsiom-delta_0_Bdjpsirho0", {"delta_0_Bdjpsiom", "delta_0_Bdjpsirho0"}}};
+
+    string basechannel;
+    regex pattern(R"(B[dsp][^_-]*)"); // regexp to match the base channel (e.g. Bd0d0b) in the observable name, assuming it starts with B followed by d, s or p and then any characters until an underscore
+    smatch match;                  // Object to hold the result
+    for (const auto meas_pair : meas)
     {
-        if (find(channels.begin(), channels.end(), channelPair.first) == channels.end() ||
-            find(channels.begin(), channels.end(), channelPair.second) == channels.end())
-        {
-            continue; // Skip if either channel is not in the list
-        }
-        string acp_key1 = "ACP_" + channelPair.first;
-        string acp_key2 = "ACP_" + channelPair.second;
+        const string &key = meas_pair.first;
 
-        double ACP1, ACP2;
-        if (obs.find(acp_key1) != obs.end())
+        // Check if the observable is already computed
+        if (obs.find(key) == obs.end())
         {
-            ACP1 = obs[acp_key1];
+
+            if (regex_search(key, match, pattern))
+            {
+                basechannel = match.str();
+                if (Debug)
+                {
+                    cout << "Extracted base channel: " << basechannel << " from observable key: " << key << endl;
+                }
+            }
+            else
+            {
+                cerr << "couldn't extract basechannel from " << key << endl;
+                continue;
+            }
+
+            // Check if it's an averaged vector meson channel
+            bool is_vector_channel = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), basechannel) != vectorMesonChannels.end();
+            bool is_polarized_measurement = key.find("_0") != string::npos || key.find("_paral") != string::npos || key.find("_perp") != string::npos;
+
+            if (is_vector_channel)
+            {
+                auto it0 = amplitude_map.find(basechannel + "_0");
+                auto itparal = amplitude_map.find(basechannel + "_paral");
+                auto itperp = amplitude_map.find(basechannel + "_perp");
+                if (it0 == amplitude_map.end() || itparal == amplitude_map.end() || itperp == amplitude_map.end())
+                {
+                    cerr << "Warning: Polarized amplitudes not found for " << basechannel << endl;
+                    continue;
+                }
+                amp0_pair = it0->second;
+                ampparal_pair = itparal->second;
+                ampperp_pair = itperp->second;
+            }
+            else
+            {
+                auto it = amplitude_map.find(basechannel);
+                if (it == amplitude_map.end())
+                {
+                    cerr << "Warning: Amplitude not found for channel " << basechannel << " in Calculate_CorrelatedObservables" << endl;
+                    continue;
+                }
+                else
+                {
+                    amp_pair = it->second;
+                }
+            }
+
+            // Compute the observable based on its type
+            if (key.rfind("C", 0) == 0)
+            {
+                double c_value;
+                if (is_vector_channel && !is_polarized_measurement)
+                {
+                    // Average over polarizations for C
+                    double c_0 = CalculateC(amp0_pair.first, amp0_pair.second, basechannel);
+                    double c_paral = CalculateC(ampparal_pair.first, ampparal_pair.second, basechannel);
+                    double c_perp = CalculateC(ampperp_pair.first, ampperp_pair.second, basechannel);
+                    auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
+                    c_value = c_0 * polfracs["f_0"] + c_paral * polfracs["f_paral"] + c_perp * polfracs["f_perp"];
+                }
+                else if (is_vector_channel && is_polarized_measurement)
+                {
+                    // Polarized measurement for vector meson channel
+                    if (key.find("_0") != string::npos)
+                    {
+                        c_value = CalculateC(amp0_pair.first, amp0_pair.second, basechannel);
+                    }
+                    else if (key.find("_paral") != string::npos)
+                    {
+                        c_value = CalculateC(ampparal_pair.first, ampparal_pair.second, basechannel);
+                    }
+                    else if (key.find("_perp") != string::npos)
+                    {
+                        c_value = CalculateC(ampperp_pair.first, ampperp_pair.second, basechannel);
+                    }
+                    else
+                    {
+                        cerr << "Error: Unknown polarization in " << key << endl;
+                        continue;
+                    }
+                }
+                else
+                {
+                    c_value = CalculateC(amp_pair.first, amp_pair.second, basechannel);
+                }
+                obs[key] = c_value;
+            }
+
+            else if (key.rfind("S", 0) == 0)
+            {
+                double s_value, delta_S;
+                if (is_vector_channel && !is_polarized_measurement)
+                {
+                    // Average over polarizations for S
+                    auto s_0 = CalculateS(amp0_pair.first, amp0_pair.second, basechannel);
+                    auto s_paral = CalculateS(ampparal_pair.first, ampparal_pair.second, basechannel);
+                    auto s_perp = CalculateS(ampperp_pair.first, ampperp_pair.second, basechannel);
+                    auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
+                    s_value = s_0.first * polfracs["f_0"] + s_paral.first * polfracs["f_paral"] + s_perp.first * polfracs["f_perp"];
+                    delta_S = s_0.second * polfracs["f_0"] + s_paral.second * polfracs["f_paral"] + s_perp.second * polfracs["f_perp"];
+                }
+                else if (is_vector_channel && is_polarized_measurement)
+                {
+                    // Polarized measurement for vector meson channel
+                    if (key.find("_0") != string::npos)
+                    {
+                        auto s_pair = CalculateS(amp0_pair.first, amp0_pair.second, basechannel);
+                        s_value = s_pair.first;
+                        delta_S = s_pair.second;
+                    }
+                    else if (key.find("_paral") != string::npos)
+                    {
+                        auto s_pair = CalculateS(ampparal_pair.first, ampparal_pair.second, basechannel);
+                        s_value = s_pair.first;
+                        delta_S = s_pair.second;
+                    }
+                    else if (key.find("_perp") != string::npos)
+                    {
+                        auto s_pair = CalculateS(ampperp_pair.first, ampperp_pair.second, basechannel);
+                        s_value = s_pair.first;
+                        delta_S = s_pair.second;
+                    }
+                    else
+                    {
+                        cerr << "Error: Unknown polarization in " << key << endl;
+                        continue;
+                    }
+                }
+                else
+                {
+                    auto s_pair = CalculateS(amp_pair.first, amp_pair.second, basechannel);
+                    s_value = s_pair.first;
+                    delta_S = s_pair.second;
+                }
+                obs[key] = s_value;
+                obs["DeltaS_" + key.substr(1)] = delta_S;
+            }
+            else if (key.rfind("phis", 0) == 0)
+            {
+                if (is_vector_channel && !is_polarized_measurement)
+                {
+                    // Average over polarizations for phi_s
+                    auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
+                    auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
+                    auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
+                    auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
+
+                    double phi_0 = get<0>(phi_lambda_0);
+                    double phi_paral = get<0>(phi_lambda_paral);
+                    double phi_perp = get<0>(phi_lambda_perp);
+
+                    double phi_avg = phi_0 * polfracs["f_0"] + phi_paral * polfracs["f_paral"] + phi_perp * polfracs["f_perp"];
+                    double delta_phi_avg = get<2>(phi_lambda_0) * polfracs["f_0"] + get<2>(phi_lambda_paral) * polfracs["f_paral"] + get<2>(phi_lambda_perp) * polfracs["f_perp"];
+                    obs[key] = phi_avg;
+                    obs["Delta" + key] = delta_phi_avg;
+                }
+                else if (is_vector_channel && is_polarized_measurement)
+                {
+                    // Polarized measurement for vector meson channel
+                    double phi_pol, delta_phi_pol;
+                    if (key.find("_0") != string::npos)
+                    {
+                        auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
+                        phi_pol = get<0>(phi_lambda_0);
+                        delta_phi_pol = get<2>(phi_lambda_0);
+                    }
+                    else if (key.find("_paral") != string::npos)
+                    {
+                        auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
+                        phi_pol = get<0>(phi_lambda_paral);
+                        delta_phi_pol = get<2>(phi_lambda_paral);
+                    }
+                    else if (key.find("_perp") != string::npos)
+                    {
+                        auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
+                        phi_pol = get<0>(phi_lambda_perp);
+                        delta_phi_pol = get<2>(phi_lambda_perp);
+                    }
+                    else
+                    {
+                        cerr << "Error: Unknown polarization in " << key << endl;
+                        continue;
+                    }
+                    obs[key] = phi_pol;
+                    obs["Delta" + key] = delta_phi_pol;
+                }
+                else
+                {
+                    // Non-vector meson channel
+                    auto phi_lambda_result = CalculatePhiAndLambda(amp_pair.first, amp_pair.second, basechannel);
+                    double phi = get<0>(phi_lambda_result);
+                    double delta_phi = get<2>(phi_lambda_result);
+                    obs[key] = phi;
+                    obs["Delta" + key] = delta_phi;
+                }
+            }
+            else if (key.rfind("lambda", 0) == 0)
+            {
+                if (is_vector_channel && !is_polarized_measurement)
+                {
+                    // Average over polarizations for |lambda|
+                    auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
+                    auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
+                    auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
+                    auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
+
+                    double lambda_0 = get<1>(phi_lambda_0);
+                    double lambda_paral = get<1>(phi_lambda_paral);
+                    double lambda_perp = get<1>(phi_lambda_perp);
+
+                    double lambda_avg = lambda_0 * polfracs["f_0"] + lambda_paral * polfracs["f_paral"] + lambda_perp * polfracs["f_perp"];
+                    obs[key] = lambda_avg;
+                }
+                else if (is_vector_channel && is_polarized_measurement)
+                {
+                    // Polarized measurement for vector meson channel
+                    double lambda_pol;
+                    if (key.find("_0") != string::npos)
+                    {
+                        auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
+                        lambda_pol = get<1>(phi_lambda_0);
+                    }
+                    else if (key.find("_paral") != string::npos)
+                    {
+                        auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
+                        lambda_pol = get<1>(phi_lambda_paral);
+                    }
+                    else if (key.find("_perp") != string::npos)
+                    {
+                        auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
+                        lambda_pol = get<1>(phi_lambda_perp);
+                    }
+                    else
+                    {
+                        cerr << "Error: Unknown polarization in " << key << endl;
+                        continue;
+                    }
+                    obs[key] = lambda_pol;
+                }
+                else
+                {
+                    // Non-vector meson channel
+                    auto phi_lambda_result = CalculatePhiAndLambda(amp_pair.first, amp_pair.second, basechannel);
+                    double lambda_val = get<1>(phi_lambda_result);
+                    obs[key] = lambda_val;
+                }
+            }
+            else if (key.rfind("f_", 0) == 0 || key.rfind("delta_", 0) == 0)
+            {
+                // Compute polarization parameters for vector meson channels
+                auto pol_params = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
+                obs["f_0_" + basechannel] = pol_params.at("f_0");
+                obs["f_paral_" + basechannel] = pol_params.at("f_paral");
+                obs["f_perp_" + basechannel] = pol_params.at("f_perp");
+                obs["delta_paral_" + basechannel] = pol_params.at("delta_paral")-pol_params.at("delta_0");
+                obs["delta_perp_" + basechannel] = pol_params.at("delta_perp")-pol_params.at("delta_0");
+            }
+            else if (key.rfind("2beta", 0) == 0)
+            {
+                if (is_vector_channel && !is_polarized_measurement)
+                {
+                    cerr << "Error: 2beta observable not implemented for unpolarized vector meson channels: " << basechannel << endl;
+                }
+                else if (is_vector_channel && is_polarized_measurement)
+                {
+                    // Polarized measurement for vector meson channel
+                    double twobeta_pol, delta_twobeta_pol;
+                    if (key.find("_0") != string::npos)
+                    {
+                        auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
+                        twobeta_pol = get<0>(phi_lambda_0);
+                        delta_twobeta_pol = get<2>(phi_lambda_0);
+                    }
+                    else if (key.find("_paral") != string::npos)
+                    {
+                        auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
+                        auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
+                        twobeta_pol = remainder(get<0>(phi_lambda_paral) - get<0>(phi_lambda_0), 2. * M_PI);
+                        delta_twobeta_pol = remainder(get<2>(phi_lambda_paral) + get<2>(phi_lambda_0), 2. * M_PI);
+                    }
+                    else if (key.find("_perp") != string::npos)
+                    {
+                        auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
+                        auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
+                        twobeta_pol = remainder(get<0>(phi_lambda_perp) - get<0>(phi_lambda_0), 2. * M_PI);
+                        delta_twobeta_pol = remainder(get<2>(phi_lambda_perp) + get<2>(phi_lambda_0), 2. * M_PI);
+                    }
+                    else
+                    {
+                        cerr << "Error: Unknown polarization in " << key << endl;
+                        continue;
+                    }
+                    obs[key] = twobeta_pol;
+                    obs["Delta" + key] = delta_twobeta_pol;
+                }
+                else
+                {
+                    // Non-vector meson channel
+                    auto phi_lambda_result = CalculatePhiAndLambda(amp_pair.first, amp_pair.second, basechannel);
+                    double phi_s = get<0>(phi_lambda_result);
+                    double delta_phi_s = get<2>(phi_lambda_result);
+
+                    obs[key] = phi_s;
+                    obs["Delta" + key] = delta_phi_s;
+                }
+            }
+            else if (key.rfind("alpha_", 0) == 0)
+            {
+                if (is_vector_channel && !is_polarized_measurement)
+                {
+                    cerr << "Error: alpha observable not implemented for unpolarized vector meson channels: " << basechannel << endl;
+                }
+                else if (is_vector_channel && is_polarized_measurement)
+                {
+                    // Polarized measurement for vector meson channel
+                    double alpha_pol;
+                    if (key.find("0") != string::npos)
+                    {
+                        double lambda = get<1>(CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel));
+                        alpha_pol = (1. - lambda) / (1. + lambda);
+                    }
+                    else if (key.find("paral") != string::npos)
+                    {
+                        double lambda = get<1>(CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel));
+                        alpha_pol = (1. - lambda) / (1. + lambda);
+                    }
+                    else if (key.find("perp") != string::npos)
+                    {
+                        double lambda = get<1>(CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel));
+                        alpha_pol = (1. - lambda) / (1. + lambda);
+                    }
+                    else
+                    {
+                        cerr << "Error: Unknown polarization in " << key << endl;
+                        continue;
+                    }
+                    obs[key] = alpha_pol;
+                }
+                else
+                {
+                    cerr << "Error: alpha observable not implemented for non-vector meson channels: " << basechannel << endl;
+                }
+            }
+            else if (key.rfind("ACP", 0) == 0)
+            {
+                double acp_value;
+                if (is_vector_channel && !is_polarized_measurement)
+                {
+                    // Average over polarizations for ACP
+                    double acp_0 = CalculateAcp(amp0_pair.first, amp0_pair.second);
+                    double acp_paral = CalculateAcp(ampparal_pair.first, ampparal_pair.second);
+                    double acp_perp = CalculateAcp(ampperp_pair.first, ampperp_pair.second);
+                    auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
+                    acp_value = acp_0 * polfracs["f_0"] + acp_paral * polfracs["f_paral"] + acp_perp * polfracs["f_perp"];
+                }
+                else if (is_vector_channel && is_polarized_measurement)
+                {
+                    // Polarized measurement for vector meson channel
+                    if (key.find("0") != string::npos)
+                    {
+                        acp_value = CalculateAcp(amp0_pair.first, amp0_pair.second);
+                    }
+                    else if (key.find("paral") != string::npos)
+                    {
+                        acp_value = CalculateAcp(ampparal_pair.first, ampparal_pair.second);
+                    }
+                    else if (key.find("perp") != string::npos)
+                    {
+                        acp_value = CalculateAcp(ampperp_pair.first, ampperp_pair.second);
+                    }
+                    else
+                    {
+                        cerr << "Error: Unknown polarization in " << key << endl;
+                        continue;
+                    }
+                }
+                else
+                {
+                    acp_value = CalculateAcp(amp_pair.first, amp_pair.second);
+                }
+                obs[key] = acp_value;
+            }
+            else if (key.find("BR") == 0)
+            {
+                double br_value = 0.;
+                if (is_vector_channel)
+                {
+                    // Average over polarizations for BR
+                    br_value += CalculateBR(amp0_pair.first, amp0_pair.second, basechannel);
+                    br_value += CalculateBR(ampparal_pair.first, ampparal_pair.second, basechannel);
+                    br_value += CalculateBR(ampperp_pair.first, ampperp_pair.second, basechannel);
+                }
+                else
+                {
+                    br_value = CalculateBR(amp_pair.first, amp_pair.second, basechannel);
+                }
+                obs[key] = br_value;
+            }
+            else if (key.find("R_") == 0)
+            {
+                // Check if this is one of the defined BR ratios
+                auto ratio_it = find_if(br_ratios.begin(), br_ratios.end(), [&key](const pair<string, pair<string, string>> &ratio)
+                                        { return key == ratio.first; });
+
+                if (ratio_it != br_ratios.end())
+                {
+                    const string &numerator_channel = ratio_it->second.first;
+                    const string &denominator_channel = ratio_it->second.second;
+
+                    double br_numerator, br_denominator;
+
+                    is_vector_channel = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), numerator_channel) != vectorMesonChannels.end();
+                    is_polarized_measurement = numerator_channel.find("_0") != string::npos || numerator_channel.find("_paral") != string::npos || numerator_channel.find("_perp") != string::npos;
+
+                    if (is_vector_channel)
+                    {
+                        amp0_pair = amplitude_map.at(numerator_channel + "_0");
+                        ampparal_pair = amplitude_map.at(numerator_channel + "_paral");
+                        ampperp_pair = amplitude_map.at(numerator_channel + "_perp");
+                    }
+                    else
+                    {
+                        amp_pair = amplitude_map.at(numerator_channel);
+                    }
+                    // Calculate BR for numerator
+                    if (is_vector_channel && !is_polarized_measurement)
+                    {
+                        br_numerator = CalculateBR(amp0_pair.first, amp0_pair.second, numerator_channel) +
+                                       CalculateBR(ampparal_pair.first, ampparal_pair.second, numerator_channel) +
+                                       CalculateBR(ampperp_pair.first, ampperp_pair.second, numerator_channel);
+                    }
+                    else if (is_vector_channel && is_polarized_measurement)
+                    {
+                        if (numerator_channel.find("_0") != string::npos)
+                        {
+                            br_numerator = CalculateBR(amp0_pair.first, amp0_pair.second, numerator_channel);
+                        }
+                        else if (numerator_channel.find("_paral") != string::npos)
+                        {
+                            br_numerator = CalculateBR(ampparal_pair.first, ampparal_pair.second, numerator_channel);
+                        }
+                        else if (numerator_channel.find("_perp") != string::npos)
+                        {
+                            br_numerator = CalculateBR(ampperp_pair.first, ampperp_pair.second, numerator_channel);
+                        }
+                        else
+                        {
+                            cerr << "Error: Unknown polarization in numerator channel " << numerator_channel << " for BR ratio " << key << endl;
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        br_numerator = CalculateBR(amp_pair.first, amp_pair.second, numerator_channel);
+                    }
+
+                    // Calculate BR for denominator
+
+                    is_vector_channel = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), denominator_channel) != vectorMesonChannels.end();
+                    is_polarized_measurement = denominator_channel.find("_0") != string::npos || denominator_channel.find("_paral") != string::npos || denominator_channel.find("_perp") != string::npos;
+
+                    if (is_vector_channel)
+                    {
+                        amp0_pair = amplitude_map.at(denominator_channel + "_0");
+                        ampparal_pair = amplitude_map.at(denominator_channel + "_paral");
+                        ampperp_pair = amplitude_map.at(denominator_channel + "_perp");
+                    }
+                    else
+                    {
+                        amp_pair = amplitude_map.at(denominator_channel);
+                    }
+                    // Calculate BR for denominator
+                    if (is_vector_channel && !is_polarized_measurement)
+                    {
+                        br_denominator = CalculateBR(amp0_pair.first, amp0_pair.second, denominator_channel) +
+                                         CalculateBR(ampparal_pair.first, ampparal_pair.second, denominator_channel) +
+                                         CalculateBR(ampperp_pair.first, ampperp_pair.second, denominator_channel);
+                    }
+                    else if (is_vector_channel && is_polarized_measurement)
+                    {
+                        if (denominator_channel.find("_0") != string::npos)
+                        {
+                            br_denominator = CalculateBR(amp0_pair.first, amp0_pair.second, denominator_channel);
+                        }
+                        else if (denominator_channel.find("_paral") != string::npos)
+                        {
+                            br_denominator = CalculateBR(ampparal_pair.first, ampparal_pair.second, denominator_channel);
+                        }
+                        else if (denominator_channel.find("_perp") != string::npos)
+                        {
+                            br_denominator = CalculateBR(ampperp_pair.first, ampperp_pair.second, denominator_channel);
+                        }
+                        else
+                        {
+                            cerr << "Error: Unknown polarization in denominator channel " << denominator_channel << " for BR ratio " << key << endl;
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        br_denominator = CalculateBR(amp_pair.first, amp_pair.second, denominator_channel);
+                    }
+
+                    if (br_denominator != 0)
+                    {
+                        obs[key] = br_numerator / br_denominator;
+                    }
+                    else
+                    {
+                        cerr << "Error: Denominator BR is zero for ratio " << key << endl;
+                        continue;
+                    }
+                }
+                else
+                {
+                    cerr << "Error: Unknown BR ratio " << key << endl;
+                    continue;
+                }
+            }
+            else if (key.find("deltaA_") == 0)
+            {
+                // Check if this is one of the defined Delta A ratios
+                auto ratio_it = find_if(deltaA_ratios.begin(), deltaA_ratios.end(), [&key](const pair<string, pair<string, string>> &ratio)
+                                        { return key == ratio.first; });
+
+                if (ratio_it != deltaA_ratios.end())
+                {
+                    const string &channel1 = ratio_it->second.first;
+                    const string &channel2 = ratio_it->second.second;
+
+                    double acp1, acp2;
+
+                    is_vector_channel = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), channel1) != vectorMesonChannels.end();
+                    is_polarized_measurement = channel1.find("_0") != string::npos || channel1.find("_paral") != string::npos || channel1.find("_perp") != string::npos;
+
+                    if (is_vector_channel)
+                    {
+                        amp0_pair = amplitude_map.at(channel1 + "_0");
+                        ampparal_pair = amplitude_map.at(channel1 + "_paral");
+                        ampperp_pair = amplitude_map.at(channel1 + "_perp");
+                    }
+                    else
+                    {
+                        amp_pair = amplitude_map.at(channel1);
+                    }
+
+
+                    // Calculate ACP for channel 1
+                    if (is_vector_channel && !is_polarized_measurement)
+                    {
+                        double acp_0 = CalculateAcp(amp0_pair.first, amp0_pair.second);
+                        double acp_paral = CalculateAcp(ampparal_pair.first, ampparal_pair.second);
+                        double acp_perp = CalculateAcp(ampperp_pair.first, ampperp_pair.second);
+                        auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
+                        acp1 = acp_0 * polfracs["f_0"] + acp_paral * polfracs["f_paral"] + acp_perp * polfracs["f_perp"];
+                    }
+                    else
+                    {
+                        acp1 = CalculateAcp(amp_pair.first, amp_pair.second);
+                    }
+
+                    is_vector_channel = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), channel2) != vectorMesonChannels.end();
+                    is_polarized_measurement = channel2.find("_0") != string::npos || channel2.find("_paral") != string::npos || channel2.find("_perp") != string::npos;
+
+                    if (is_vector_channel)
+                    {
+                        amp0_pair = amplitude_map.at(channel2 + "_0");
+                        ampparal_pair = amplitude_map.at(channel2 + "_paral");
+                        ampperp_pair = amplitude_map.at(channel2 + "_perp");
+                    }
+                    else
+                    {
+                        amp_pair = amplitude_map.at(channel2);
+                    }
+
+
+                    // Calculate ACP for channel 2
+                    if (is_vector_channel && !is_polarized_measurement)
+                    {
+                        double acp_0 = CalculateAcp(amp0_pair.first, amp0_pair.second);
+                        double acp_paral = CalculateAcp(ampparal_pair.first, ampparal_pair.second);
+                        double acp_perp = CalculateAcp(ampperp_pair.first, ampperp_pair.second);
+                        auto polfracs = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
+                        acp2 = acp_0 * polfracs["f_0"] + acp_paral * polfracs["f_paral"] + acp_perp * polfracs["f_perp"];
+                    }
+                    else
+                    {
+                        acp2 = CalculateAcp(amp_pair.first, amp_pair.second);
+                    }
+                    obs[key] = acp1 - acp2;
+                }
+                else
+                {
+                    cerr << "Error: Unknown Delta A ratio " << key << endl;
+                    continue;
+                }
+            }
+            else if (key.find("Delta_delta_") == 0)
+            {
+                // Check if this is one of the defined phase differences
+                auto ratio_it = find_if(phase_differences.begin(), phase_differences.end(), [&key](const pair<string, pair<string, string>> &ratio)
+                                        { return key == ratio.first; });
+
+                if (ratio_it != phase_differences.end())
+                {
+                    const string &channel1 = ratio_it->second.first;
+                    const string &channel2 = ratio_it->second.second;
+
+                    if (regex_search(channel1, match, pattern))
+                    {
+                        basechannel = match.str();
+                        if (Debug)
+                        {
+                            cout << "Extracted base channel: " << basechannel << " from observable key: " << key << endl;
+                        }
+                    }
+                    else
+                    {
+                        cerr << "couldn't extract basechannel from " << key << endl;
+                        continue;
+                    }
+
+                    string poltype;
+                    if (channel1.find("_0") != string::npos)
+                    {
+                        poltype = "_0";
+                    }
+                    else if (channel1.find("_paral") != string::npos)
+                    {
+                        poltype = "_paral";
+                    }
+                    else if (channel1.find("_perp") != string::npos)
+                    {
+                        poltype = "_perp";
+                    }
+                    else
+                    {
+                        cerr << "Error: Unknown polarization type in " << channel1 << endl;
+                        continue;
+                    }
+
+                    double delta1, delta2;
+
+                    amp0_pair = amplitude_map.at(basechannel + "_0");
+                    ampparal_pair = amplitude_map.at(basechannel + "_paral");
+                    ampperp_pair = amplitude_map.at(basechannel + "_perp");
+
+
+                    auto pols1 = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
+                    delta1 = pols1.at("delta_" + poltype.substr(1)); // Extract the relevant delta based on polarization type
+
+                    if (regex_search(channel2, match, pattern))
+                    {
+                        basechannel = match.str();
+                        if (Debug)
+                        {
+                            cout << "Extracted base channel: " << basechannel << " from observable key: " << key << endl;
+                        }
+                    }
+                    else
+                    {
+                        cerr << "couldn't extract basechannel from " << key << endl;
+                        continue;
+                    }
+
+                    if (channel2.find("_0") != string::npos)
+                    {
+                        poltype = "_0";
+                    }
+                    else if (channel2.find("_paral") != string::npos)
+                    {
+                        poltype = "_paral";
+                    }
+                    else if (channel2.find("_perp") != string::npos)
+                    {
+                        poltype = "_perp";
+                    }
+                    else
+                    {
+                        cerr << "Error: Unknown polarization type in " << channel2 << endl;
+                        continue;
+                    }
+
+                    amp0_pair = amplitude_map.at(basechannel + "_0");
+                    ampparal_pair = amplitude_map.at(basechannel + "_paral");
+                    ampperp_pair = amplitude_map.at(basechannel + "_perp");
+                    auto pols2 = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
+                    delta2 = pols2.at("delta_" + poltype.substr(1)); // Extract the relevant delta based on polarization type
+
+                    // Calculate the phase difference and ensure it's within [-pi, pi]
+                    double delta_diff = remainder(delta1 - delta2, 2. * M_PI);
+                    obs[key] = delta_diff;
+                }
+                else
+                {                     cerr << "Error: Unknown phase difference " << key << endl;
+                    continue;
+                }
+            }
+            else
+            {
+                cerr << "Error: Unknown observable " << key << endl;
+                continue;
+            }
         }
         else
         {
-            auto it = amplitude_map.find(channelPair.first);
-            if (it == amplitude_map.end())
+            if (Debug)
             {
-                cerr << "Warning: Amplitude not found for " << channelPair.first << " in deltaA calculation" << endl;
-                continue;
+                cout << "Observable " << key << " already computed: " << obs[key] << endl;
             }
-            obs[acp_key1] = CalculateAcp(it->second.first, it->second.second);
-            ACP1 = obs[acp_key1];
-        }
-        if (obs.find(acp_key2) != obs.end())
-        {
-            ACP2 = obs[acp_key2];
-        }
-        else
-        {
-            auto it = amplitude_map.find(channelPair.second);
-            if (it == amplitude_map.end())
-            {
-                cerr << "Warning: Amplitude not found for " << channelPair.second << " in deltaA calculation" << endl;
-                continue;
-            }
-            obs[acp_key2] = CalculateAcp(it->second.first, it->second.second);
-            ACP2 = obs[acp_key2];
         }
 
-        double deltaA_predicted = ACP1 - ACP2;
-        obs[deltaAKey] = deltaA_predicted;
-
-        if (meas.find(deltaAKey) != meas.end())
+        ll_uncorr += meas_pair.second.logweight(obs[key]);
+        if (Debug)
         {
-            double observed = meas.at(deltaAKey).getMean();
-            double uncertainty = meas.at(deltaAKey).getSigma();
-            double diff = deltaA_predicted - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            cout << "Observable: " << key << " Value: " << obs[key] << " Measured: " << meas_pair.second.getMean() << " Uncertainty: " << meas_pair.second.getSigma() << " isAngle: " << meas_pair.second.getIsAngle() << endl;
         }
     }
 
@@ -3442,10 +3856,8 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
     double ll_corr = 0.0; // Initialize the log-likelihood contribution
 
     string basechannel;
-    bool skip_observable;
     for (const auto meas_pair : corrmeas)
     {
-        skip_observable = false;
         const string &key = meas_pair.first;
         const CorrelatedGaussianObservables &corrObs = meas_pair.second;
         const vector<string> &obs_names = corrmeas_channels.at(key);
@@ -3467,12 +3879,6 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                 if (pos != string::npos)
                 {
                     basechannel = obs_name.substr(pos);
-                    if (find(channels.begin(), channels.end(), basechannel) == channels.end())
-                    {
-                        // skip if channel not in the list
-                        skip_observable = true;
-                        break;
-                    }
                 }
                 else
                 {
@@ -3724,8 +4130,8 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
                     obs["f_0_" + basechannel] = pol_params.at("f_0");
                     obs["f_paral_" + basechannel] = pol_params.at("f_paral");
                     obs["f_perp_" + basechannel] = pol_params.at("f_perp");
-                    obs["delta_paral_" + basechannel] = pol_params.at("delta_paral");
-                    obs["delta_perp_" + basechannel] = pol_params.at("delta_perp");
+                    obs["delta_paral_" + basechannel] = pol_params.at("delta_paral") - pol_params.at("delta_0") ; // Store relative phases
+                    obs["delta_perp_" + basechannel] = pol_params.at("delta_perp") - pol_params.at("delta_0") ;
                 }
                 else if (obs_name.rfind("2beta", 0) == 0)
                 {
@@ -3860,10 +4266,6 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
             }
         }
 
-        if (skip_observable)
-        {
-            continue; // Skip this correlated observable if any channel was missing
-        }
         TVectorD res(corrObs.getNObs());
         for (size_t i = 0; i < corrObs.getNObs(); ++i)
         {
@@ -3871,6 +4273,8 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
             res(i) = obs[obs_name];
         }
 
+        if (Debug)
+            cout << "computing logweight for correlated gaussian observable " << meas_pair.first << endl;
         ll_corr += corrObs.logweight(res);
     }
 
@@ -3933,11 +4337,11 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
 
             if (length >= 3 && param.substr(length - 3) == "_re")
             {
-                newStr.append(param, 0, length - 3);                                                                              // Append text before "_re"
+                newStr.append(param, 0, length - 3); // Append text before "_re"
                 // strip the possible trailing "delta_" from the parameter name to get the full parameter
-                newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0);                                                            // Remove "delta_" if it exists at the start
-                obs[newStr + "_abs"] = getPar(newStr).Rho(); // Append replacement
-                obs[newStr + "_arg"] = getPar(newStr).Theta();                                            // Append replacement
+                newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0); // Remove "delta_" if it exists at the start
+                obs[newStr + "_abs"] = getPar(newStr).Rho();         // Append replacement
+                obs[newStr + "_arg"] = getPar(newStr).Theta();       // Append replacement
             }
         }
     }
@@ -3953,7 +4357,7 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
         // For CP observables, add K0s and K0l cases with the same amplitudes as Bdjpsik0
         if (channel == "Bdjpsik0")
         {
-            amplitude_map["Bdjpsik0s"] = make_pair(amplitude_map.at("Bdjpsik0").first / sqrt(2.), amplitude_map.at("Bdjpsik0").second / sqrt(2.)); 
+            amplitude_map["Bdjpsik0s"] = make_pair(amplitude_map.at("Bdjpsik0").first / sqrt(2.), amplitude_map.at("Bdjpsik0").second / sqrt(2.));
             amplitude_map["Bdjpsik0l"] = make_pair(amplitude_map.at("Bdjpsik0").first / sqrt(2.), amplitude_map.at("Bdjpsik0").second / sqrt(2.));
             //    cout << "Mapped Bdjpsik0 to Bdjpsik0s and Bdjpsik0l" << endl;
         }
@@ -4006,8 +4410,8 @@ double goldenmodesB::LogLikelihood(const vector<double> &parameters)
             obs["f_0_" + channel] = pol_params.at("f_0");
             obs["f_paral_" + channel] = pol_params.at("f_paral");
             obs["f_perp_" + channel] = pol_params.at("f_perp");
-            obs["delta_paral_" + channel] = pol_params.at("delta_paral");
-            obs["delta_perp_" + channel] = pol_params.at("delta_perp");
+            obs["delta_paral_" + channel] = pol_params.at("delta_paral") - pol_params.at("delta_0"); // Store relative phases
+            obs["delta_perp_" + channel] = pol_params.at("delta_perp") - pol_params.at("delta_0");
         }
         // Direct CP Asymmetry for charged B decays
         if (ch.first == "Bp")

@@ -23,18 +23,20 @@ public:
   CorrelatedGaussianObservables(vector<dato> v_i, const TMatrixDSym& corr_1, const TMatrixDSym& corr_2) ;
   CorrelatedGaussianObservables(vector<dato> v_i, const TMatrixDSym& corr_i) ;
   CorrelatedGaussianObservables(const CorrelatedGaussianObservables& orig)
-  :Obs(orig.getObs()),Cov(orig.getCov()) {};
+  :Obs(orig.getObs()),Cov(orig.getCov()), isAngle(orig.getIsAngle()) {};
 
   const TVectorD& getObs() const { return Obs; }
 
   const TMatrixDSym& getCov() const { return Cov; }
 
+  const vector <bool>& getIsAngle() const { return isAngle; }
   const size_t getNObs() const { return Obs.GetNoElements(); }
 
   double logweight(const TVectorD& v) const;
 
 private:
   TVectorD Obs;
+  vector <bool> isAngle;
   TMatrixDSym Cov;
 };
 

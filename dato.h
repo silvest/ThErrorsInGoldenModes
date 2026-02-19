@@ -15,34 +15,48 @@
 class dato {
 
 public:
-    dato(double ave, double sig1, double sig2 = 0., double sig3 = 0., double sig4 = 0.) {
+    dato(double ave, double sig1, double sig2 = 0., double sig3 = 0., double sig4 = 0., bool angle = false) {
         sigma1 = sig1;
         sigma2 = sig2;
         sigma3 = sig3;
         sigma4 = sig4;
         mean = ave;
         sigma = sqrt(sigma1 * sigma1 + sigma2 * sigma2 + sigma3 * sigma3 + sigma4 * sigma4);
+        isAngle = angle;
+        if (isAngle)
+            mean = remainder(mean, 2. * M_PI);
     };
 
     virtual ~dato() {
     };
 
-    double getMean() {
+    double getMean() const {
         return mean;
     };
 
-    double getSigma() {
+    double getSigma() const {
         return sigma;
     };
 
     double weight(double x) {
-        return exp(-0.5 * (x - mean)*(x - mean) / sigma / sigma);
+        if (isAngle) {
+            // For angles, compute Gaussian weight using the shortest distance on the circle
+            double delta = remainder(x - mean, 2. * M_PI); // Get the difference modulo 2*pi
+            return exp(-0.5 * delta * delta / sigma / sigma);
+        }
+        else
+            return exp(-0.5 * (x - mean)*(x - mean) / sigma / sigma);
     };
 
-
     //Peso Gaussiano del dato
-    double logweight(double x) {
-        return (-0.5 * (x - mean)*(x - mean) / sigma / sigma);
+    double logweight(double x) const {
+        if (isAngle) {
+            // For angles, compute Gaussian weight using the shortest distance on the circle
+            double delta = remainder(x - mean, 2. * M_PI); // Get the difference modulo 2*pi
+            return (-0.5 * delta * delta / sigma / sigma);
+        }
+        else
+            return (-0.5 * (x - mean)*(x - mean) / sigma / sigma);
     };
 
     double getRandom() {
@@ -73,8 +87,14 @@ public:
         return sigma4;
     }
 
+    bool getIsAngle() const
+    {
+        return isAngle;
+    }
+
 private:
     double mean, sigma, sigma1, sigma2, sigma3, sigma4;
+    bool isAngle;
 
 };
 

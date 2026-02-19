@@ -42,6 +42,10 @@ public:
         fName = newName;
     }
 
+    bool getIsAngle() const {
+        return isAngle;
+    }
+
 private:
     // member variables
     std::string fName;
@@ -49,6 +53,7 @@ private:
     double fAverage;
     double fUncertainty;
     double fScaleFactor;
+    bool isAngle; // flag to indicate if the observable is an angle
 };
 
 #endif // PDGAVERAGE_H

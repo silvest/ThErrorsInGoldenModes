@@ -8,11 +8,13 @@ CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
 
     Int_t n = v_i.size(), i=0;
     Obs.ResizeTo(n);
+    isAngle.clear();
     TVectorD Sig(n);
 
     for(vector<dato>::iterator it = v_i.begin(); it != v_i.end(); ++it) {
       Sig(i) = it->getSigma();
       Obs(i++) = it->getMean(); //equivalente a Obs(i) = it -> GetMean(); i++;
+      isAngle.push_back(it->getIsAngle());
     }
 
     Cov.ResizeTo(n, n);
@@ -47,12 +49,14 @@ CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
   {
     Int_t n = v_i.size(), i=0;
     Obs.ResizeTo(n);
+    isAngle.clear();
     TVectorD Sig1(n), Sig2(n);
 
     for(vector<dato>::iterator it = v_i.begin(); it != v_i.end(); ++it) {
       Sig1(i) = it->getSigma1();
       Sig2(i) = it->getSigma2();
       Obs(i++) = it->getMean();
+      isAngle.push_back(it->getIsAngle());
     }
 
     Cov.ResizeTo(n, n);
@@ -87,6 +91,7 @@ CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
   {
     Int_t n = v_i.size(), i=0;
     Obs.ResizeTo(n);
+    isAngle.clear();
     TVectorD Sig1(n), Sig2(n), Sig3(n);
 
     for(vector<dato>::iterator it = v_i.begin(); it != v_i.end(); ++it) {
@@ -94,6 +99,7 @@ CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
       Sig2(i) = it->getSigma2();
       Sig3(i) = it->getSigma3();
       Obs(i++) = it->getMean();
+      isAngle.push_back(it->getIsAngle());
     }
 
     Cov.ResizeTo(n, n);
@@ -133,7 +139,11 @@ double CorrelatedGaussianObservables::logweight(const TVectorD& v) const {
     }
     for(int i = 0; i < n; i++)
       for(int j = 0; j < n; j++)
-	      chisq += (v(i)-Obs(i))*Cov(i,j)*(v(j)-Obs(j));
+      {
+        double num = (isAngle[i] ? remainder(v(i) - Obs(i), 2.*M_PI) : v(i) - Obs(i));
+        num *= (isAngle[j] ? remainder(v(j) - Obs(j), 2.*M_PI) : v(j) - Obs(j));
+	      chisq += num*Cov(i,j);
+      }
 
     return(-0.5*chisq);
   }
