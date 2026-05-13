@@ -101,16 +101,26 @@ target_compile_options(mainGM PRIVATE ${BAT_CFLAGS_LIST})
 # Add BAT libraries
 separate_arguments(BAT_LIBS_LIST UNIX_COMMAND "${BAT_LIBS}")
 
-# Add link options to use libc++
-target_link_options(mainGM PRIVATE -stdlib=libc++ -L/opt/homebrew/opt/llvm/lib/c++)
-
-target_link_libraries(mainGM 
-    PRIVATE 
-    ${BAT_LIBS_LIST}
-    ${ROOT_LIBRARIES}
-    c++
-    c++abi
-)
+# Add link options to use libc++ (Clang/AppleClang only)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_link_options(mainGM PRIVATE -stdlib=libc++)
+    if(APPLE)
+        target_link_options(mainGM PRIVATE -L/opt/homebrew/opt/llvm/lib/c++)
+    endif()
+    target_link_libraries(mainGM 
+        PRIVATE 
+        ${BAT_LIBS_LIST}
+        ${ROOT_LIBRARIES}
+        c++
+        c++abi
+    )
+else()
+    target_link_libraries(mainGM 
+        PRIVATE 
+        ${BAT_LIBS_LIST}
+        ${ROOT_LIBRARIES}
+    )
+endif()
 
 # Installation rules
 install(TARGETS mainGM
