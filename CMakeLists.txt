@@ -62,6 +62,7 @@ include_directories(
 # Source files for the library
 set(LIBRARY_SOURCES
     goldenmodesB.cpp
+    goldenmodesB_indSU3.cpp
     CKM.cpp
     ModelParameter.cpp
     PDGAverage.cpp
@@ -72,6 +73,7 @@ set(LIBRARY_SOURCES
 # Header files
 set(LIBRARY_HEADERS
     goldenmodesB.h
+    goldenmodesB_indSU3.h
     CKM.h
     ModelParameter.h
     PDGAverage.h
@@ -84,6 +86,7 @@ set(LIBRARY_HEADERS
 add_executable(mainGM 
     mainGM.cpp
     goldenmodesB.cpp
+    goldenmodesB_indSU3.cpp
     CKM.cpp
     ModelParameter.cpp
     CorrelatedGaussianObservables.cpp
