@@ -97,7 +97,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
     // Enable histogramming only on rank 0; workers only evaluate LogLikelihood.
     if (mpi_rank == 0)
-        SetFlagFillHistograms(true, false);
+        SetFlagFillHistograms(true, true);
     else
         SetFlagFillHistograms(false, false);
 
