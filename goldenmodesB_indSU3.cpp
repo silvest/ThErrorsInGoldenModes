@@ -1171,6 +1171,11 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
     histos.createH1D("myphid", 500, 0.0, 0.0);
 
     histos.createH1D("LogLikelihood", 500, 0.0, 0.0);
+
+    // Create histograms for SU3-breaking ratios (one per pair)
+    for (const auto &p : su3Pairs) {
+        histos.createH1D("SU3ratio_" + p.first + "_vs_" + p.second, 500, 0., 0.);
+    }
 }
 
 
@@ -4140,6 +4145,19 @@ void goldenmodesB_indSU3::MCMCUserIterationInterface()
         {
             cerr << "Error in LogLikelihood: " << e.what() << endl;
             return;
+        }
+
+        // Compute SU3-breaking ratios and store in obs so fillh1d() picks them up
+        for (const auto &p : su3Pairs) {
+            const string hname = "SU3ratio_" + p.first + "_vs_" + p.second;
+            try {
+                TComplex A1 = getPar(p.first);
+                TComplex A2 = getPar(p.second);
+                double avg = 0.5 * (A1.Rho() + A2.Rho());
+                obs[hname] = (avg > 1e-10) ? TComplex(A1 - A2).Rho() / avg : 0.;
+            } catch (...) {
+                obs[hname] = 0.;
+            }
         }
 
         // Directly fill histograms
