@@ -102,7 +102,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         SetFlagFillHistograms(false, false);
 
     // Use lattice QCD result for theta_P
-    GetParameter("theta_P").SetPrior(make_shared<BCGaussianPrior>(-14.1 / 180.0 * M_PI, 2.8 / 180.0 * M_PI)); // in rad
+    GetParameter("theta_P").SetPrior(make_shared<BCGaussianPrior>(-15.4 / 180.0 * M_PI, 2.0 / 180.0 * M_PI)); // in rad from 2503.09895
 
     // Set Gaussian priors on EW penguin parameters (better for MCMC than a log-likelihood penalty)
     if (ewp_limit > 0.) {
@@ -2270,9 +2270,9 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
     {
         // Bs→J/ψ \bar{K}⁰: b→c(c̄d), spectator s
         amp = lam_bd_c * getPar("E2t_ccds_BJPSIP") - lam_bd_u * getPar("G2t_dcs_BJPSIP");
-        amp /= lam_bd_c; // Normalize by lam_bd_c
+        amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = lamst_bd_c * getPar("E2t_ccds_BJPSIP") - lamst_bd_u * getPar("G2t_dcs_BJPSIP");
-        ampc /= lamst_bd_c; // Normalize by lamst_bd_c
+        ampc /= lamst_bs_c; // Normalize by lamst_bs_c
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsieta8")
