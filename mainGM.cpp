@@ -88,6 +88,7 @@ int main(int argc, char* argv[]) {
     bool flagBDDb = false;
     bool Univariate = false;
     bool flagIndSU3 = false;
+    bool flagSU3ReIm = false;
 
     double dsu3_limit = 0.2;
     double ewp_limit = 0.0;
@@ -128,6 +129,8 @@ int main(int argc, char* argv[]) {
             flagIndSU3 = true;
         } else if (strcmp(argv[i], "--su3_sigma") == 0 && i + 1 < argc) {
             su3_sigma = atof(argv[++i]);
+        } else if (strcmp(argv[i], "--su3_reIm") == 0) {
+            flagSU3ReIm = true;
         } else if (strcmp(argv[i], "--help") == 0) {
             cout << "Usage: " << argv[0] << " [options]\n"
                  << "Options:\n"
@@ -143,7 +146,9 @@ int main(int argc, char* argv[]) {
                   "  --nUpdateMax value            Set max number of update iterations (default: 100)\n"
                   "  --nChains value               Set number of chains (default: 10)\n"
                   "  --Univariate                   Enable univariate mode\n"                  "  --indSU3                        Use goldenmodesB_indSU3 (independent SU(3) breaking)\n"
-                  "  --su3_sigma <value>             SU(3) sigma for indSU3 mode (default: free BAT parameter)\n"                  "  --help                          Show this help message\n";
+                  "  --su3_sigma <value>             SU(3) sigma for indSU3 mode (default: free BAT parameter)\n"
+                  "  --su3_reIm                      Use separate Re/Im SU(3) weight instead of |A1-A2|\n"
+                  "  --help                          Show this help message\n";
             return 0;
         }
     }
@@ -162,8 +167,10 @@ int main(int argc, char* argv[]) {
         cout << "dsu3_limit: " << dsu3_limit << endl;
         cout << "ewp_limit: " << ewp_limit << endl;
         cout << "indSU3 mode: " << (flagIndSU3 ? "true" : "false") << endl;
-        if (flagIndSU3)
+        if (flagIndSU3) {
             cout << "su3_sigma: " << (su3_sigma > 0. ? to_string(su3_sigma) : "free") << endl;
+            cout << "su3_reIm weight: " << (flagSU3ReIm ? "true" : "false") << endl;
+        }
         cout << "nIterationsPreRun: " << nIterationsPreRun << endl;
         cout << "nIterationsRun: " << nIterationsRun << endl;
         cout << "nIterationsPreRunFactorized: " << nIterationsPreRunFactorized << endl;
@@ -179,6 +186,7 @@ int main(int argc, char* argv[]) {
 
     if (flagIndSU3) {
         goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma);
+        model.SetSU3WeightReIm(flagSU3ReIm);
         if (mpi_rank != 0) {
             workerLoop(model);
         } else {
