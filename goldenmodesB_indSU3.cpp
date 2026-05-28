@@ -30,12 +30,13 @@ using namespace std;
 
 static CKMParameters ckm;
 
-goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in) : BCModel(), histos(obs)
+goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM) : BCModel(), histos(obs)
 {
     int mpi_rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     TH1::SetDefaultBufferSize(1000000);
     ewp_limit = ewp_limit_in;
+    ckm_gaussian_prior = gaussianCKM;
     if (su3_sigma_in > 0.) {
         su3_sigma = su3_sigma_in;
         su3_sigma_is_free = false;
@@ -103,6 +104,14 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
     // Use lattice QCD result for theta_P
     GetParameter("theta_P").SetPrior(make_shared<BCGaussianPrior>(-15.4 / 180.0 * M_PI, 2.0 / 180.0 * M_PI)); // in rad from 2503.09895
+
+    // Set Gaussian priors on CKM parameters if requested
+    if (ckm_gaussian_prior) {
+        GetParameter("CKM_Vud").SetPrior(make_shared<BCGaussianPrior>(0.97432, 0.00015));
+        GetParameter("CKM_Vcb").SetPrior(make_shared<BCGaussianPrior>(0.04118, 0.00076));
+        GetParameter("CKM_Vub").SetPrior(make_shared<BCGaussianPrior>(0.00382, 0.00034));
+        GetParameter("CKM_gamma").SetPrior(make_shared<BCGaussianPrior>(65.7/180.0 * M_PI, 2.5/180.0 * M_PI));
+    }
 
     // Set Gaussian priors on EW penguin parameters (better for MCMC than a log-likelihood penalty)
     if (ewp_limit > 0.) {

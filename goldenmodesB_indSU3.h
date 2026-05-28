@@ -44,7 +44,7 @@ using namespace std;
 class goldenmodesB_indSU3 : public BCModel
 {
 public:
-    goldenmodesB_indSU3(double &ewp_limit, bool BJPSIP = true, bool BJPSIV = true, bool BDDb = true, double su3_sigma_in = 0.3);
+    goldenmodesB_indSU3(double &ewp_limit, bool BJPSIP = true, bool BJPSIV = true, bool BDDb = true, double su3_sigma_in = 0.3, bool gaussianCKM = false);
     ~goldenmodesB_indSU3();
 
     // map to store all the parameters used in amplitudes
@@ -144,6 +144,7 @@ private:
     double su3_sigma = 0.3;    // fixed value (used when su3_sigma_is_free = false)
     bool su3_sigma_is_free = false;
     bool su3_weight_reIm = false; // if true, penalise Re and Im parts separately
+    bool ckm_gaussian_prior = false; // if true, use Gaussian priors on CKM parameters
 
     // List of adjacent SU(3)-related amplitude base-name pairs
     // (each entry is a pair of base-names, getPar() is called on each)
