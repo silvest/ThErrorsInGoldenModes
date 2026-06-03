@@ -183,6 +183,30 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
         // Correlated Measurements
 
+        // Bdjpsik0s : C and S observables from CMS-PAS-BPH-26-005
+        CorrData.push_back(dato(0.013, 0.011, 0.006)); // C observable
+        names.push_back("CBdjpsik0s");
+        CorrData.push_back(dato(0.710, 0.013, 0.009)); // S observable
+        names.push_back("SBdjpsik0s");
+
+        // Populate the correlation matrix
+        CorrStat(0, 0) = 1.;   // Variance for C
+        CorrStat(1, 1) = 1.;   // Variance for S
+        CorrStat(0, 1) = 0.27; // Correlation between C and S
+        CorrStat(1, 0) = 0.27; // Symmetric part (same as Corr(0, 1))
+
+        // Populate the correlation matrix
+        CorrSyst(0, 0) = 1.; //
+        CorrSyst(1, 1) = 1.;
+        CorrSyst(0, 1) = 0.; // Correlation between C and S
+        CorrSyst(1, 0) = 0.; // Symmetric part (same as Corr(0, 1))
+
+        // Insert correlated data into corrmeas
+        corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bdjpsik0s_CMS2026", CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+        corrmeas_channels.insert(pair<string, vector<string>>("CS_Bdjpsik0s_CMS2026", names));
+        CorrData.clear();
+        names.clear();
+
         // Bdjpsik0s : C and S observables from LHCb:2023zcp
         CorrData.push_back(dato(0.010, 0.012)); // C observable
         names.push_back("CBdjpsik0s");
@@ -454,6 +478,24 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         CorrData.clear();
         names.clear();
 
+        // Bsjpsik0s : C and S observables from CMS-PAS-BPH-26-005
+        CorrData.push_back(dato(-0.18, 0.23)); // C observable
+        names.push_back("CBsjpsik0s");
+        CorrData.push_back(dato(0., 0.19)); // S observable
+        names.push_back("SBsjpsik0s");
+
+        // Populate the correlation matrix
+        CorrStat(0, 0) = 1.;   // Variance for C
+        CorrStat(1, 1) = 1.;   // Variance for S
+        CorrStat(0, 1) = 0.03; // Correlation between C and S
+        CorrStat(1, 0) = 0.03; // Symmetric part (same as Corr(0, 1))
+
+        // Insert correlated data into corrmeas
+        corrmeas.insert(pair<string, CorrelatedGaussianObservables>("CS_Bsjpsik0s_CMS2026", CorrelatedGaussianObservables(CorrData, CorrStat, CorrSyst)));
+        corrmeas_channels.insert(pair<string, vector<string>>("CS_Bsjpsik0s_CMS2026", names));
+        CorrData.clear();
+        names.clear();
+
         /////////////////////////////
         // Bsjpsieta
         /////////////////////////////
@@ -716,14 +758,54 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
         // Ratios of BRs
         //  R_Bdjpsiom_Bdjpsirho from LHCb:2012cw
-        meas.insert(pair<string, dato>("R_Bdjpsiom_Bdjpsirho", dato(0.86, 0.19, 0.10))); // LHCb:2012cw
+        meas.insert(pair<string, dato>("R_Bdjpsiom_Bdjpsirho0", dato(0.86, 0.19, 0.10))); // LHCb:2012cw
 
-        // Transversity fractions and phases from LHCb:2014vbo
-        meas.insert(pair<string, dato>("f_0_Bdjpsiom", dato(0.405, 0.14, 0.035)));                                                   // LHCb:2014vbo
-        meas.insert(pair<string, dato>("f_paral_Bdjpsiom", dato(0.58, 0.135, 0.035)));                                               // LHCb:2014vbo
-        meas.insert(pair<string, dato>("delta_paral_Bdjpsiom-delta_0_Bdjpsirho0", dato(123.5 / 180. * M_PI, 13.7 / 180. * M_PI)));   // LHCb:2014vbo
-        meas.insert(pair<string, dato>("delta_perp_Bdjpsiom-delta_perp_Bdjpsirho0", dato(227.4 / 180. * M_PI, 84.9 / 180. * M_PI))); // LHCb:2014vbo
-        meas.insert(pair<string, dato>("delta_0_Bdjpsiom-delta_0_Bdjpsirho0", dato(268.8 / 180. * M_PI, 11.9 / 180. * M_PI)));       // LHCb:2014vbo
+        // Transversity fractions of Bdjpsiom: PDG average of LHCb:2014vbo and LHCb:2026pbn
+        data.push_back(dato(0.405, 0.14, 0.035)); // LHCb:2014vbo
+        data.push_back(dato(0.671, 0.078));        // LHCb:2026pbn
+        pdgaverage.setData(data);
+        pdgaverage.setName("f_0_Bdjpsiom");
+        pdgaverage.CalculateAverage();
+        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+        data.clear();
+
+        data.push_back(dato(0.58, 0.135, 0.035)); // LHCb:2014vbo
+        data.push_back(dato(0.181, 0.078));         // LHCb:2026pbn
+        pdgaverage.setData(data);
+        pdgaverage.setName("f_paral_Bdjpsiom");
+        pdgaverage.CalculateAverage();
+        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
+        data.clear();
+        meas.insert(pair<string, dato>("A_0_Bdjpsiom_over_A_0_Bdjpsirho0", dato(0.023, 0.002)));                                    // LHCb:2026pbn
+        meas.insert(pair<string, dato>("A_paral_Bdjpsiom_over_A_0_Bdjpsirho0", dato(0.012, 0.003)));                                // LHCb:2026pbn
+        meas.insert(pair<string, dato>("A_perp_Bdjpsiom_over_A_0_Bdjpsirho0", dato(0.011, 0.003)));                                // LHCb:2026pbn
+        meas.insert(pair<string, dato>("delta_paral_Bdjpsirho0", dato(164.1 / 180. * M_PI, 4.5 / 180. * M_PI))); // LHCb:2026pbn
+        meas.insert(pair<string, dato>("delta_perp_Bdjpsirho0", dato(176.8 / 180. * M_PI, 5.7 / 180. * M_PI)));   // LHCb:2026pbn
+
+
+        data.push_back(dato(123.5 / 180. * M_PI, 13.7 / 180. * M_PI)); // LHCb:2014vbo
+        data.push_back(dato(98.2 / 180. * M_PI, 14.1 / 180. * M_PI));    // LHCb:2026pbn
+        pdgaverage.setData(data);
+        pdgaverage.setName("delta_paral_Bdjpsiom-delta_0_Bdjpsirho0");
+        pdgaverage.CalculateAverage();
+        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty()))); // Average of LHCb:2014vbo and LHCb:2026pbn for the phase difference in Bdjpsirho0
+        data.clear();
+
+        data.push_back(dato(273.5 / 180. * M_PI, 14.6 / 180. * M_PI));    // LHCb:2026pbn
+        data.push_back(dato(227.4 / 180. * M_PI, 84.9 / 180. * M_PI)); // LHCb:2014vbo
+        pdgaverage.setData(data);
+        pdgaverage.setName("delta_perp_Bdjpsiom-delta_perp_Bdjpsirho0");
+        pdgaverage.CalculateAverage();
+        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty()))); // Average of LHCb:2014vbo and LHCb:2026pbn for the phase difference in Bdjpsiom
+        data.clear();
+
+        data.push_back(dato(268.8 / 180. * M_PI, 11.9 / 180. * M_PI));       // LHCb:2014vbo
+        data.push_back(dato(279.1 / 180. * M_PI, 6.0 / 180. * M_PI));        // LHCb:2026pbn
+        pdgaverage.setData(data);
+        pdgaverage.setName("delta_0_Bdjpsiom-delta_0_Bdjpsirho0");
+        pdgaverage.CalculateAverage();
+        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty()))); // Average of LHCb:2014vbo and LHCb:2026pbn for the phase difference in Bdjpsiom
+        data.clear();
 
         /////////////////////////////
         // Bdjpsikst0
@@ -871,7 +953,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
         data.clear();
 
-        // CP violation for the different polarizations of Bdjpsirho0 from LHCb:2014xpr
+        // CP violation for the different polarizations of Bdjpsirho0 from LHCb:2014xpr (Run I)
 
         CorrData.push_back(dato(-0.047, 0.034, 0.011)); // Alpha_0
         names.push_back("alpha_CP_0_Bdjpsirho0");
@@ -880,9 +962,9 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         CorrData.push_back(dato(0.020, 0.109, 0.018)); // Alpha_perp
         names.push_back("alpha_CP_perp_Bdjpsirho0");
         CorrData.push_back(dato(-3.3 / 180. * M_PI, 7.2 / 180. * M_PI, 1.7 / 180. * M_PI)); // 2beta_perp - 2beta_0
-        names.push_back("2beta_perp_Bdjpsirho0");
+        names.push_back("delta2beta_perp_Bdjpsirho0");
         CorrData.push_back(dato(-0.5 / 180. * M_PI, 6.5 / 180. * M_PI, 1.6 / 180. * M_PI)); // 2beta_paral - 2beta_0
-        names.push_back("2beta_paral_Bdjpsirho0");
+        names.push_back("delta2beta_paral_Bdjpsirho0");
         CorrData.push_back(dato(42.1 / 180. * M_PI, 10.2 / 180. * M_PI, 5.0 / 180. * M_PI)); // 2beta_0
         names.push_back("2beta_0_Bdjpsirho0");
         // Populate the correlation matrix
@@ -915,6 +997,53 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         corrmeas_channels.insert(pair<string, vector<string>>("Bdjpsirh_LHCb2014xpr", names));
         CorrData.clear();
         names.clear();
+
+        // CP violation for the different polarizations of Bdjpsirho0 from LHCb:2026pbn (Run II)
+
+        CorrData.push_back(dato(0.706, 0.086, 0.035)); // 2beta_0
+        names.push_back("2beta_0_Bdjpsirho0");
+        CorrData.push_back(dato(0.674, 0.097, 0.027)); // 2beta_paral
+        names.push_back("2beta_paral_Bdjpsirho0");
+        CorrData.push_back(dato(0.696, 0.096, 0.032)); // 2beta_perp
+        names.push_back("2beta_perp_Bdjpsirho0");
+        CorrData.push_back(dato(1.004, 0.045, 0.012)); // Lambda_0
+        names.push_back("lambda_0_Bdjpsirho0");
+        CorrData.push_back(dato(0.996, 0.072, 0.013)); // Lambda_paral
+        names.push_back("lambda_paral_Bdjpsirho0");
+        CorrData.push_back(dato(1.203, 0.154, 0.045)); // Lambda_perp
+        names.push_back("lambda_perp_Bdjpsirho0");
+        // Populate the correlation matrix
+        TMatrixDSym CorrBdjpsirh(6);
+
+        CorrBdjpsirh(0, 0) = 1.;
+        CorrBdjpsirh(0, 1) = CorrBdjpsirh(1, 0) = 0.784;
+        CorrBdjpsirh(0, 2) = CorrBdjpsirh(2, 0) = 0.767;
+        CorrBdjpsirh(0, 3) = CorrBdjpsirh(3, 0) = 0.311;
+        CorrBdjpsirh(0, 4) = CorrBdjpsirh(4, 0) = -0.021;
+        CorrBdjpsirh(0, 5) = CorrBdjpsirh(5, 0) = 0.027;
+        CorrBdjpsirh(1, 1) = 1.;
+        CorrBdjpsirh(1, 2) = CorrBdjpsirh(2, 1) = 0.830;
+        CorrBdjpsirh(1, 3) = CorrBdjpsirh(3, 1) = 0.094;
+        CorrBdjpsirh(1, 4) = CorrBdjpsirh(4, 1) = 0.036;
+        CorrBdjpsirh(1, 5) = CorrBdjpsirh(5, 1) = -0.070;
+        CorrBdjpsirh(2, 2) = 1.;
+        CorrBdjpsirh(2, 3) = CorrBdjpsirh(3, 2) = 0.095;
+        CorrBdjpsirh(2, 4) = CorrBdjpsirh(4, 2) = 0.108;
+        CorrBdjpsirh(2, 5) = CorrBdjpsirh(5, 2) = -0.097;
+        CorrBdjpsirh(3, 3) = 1.;
+        CorrBdjpsirh(3, 4) = CorrBdjpsirh(4, 3) = -0.074;
+        CorrBdjpsirh(3, 5) = CorrBdjpsirh(5, 3) = 0.105;
+        CorrBdjpsirh(4, 4) = 1.;
+        CorrBdjpsirh(4, 5) = CorrBdjpsirh(5, 4) = -0.388;
+        CorrBdjpsirh(5, 5) = 1.;
+
+        // Insert correlated data into corrmeas
+        corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bdjpsirh_LHCb2026pbn", CorrelatedGaussianObservables(CorrData, CorrBdjpsirh)));
+        corrmeas_channels.insert(pair<string, vector<string>>("Bdjpsirh_LHCb2026pbn", names));
+        CorrData.clear();
+        names.clear();
+
+
 
         /////////////////////////////
         // BdJpsiphi
@@ -965,7 +1094,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
     {
 
         //----------------------------------------------------------------------
-        // B→DD channels (control modes for penguin analysis)
+        // B→DD channels 
         //----------------------------------------------------------------------
 
         // BRBddpdm (Bd→D⁺D⁻)
@@ -1027,6 +1156,11 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
         meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
         data.clear();
+
+        //ACPBddspdm (B⁰→D_s⁺D⁻)
+        meas.insert(pair<string, dato>("ACPBddspdm", dato(0.0009,0.0053,0.0040))); //LHCb:2603.28132
+        //ACPBsdpdsm (Bs→D⁺D_s⁻)
+        meas.insert(pair<string, dato>("ACPBsdpdsm", dato(0.103,0.053,0.010))); //LHCb:2603.28132
 
         //----------------------------------------------------------------------
         // B→DD Correlated CP measurements
@@ -1196,7 +1330,6 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
     double limit1 = 0.;
 
     // We take as reference channels the golden ones: B→J/ψK0, Bs→J/ψφ, Bs->Ds+Ds-
-    // all other channels will have parameters defined relative to these ones including SU(3) breaking
     // We choose the dominant amplitude of the reference channels to be real and positive
 
     if (channel == "Bdjpsik0")
@@ -1506,14 +1639,30 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             "G4t_css_BJPSIV_perp_im"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccss_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("E2t_ccss_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("G2t_scs_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G2t_scs_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("G4t_css_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G4t_css_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_paral_re", 0., 10.);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_paral_im", 0., 0.);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G2t_scs_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G2t_scs_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G2t_scs_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G2t_scs_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G2t_scs_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G2t_scs_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G4t_css_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G4t_css_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G4t_css_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G4t_css_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G4t_css_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G4t_css_BJPSIV_perp_im", -10., 10.);
     }
     else if (channel == "Bsjpsiom")
     {
@@ -1543,19 +1692,35 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             "EA2_ddcs_BVJPSI_perp_re",
             "EA2_ddcs_BVJPSI_perp_im"};
         channelParameters[channel] = params;
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("EA2t_ccds_BJPSIV", "EA2t_ccss_BJPSIV", true);
-        addAmplitudeParameter("G4t_cds_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G4t_cds_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("G4t_cds_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("G4t_cds_BJPSIV", "G4t_css_BJPSIV", true);
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.), true);
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_0_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_0_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP4EW_ucs_BVJPSI_0");
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_paral_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_paral_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP4EW_ucs_BVJPSI_paral");
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_perp_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_perp_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP4EW_ucs_BVJPSI_perp");
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.), true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -10., 10., true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -10., 10., true);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_0_re", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_0_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_paral_re", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_paral_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_perp_re", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_perp_im", -10., 10.);
     }
     else if (channel == "Bsjpsikbst0")
     {
@@ -1574,11 +1739,19 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             "G2t_dcs_BJPSIV_perp_im"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccds_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("E2t_ccds_BJPSIV", "E2t_ccss_BJPSIV", true);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("G2t_dcs_BJPSIV", "G2t_scs_BJPSIV", true);
     }
     else if (channel == "Bsjpsirho0")
@@ -1598,10 +1771,21 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             "EA2_ddcs_BVJPSI_perp_im"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.), true);
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.), true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_re", -10., 10., true);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_im", -10., 10., true);
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_0_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_0_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        registerEWP("dP4EW_ucs_BVJPSI_0");
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_paral_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_paral_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        registerEWP("dP4EW_ucs_BVJPSI_paral");
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_perp_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_perp_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        registerEWP("dP4EW_ucs_BVJPSI_perp");
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_0_re", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_0_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_paral_re", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_paral_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_perp_re", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_perp_im", -10., 10.);
     }
     else if (channel == "Bdjpsiom")
     {
@@ -1669,34 +1853,74 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
 
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccds_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("E2t_ccdd_BJPSIV", "E2t_ccds_BJPSIV", true);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("G2t_dcd_BJPSIV", "G2t_dcs_BJPSIV", true);
-        addAmplitudeParameter("dP4EW_ucd_BVJPSI_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.), true);
-        addAmplitudeParameter("dP4EW_ucd_BVJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.), true);
+        addAmplitudeParameter("dP4EW_ucd_BVJPSI_0_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucd_BVJPSI_0_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP4EW_ucd_BVJPSI_0");
+        addAmplitudeParameter("dP4EW_ucd_BVJPSI_paral_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucd_BVJPSI_paral_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP4EW_ucd_BVJPSI_paral");
+        addAmplitudeParameter("dP4EW_ucd_BVJPSI_perp_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucd_BVJPSI_perp_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP4EW_ucd_BVJPSI_perp");
         addSU3Pair("dP4EW_ucd_BVJPSI", "dP4EW_ucs_BVJPSI", true);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("EA2t_ccdd_BJPSIV", "EA2t_ccds_BJPSIV", true);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_re", -10., 10., true);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_im", -10., 10., true);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_0_re", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_0_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_paral_re", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_paral_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_perp_re", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_perp_im", -10., 10.);
         addSU3Pair("EA2_ddcd_BVJPSI", "EA2_ddcs_BVJPSI", true);
-        addAmplitudeParameter("G4t_cds_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G4t_cds_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("G4t_cdd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G4t_cdd_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("G4t_cds_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G4t_cdd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G4t_cdd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G4t_cdd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G4t_cdd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G4t_cdd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G4t_cdd_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("G4t_cdd_BJPSIV", "G4t_cds_BJPSIV", true);
     }
     else if (channel == "Bdjpsikst0")
@@ -1715,11 +1939,19 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             "G2t_scd_BJPSIV_perp_re",
             "G2t_scd_BJPSIV_perp_im"};
         channelParameters[channel] = params;
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_re", 0., 10., true);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_im", 0., 0., true);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("E2t_ccsd_BJPSIV", "E2t_ccss_BJPSIV", true);
-        addAmplitudeParameter("G2t_scd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G2t_scd_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("G2t_scd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("G2t_scd_BJPSIV", "G2t_scs_BJPSIV", true);
     }
     else if (channel == "Bdjpsirho0")
@@ -1757,18 +1989,38 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             "G2t_dcd_BJPSIV_perp_im"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("E2t_ccdd_BJPSIV", "E2t_ccsd_BJPSIV", true);
         // [skip orphan: P4EW_ucd_BVJPSI]
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_re", -10., 10., true);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_im", -10., 10., true);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_0_re", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_0_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_paral_re", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_paral_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_perp_re", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_perp_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_im", -10., 10.);
     }
     else if (channel == "Bdjpsiphi")
     {
@@ -1787,11 +2039,19 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             "G4t_csd_BJPSIV_perp_im"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("EA2t_ccsd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("EA2t_ccsd_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("EA2t_ccsd_BJPSIV", "EA2t_ccss_BJPSIV", true);
-        addAmplitudeParameter("G4t_csd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G4t_csd_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("G4t_csd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G4t_csd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G4t_csd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G4t_csd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G4t_csd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G4t_csd_BJPSIV_perp_im", -10., 10.);
         addSU3Pair("G4t_csd_BJPSIV", "G4t_css_BJPSIV", true);
     }
     else if (channel == "Bpjpsikstp")
@@ -1824,17 +2084,33 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
 
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("dP2EW_scu_BJPSIV_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.), true);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("dP2EW_scu_BJPSIV_0_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP2EW_scu_BJPSIV_0_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP2EW_scu_BJPSIV_0");
+        addAmplitudeParameter("dP2EW_scu_BJPSIV_paral_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP2EW_scu_BJPSIV_paral_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP2EW_scu_BJPSIV_paral");
+        addAmplitudeParameter("dP2EW_scu_BJPSIV_perp_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP2EW_scu_BJPSIV_perp_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP2EW_scu_BJPSIV_perp");
-        addAmplitudeParameter("dP2EW_scu_BJPSIV_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.), true);
-        addAmplitudeParameter("EA1_sdcd_BVJPSI_re", -10., 10., true);
-        addAmplitudeParameter("EA1_sdcd_BVJPSI_im", -10., 10., true);
-        addAmplitudeParameter("G2t_scd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G2t_scd_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_0_re", -10., 10.);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_0_im", -10., 10.);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_paral_re", -10., 10.);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_paral_im", -10., 10.);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_perp_re", -10., 10.);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_perp_im", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_perp_im", -10., 10.);
     }
     else if (channel == "Bpjpsirhop")
     {
@@ -1878,23 +2154,47 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
 
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("dP2EW_dcu_BJPSIV_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.), true);
-        addAmplitudeParameter("dP2EW_dcu_BJPSIV_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.), true);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("dP2EW_dcu_BJPSIV_0_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP2EW_dcu_BJPSIV_0_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP2EW_dcu_BJPSIV_0");
+        addAmplitudeParameter("dP2EW_dcu_BJPSIV_paral_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP2EW_dcu_BJPSIV_paral_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP2EW_dcu_BJPSIV_paral");
+        addAmplitudeParameter("dP2EW_dcu_BJPSIV_perp_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP2EW_dcu_BJPSIV_perp_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP2EW_dcu_BJPSIV_perp");
         addSU3Pair("dP2EW_dcu_BJPSIV", "dP2EW_scu_BJPSIV", true);
-        addAmplitudeParameter("EA1_ddcd_BVJPSI_re", -10., 10., true);
-        addAmplitudeParameter("EA1_ddcd_BVJPSI_im", -10., 10., true);
+        addAmplitudeParameter("EA1_ddcd_BVJPSI_0_re", -10., 10.);
+        addAmplitudeParameter("EA1_ddcd_BVJPSI_0_im", -10., 10.);
+        addAmplitudeParameter("EA1_ddcd_BVJPSI_paral_re", -10., 10.);
+        addAmplitudeParameter("EA1_ddcd_BVJPSI_paral_im", -10., 10.);
+        addAmplitudeParameter("EA1_ddcd_BVJPSI_perp_re", -10., 10.);
+        addAmplitudeParameter("EA1_ddcd_BVJPSI_perp_im", -10., 10.);
         addSU3Pair("EA1_ddcd_BVJPSI", "EA1_sdcd_BVJPSI", true);
-        addAmplitudeParameter("G2t_scd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G2t_scd_BJPSIV_im", -10., 10., true);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_re", -10., 10., true);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_im", -10., 10., true);
+        addAmplitudeParameter("G2t_scd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_0_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_0_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_re", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_im", -10., 10.);
     }
     else if (channel == "Bsdspdsm")
     {
@@ -3254,6 +3554,46 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
             double diff = br_predicted - observed;
             ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
         }
+
+        // **Compute polarization fractions and phases for vector meson channels**
+        if (is_vector_channel)
+        {
+            auto pol_params = CalculatePolarizations(amp0_pair, ampparal_pair, ampperp_pair);
+            obs["f_0_" + channel]       = pol_params.at("f_0");
+            obs["f_paral_" + channel]   = pol_params.at("f_paral");
+            obs["f_perp_" + channel]    = pol_params.at("f_perp");
+            obs["delta_paral_" + channel] = pol_params.at("delta_paral");
+            obs["delta_perp_" + channel]  = pol_params.at("delta_perp");
+
+            for (const string &frac_key : {"f_0_" + channel, "f_paral_" + channel, "f_perp_" + channel})
+            {
+                if (meas.find(frac_key) != meas.end())
+                {
+                    double observed    = meas.at(frac_key).getMean();
+                    double uncertainty = meas.at(frac_key).getSigma();
+                    double diff = obs.at(frac_key) - observed;
+                    ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+                }
+            }
+
+            // Phase differences relative to delta_0 (i.e. delta_paral and delta_perp)
+            string delta_paral_key = "delta_paral_" + channel;
+            if (meas.find(delta_paral_key) != meas.end())
+            {
+                double observed    = meas.at(delta_paral_key).getMean();
+                double uncertainty = meas.at(delta_paral_key).getSigma();
+                double diff = obs.at("delta_paral_" + channel) - observed;
+                ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            }
+            string delta_perp_key = "delta_perp_" + channel;
+            if (meas.find(delta_perp_key) != meas.end())
+            {
+                double observed    = meas.at(delta_perp_key).getMean();
+                double uncertainty = meas.at(delta_perp_key).getSigma();
+                double diff = obs.at("delta_perp_" + channel) - observed;
+                ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            }
+        }
     }
 
     // **Handle BR Ratios (`R_`)**
@@ -3265,7 +3605,6 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
         {"R_Bdjpsietap_Bsjpsietap", {"Bdjpsietap", "Bsjpsietap"}},
         {"R_Bdjpsietap_Bdjpsieta", {"Bdjpsietap", "Bdjpsieta"}},
         {"R_Bsjpsieta_Bsjpsiphi", {"Bsjpsieta", "Bsjpsiphi"}},
-        {"R_Bsjpsietap_Bsjpsieta", {"Bsjpsietap", "Bsjpsieta"}},
         {"R_Bsjpsietap_Bsjpsieta", {"Bsjpsietap", "Bsjpsieta"}},
         {"R_Bsjpsietap_Bsjpsiphi", {"Bsjpsietap", "Bsjpsiphi"}}};
 
@@ -3443,6 +3782,124 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
             double uncertainty = meas.at(deltaAKey).getSigma();
             double diff = deltaA_predicted - observed;
             ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+        }
+    }
+
+    // **Handle cross-channel Bdjpsiom/Bdjpsirho0 phase differences and amplitude ratios**
+    if (find(channels.begin(), channels.end(), "Bdjpsiom") != channels.end() &&
+        find(channels.begin(), channels.end(), "Bdjpsirho0") != channels.end())
+    {
+        auto it0_om    = amplitude_map.find("Bdjpsiom_0");
+        auto itpa_om   = amplitude_map.find("Bdjpsiom_paral");
+        auto itpe_om   = amplitude_map.find("Bdjpsiom_perp");
+        auto it0_rho   = amplitude_map.find("Bdjpsirho0_0");
+        auto itpa_rho  = amplitude_map.find("Bdjpsirho0_paral");
+        auto itpe_rho  = amplitude_map.find("Bdjpsirho0_perp");
+
+        if (it0_om  != amplitude_map.end() && itpa_om  != amplitude_map.end() && itpe_om  != amplitude_map.end() &&
+            it0_rho != amplitude_map.end() && itpa_rho != amplitude_map.end() && itpe_rho != amplitude_map.end())
+        {
+            // CP-averaged phases for each polarization and channel
+            auto cpPhase = [](const pair<TComplex, TComplex> &p) {
+                return remainder((p.first.Theta() + p.second.Theta()) / 2., 2. * M_PI);
+            };
+            // CP-averaged squared norms
+            auto cpNorm = [](const pair<TComplex, TComplex> &p) {
+                return 0.5 * (p.first.Rho2() + p.second.Rho2());
+            };
+
+            double phase_0_om   = cpPhase(it0_om->second);
+            double phase_pa_om  = cpPhase(itpa_om->second);
+            double phase_pe_om  = cpPhase(itpe_om->second);
+            double phase_0_rho  = cpPhase(it0_rho->second);
+            double phase_pe_rho = cpPhase(itpe_rho->second);
+
+            double norm_0_om  = cpNorm(it0_om->second);
+            double norm_pa_om = cpNorm(itpa_om->second);
+            double norm_pe_om = cpNorm(itpe_om->second);
+            double norm_0_rho = cpNorm(it0_rho->second);
+
+            // Phase differences
+            struct { string key; double value; } phase_diffs[] = {
+                {"delta_0_Bdjpsiom-delta_0_Bdjpsirho0",           remainder(phase_0_om  - phase_0_rho,  2. * M_PI)},
+                {"delta_paral_Bdjpsiom-delta_0_Bdjpsirho0",       remainder(phase_pa_om - phase_0_rho,  2. * M_PI)},
+                {"delta_perp_Bdjpsiom-delta_perp_Bdjpsirho0",     remainder(phase_pe_om - phase_pe_rho, 2. * M_PI)},
+            };
+            for (const auto &pd : phase_diffs)
+            {
+                obs[pd.key] = pd.value;
+                if (meas.find(pd.key) != meas.end())
+                {
+                    double observed    = meas.at(pd.key).getMean();
+                    double uncertainty = meas.at(pd.key).getSigma();
+                    double diff = pd.value - observed;
+                    ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+                }
+            }
+
+            // Amplitude ratios (CP-averaged magnitudes, no phase space or CKM factors)
+            if (norm_0_rho > 0.)
+            {
+                struct { string key; double value; } amp_ratios[] = {
+                    {"A_0_Bdjpsiom_over_A_0_Bdjpsirho0",    sqrt(norm_0_om  / norm_0_rho)},
+                    {"A_paral_Bdjpsiom_over_A_0_Bdjpsirho0", sqrt(norm_pa_om / norm_0_rho)},
+                    {"A_perp_Bdjpsiom_over_A_0_Bdjpsirho0",  sqrt(norm_pe_om / norm_0_rho)},
+                };
+                for (const auto &ar : amp_ratios)
+                {
+                    obs[ar.key] = ar.value;
+                    if (meas.find(ar.key) != meas.end())
+                    {
+                        double observed    = meas.at(ar.key).getMean();
+                        double uncertainty = meas.at(ar.key).getSigma();
+                        double diff = ar.value - observed;
+                        ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+                    }
+                }
+            }
+        }
+    }
+
+    // **Handle ACP of polarization fractions and phases for Bdjpsikst0**
+    if (find(channels.begin(), channels.end(), "Bdjpsikst0") != channels.end())
+    {
+        auto it0   = amplitude_map.find("Bdjpsikst0_0");
+        auto itpa  = amplitude_map.find("Bdjpsikst0_paral");
+        auto itpe  = amplitude_map.find("Bdjpsikst0_perp");
+
+        if (it0 != amplitude_map.end() && itpa != amplitude_map.end() && itpe != amplitude_map.end())
+        {
+            // B amplitudes (.first) and Bbar amplitudes (.second)
+            double norm_B    = it0->second.first.Rho2()  + itpa->second.first.Rho2()  + itpe->second.first.Rho2();
+            double norm_Bbar = it0->second.second.Rho2() + itpa->second.second.Rho2() + itpe->second.second.Rho2();
+
+            double f_paral_B    = itpa->second.first.Rho2()  / norm_B;
+            double f_paral_Bbar = itpa->second.second.Rho2() / norm_Bbar;
+            double f_perp_B     = itpe->second.first.Rho2()  / norm_B;
+            double f_perp_Bbar  = itpe->second.second.Rho2() / norm_Bbar;
+
+            double delta_paral_B    = remainder(itpa->second.first.Theta()  - it0->second.first.Theta(),  2. * M_PI);
+            double delta_paral_Bbar = remainder(itpa->second.second.Theta() - it0->second.second.Theta(), 2. * M_PI);
+            double delta_perp_B     = remainder(itpe->second.first.Theta()  - it0->second.first.Theta(),  2. * M_PI);
+            double delta_perp_Bbar  = remainder(itpe->second.second.Theta() - it0->second.second.Theta(), 2. * M_PI);
+
+            struct { string key; double value; } acp_pols[] = {
+                {"ACP_fparal_Bdjpsikst0",       (f_paral_Bbar    - f_paral_B)    / (f_paral_Bbar    + f_paral_B)},
+                {"ACP_fperp_Bdjpsikst0",        (f_perp_Bbar     - f_perp_B)     / (f_perp_Bbar     + f_perp_B)},
+                {"ACP_delta_paral_Bdjpsikst0",  (delta_paral_Bbar - delta_paral_B) / (delta_paral_Bbar + delta_paral_B)},
+                {"ACP_delta_perp_Bdjpsikst0",   (delta_perp_Bbar  - delta_perp_B)  / (delta_perp_Bbar  + delta_perp_B)},
+            };
+            for (const auto &ap : acp_pols)
+            {
+                obs[ap.key] = ap.value;
+                if (meas.find(ap.key) != meas.end())
+                {
+                    double observed    = meas.at(ap.key).getMean();
+                    double uncertainty = meas.at(ap.key).getSigma();
+                    double diff = ap.value - observed;
+                    ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+                }
+            }
         }
     }
 
@@ -3760,16 +4217,14 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
                         else if (obs_name.find("_paral") != string::npos)
                         {
                             auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
-                            auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
-                            twobeta_pol = remainder(get<0>(phi_lambda_paral) - get<0>(phi_lambda_0), 2. * M_PI);
-                            delta_twobeta_pol = remainder(get<2>(phi_lambda_paral) + get<2>(phi_lambda_0), 2. * M_PI);
+                            twobeta_pol = get<0>(phi_lambda_paral);
+                            delta_twobeta_pol = get<2>(phi_lambda_paral);
                         }
                         else if (obs_name.find("_perp") != string::npos)
                         {
                             auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
-                            auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
-                            twobeta_pol = remainder(get<0>(phi_lambda_perp) - get<0>(phi_lambda_0), 2. * M_PI);
-                            delta_twobeta_pol = remainder(get<2>(phi_lambda_perp) + get<2>(phi_lambda_0), 2. * M_PI);
+                            twobeta_pol = get<0>(phi_lambda_perp);
+                            delta_twobeta_pol = get<2>(phi_lambda_perp);
                         }
                         else
                         {
@@ -3788,6 +4243,38 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
 
                         obs[obs_name] = phi_s;
                         obs["Delta" + obs_name] = delta_phi_s;
+                    }
+                }
+                else if (obs_name.rfind("delta2beta", 0) == 0)
+                {
+                    if (is_vector_channel && is_polarized_measurement)
+                    {
+                        double delta_twobeta_pol, delta_delta_twobeta_pol;
+                        if (obs_name.find("_paral") != string::npos)
+                        {
+                            auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
+                            auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
+                            delta_twobeta_pol = remainder(get<0>(phi_lambda_paral) - get<0>(phi_lambda_0), 2. * M_PI);
+                            delta_delta_twobeta_pol = remainder(get<2>(phi_lambda_paral) + get<2>(phi_lambda_0), 2. * M_PI);
+                        }
+                        else if (obs_name.find("_perp") != string::npos)
+                        {
+                            auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
+                            auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
+                            delta_twobeta_pol = remainder(get<0>(phi_lambda_perp) - get<0>(phi_lambda_0), 2. * M_PI);
+                            delta_delta_twobeta_pol = remainder(get<2>(phi_lambda_perp) + get<2>(phi_lambda_0), 2. * M_PI);
+                        }
+                        else
+                        {
+                            cerr << "Error: Unknown polarization in " << obs_name << endl;
+                            continue;
+                        }
+                        obs[obs_name] = delta_twobeta_pol;
+                        obs["Delta" + obs_name] = delta_delta_twobeta_pol;
+                    }
+                    else
+                    {
+                        cerr << "Error: delta2beta observable only implemented for polarized vector meson channels: " << basechannel << endl;
                     }
                 }
                 else if (obs_name.rfind("alpha_", 0) == 0)
