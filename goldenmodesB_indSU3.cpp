@@ -1013,32 +1013,32 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         CorrData.push_back(dato(1.203, 0.154, 0.045)); // Lambda_perp
         names.push_back("lambda_perp_Bdjpsirho0");
         // Populate the correlation matrix
-        TMatrixDSym CorrBdjpsirh(6);
+        TMatrixDSym CorrBdjpsirh_pbn(6);
 
-        CorrBdjpsirh(0, 0) = 1.;
-        CorrBdjpsirh(0, 1) = CorrBdjpsirh(1, 0) = 0.784;
-        CorrBdjpsirh(0, 2) = CorrBdjpsirh(2, 0) = 0.767;
-        CorrBdjpsirh(0, 3) = CorrBdjpsirh(3, 0) = 0.311;
-        CorrBdjpsirh(0, 4) = CorrBdjpsirh(4, 0) = -0.021;
-        CorrBdjpsirh(0, 5) = CorrBdjpsirh(5, 0) = 0.027;
-        CorrBdjpsirh(1, 1) = 1.;
-        CorrBdjpsirh(1, 2) = CorrBdjpsirh(2, 1) = 0.830;
-        CorrBdjpsirh(1, 3) = CorrBdjpsirh(3, 1) = 0.094;
-        CorrBdjpsirh(1, 4) = CorrBdjpsirh(4, 1) = 0.036;
-        CorrBdjpsirh(1, 5) = CorrBdjpsirh(5, 1) = -0.070;
-        CorrBdjpsirh(2, 2) = 1.;
-        CorrBdjpsirh(2, 3) = CorrBdjpsirh(3, 2) = 0.095;
-        CorrBdjpsirh(2, 4) = CorrBdjpsirh(4, 2) = 0.108;
-        CorrBdjpsirh(2, 5) = CorrBdjpsirh(5, 2) = -0.097;
-        CorrBdjpsirh(3, 3) = 1.;
-        CorrBdjpsirh(3, 4) = CorrBdjpsirh(4, 3) = -0.074;
-        CorrBdjpsirh(3, 5) = CorrBdjpsirh(5, 3) = 0.105;
-        CorrBdjpsirh(4, 4) = 1.;
-        CorrBdjpsirh(4, 5) = CorrBdjpsirh(5, 4) = -0.388;
-        CorrBdjpsirh(5, 5) = 1.;
+        CorrBdjpsirh_pbn(0, 0) = 1.;
+        CorrBdjpsirh_pbn(0, 1) = CorrBdjpsirh_pbn(1, 0) = 0.784;
+        CorrBdjpsirh_pbn(0, 2) = CorrBdjpsirh_pbn(2, 0) = 0.767;
+        CorrBdjpsirh_pbn(0, 3) = CorrBdjpsirh_pbn(3, 0) = 0.311;
+        CorrBdjpsirh_pbn(0, 4) = CorrBdjpsirh_pbn(4, 0) = -0.021;
+        CorrBdjpsirh_pbn(0, 5) = CorrBdjpsirh_pbn(5, 0) = 0.027;
+        CorrBdjpsirh_pbn(1, 1) = 1.;
+        CorrBdjpsirh_pbn(1, 2) = CorrBdjpsirh_pbn(2, 1) = 0.830;
+        CorrBdjpsirh_pbn(1, 3) = CorrBdjpsirh_pbn(3, 1) = 0.094;
+        CorrBdjpsirh_pbn(1, 4) = CorrBdjpsirh_pbn(4, 1) = 0.036;
+        CorrBdjpsirh_pbn(1, 5) = CorrBdjpsirh_pbn(5, 1) = -0.070;
+        CorrBdjpsirh_pbn(2, 2) = 1.;
+        CorrBdjpsirh_pbn(2, 3) = CorrBdjpsirh_pbn(3, 2) = 0.095;
+        CorrBdjpsirh_pbn(2, 4) = CorrBdjpsirh_pbn(4, 2) = 0.108;
+        CorrBdjpsirh_pbn(2, 5) = CorrBdjpsirh_pbn(5, 2) = -0.097;
+        CorrBdjpsirh_pbn(3, 3) = 1.;
+        CorrBdjpsirh_pbn(3, 4) = CorrBdjpsirh_pbn(4, 3) = -0.074;
+        CorrBdjpsirh_pbn(3, 5) = CorrBdjpsirh_pbn(5, 3) = 0.105;
+        CorrBdjpsirh_pbn(4, 4) = 1.;
+        CorrBdjpsirh_pbn(4, 5) = CorrBdjpsirh_pbn(5, 4) = -0.388;
+        CorrBdjpsirh_pbn(5, 5) = 1.;
 
         // Insert correlated data into corrmeas
-        corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bdjpsirh_LHCb2026pbn", CorrelatedGaussianObservables(CorrData, CorrBdjpsirh)));
+        corrmeas.insert(pair<string, CorrelatedGaussianObservables>("Bdjpsirh_LHCb2026pbn", CorrelatedGaussianObservables(CorrData, CorrBdjpsirh_pbn)));
         corrmeas_channels.insert(pair<string, vector<string>>("Bdjpsirh_LHCb2026pbn", names));
         CorrData.clear();
         names.clear();
