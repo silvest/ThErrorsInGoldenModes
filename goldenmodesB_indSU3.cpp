@@ -3524,6 +3524,8 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
         double br_predicted = 0.0;
         if (is_vector_channel)
         {
+            br_obsKey = "BR_" + channel;
+            br_measKey = "BR" + channel;
             // For vector meson channels, use the sum over polarizations for BR
             br_predicted += (obs.find("BR_" + channel + "_0") != obs.end()) ? obs["BR_" + channel + "_0"] : CalculateBR(amp0_pair.first, amp0_pair.second, channel);
             br_predicted += (obs.find("BR_" + channel + "_paral") != obs.end()) ? obs["BR_" + channel + "_paral"] : CalculateBR(ampparal_pair.first, ampparal_pair.second, channel);
