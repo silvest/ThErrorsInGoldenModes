@@ -35,6 +35,7 @@ void runModel(Model &model, const string &outputFileName,
              << ", " << model.GetParameter(i).GetUpperLimit() << "]" << endl;
 
     model.MarginalizeAll();
+    model.FindMode();
     model.PrintSummary();
     model.PrintAllMarginalized(outputFileName + "marginalized_parameters.pdf");
     model.PrintCorrelationMatrix(outputFileName + "correlation_matrix.pdf");
