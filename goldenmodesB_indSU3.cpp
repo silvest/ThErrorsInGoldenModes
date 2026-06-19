@@ -68,16 +68,6 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         }
         channels.insert(channels.end(), polarizedChannels.begin(), polarizedChannels.end());
     }
-    else if (BJPSIP)
-    {
-        // Bsjpsiphi is needed to compute BR ratios (e.g. R_Bsjpsieta_Bsjpsiphi)
-        // and S in the control channels BsJpsiKs even when the full BJPSIV fit is not requested.
-        channelNamesSU3.push_back("Bsjpsiphi");
-        channels.push_back("Bsjpsiphi");
-        channels.push_back("Bsjpsiphi_0");
-        channels.push_back("Bsjpsiphi_paral");
-        channels.push_back("Bsjpsiphi_perp");
-    }
     if (BDDb)
     {
         channels.insert(channels.end(), ddbarChannels.begin(), ddbarChannels.end());
@@ -106,7 +96,11 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
     SetPriorConstantAll();
 
-    // Enable histogramming only on rank 0; workers only evaluate LogLikelihood.
+    if (!BJPSIP)
+        GetParameter("myphid").SetPrior(make_shared<BCGaussianPrior>(0.700, 0.015)); // in rad
+    if (!BJPSIV)
+        GetParameter("myphis").SetPrior(make_shared<BCGaussianPrior>(-0.037, 0.006)); // in rad
+        // Enable histogramming only on rank 0; workers only evaluate LogLikelihood.
     if (mpi_rank == 0)
         SetFlagFillHistograms(true, true);
     else
