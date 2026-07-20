@@ -344,7 +344,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         ////////////////////////////
 
         // BR measurements
-        data.push_back(dato(1.235e-6, 0.175e-6, 0.07e-6)); // Chang:2012gnb (Belle full dataset)
+        data.push_back(dato(1.235e-5, 0.175e-5, 0.07e-5)); // Chang:2012gnb (Belle full dataset)
 
         pdgaverage.setData(data);
         pdgaverage.setName("BRBdjpsieta");
@@ -763,53 +763,6 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         // Ratios of BRs
         //  R_Bdjpsiom_Bdjpsirho from LHCb:2012cw
         meas.insert(pair<string, dato>("R_Bdjpsiom_Bdjpsirho0", dato(0.86, 0.19, 0.10))); // LHCb:2012cw
-
-        // Transversity fractions of Bdjpsiom: PDG average of LHCb:2014vbo and LHCb:2026pbn
-        data.push_back(dato(0.405, 0.14, 0.035)); // LHCb:2014vbo
-        data.push_back(dato(0.671, 0.078));        // LHCb:2026pbn
-        pdgaverage.setData(data);
-        pdgaverage.setName("f_0_Bdjpsiom");
-        pdgaverage.CalculateAverage();
-        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
-        data.clear();
-
-        data.push_back(dato(0.58, 0.135, 0.035)); // LHCb:2014vbo
-        data.push_back(dato(0.181, 0.078));         // LHCb:2026pbn
-        pdgaverage.setData(data);
-        pdgaverage.setName("f_paral_Bdjpsiom");
-        pdgaverage.CalculateAverage();
-        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
-        data.clear();
-        meas.insert(pair<string, dato>("A_0_Bdjpsiom_over_A_0_Bdjpsirho0", dato(0.023, 0.002)));                                    // LHCb:2026pbn
-        meas.insert(pair<string, dato>("A_paral_Bdjpsiom_over_A_0_Bdjpsirho0", dato(0.012, 0.003)));                                // LHCb:2026pbn
-        meas.insert(pair<string, dato>("A_perp_Bdjpsiom_over_A_0_Bdjpsirho0", dato(0.011, 0.003)));                                // LHCb:2026pbn
-        meas.insert(pair<string, dato>("delta_paral_Bdjpsirho0", dato(164.1 / 180. * M_PI, 4.5 / 180. * M_PI))); // LHCb:2026pbn
-        meas.insert(pair<string, dato>("delta_perp_Bdjpsirho0", dato(176.8 / 180. * M_PI, 5.7 / 180. * M_PI)));   // LHCb:2026pbn
-
-
-        data.push_back(dato(123.5 / 180. * M_PI, 13.7 / 180. * M_PI)); // LHCb:2014vbo
-        data.push_back(dato(98.2 / 180. * M_PI, 14.1 / 180. * M_PI));    // LHCb:2026pbn
-        pdgaverage.setData(data);
-        pdgaverage.setName("delta_paral_Bdjpsiom-delta_0_Bdjpsirho0");
-        pdgaverage.CalculateAverage();
-        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty()))); // Average of LHCb:2014vbo and LHCb:2026pbn for the phase difference in Bdjpsirho0
-        data.clear();
-
-        data.push_back(dato(273.5 / 180. * M_PI, 14.6 / 180. * M_PI));    // LHCb:2026pbn
-        data.push_back(dato(227.4 / 180. * M_PI, 84.9 / 180. * M_PI)); // LHCb:2014vbo
-        pdgaverage.setData(data);
-        pdgaverage.setName("delta_perp_Bdjpsiom-delta_perp_Bdjpsirho0");
-        pdgaverage.CalculateAverage();
-        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty()))); // Average of LHCb:2014vbo and LHCb:2026pbn for the phase difference in Bdjpsiom
-        data.clear();
-
-        data.push_back(dato(268.8 / 180. * M_PI, 11.9 / 180. * M_PI));       // LHCb:2014vbo
-        data.push_back(dato(279.1 / 180. * M_PI, 6.0 / 180. * M_PI));        // LHCb:2026pbn
-        pdgaverage.setData(data);
-        pdgaverage.setName("delta_0_Bdjpsiom-delta_0_Bdjpsirho0");
-        pdgaverage.CalculateAverage();
-        meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty()))); // Average of LHCb:2014vbo and LHCb:2026pbn for the phase difference in Bdjpsiom
-        data.clear();
 
         /////////////////////////////
         // Bdjpsikst0
