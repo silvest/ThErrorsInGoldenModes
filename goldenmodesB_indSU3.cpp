@@ -30,6 +30,58 @@ using namespace std;
 
 static CKMParameters ckm;
 
+static inline double AngleDiff(double pred, double meas)
+{
+    return std::remainder(pred - meas, 2.0 * M_PI);
+}
+
+static inline double WrapAngle(double x)
+{
+    return std::remainder(x, 2.0 * M_PI);
+}
+
+static inline double CircularMean2(double a, double b)
+{
+    double x = std::cos(a) + std::cos(b);
+    double y = std::sin(a) + std::sin(b);
+
+    // Exactly opposite angles: circular mean is undefined.
+    // Returning 0 avoids NaN, but if this happens often it signals ambiguity.
+    if (std::abs(x) < 1e-14 && std::abs(y) < 1e-14)
+        return 0.0;
+
+    return std::atan2(y, x);
+}
+static inline string GetPolarizationLabel(const string &obs_name)
+{
+    if (obs_name.find("_paral_") != string::npos ||
+        obs_name.find("paral_") == 0)
+        return "paral";
+
+    if (obs_name.find("_perp_") != string::npos ||
+        obs_name.find("perp_") == 0)
+        return "perp";
+
+    if (obs_name.find("_0_") != string::npos ||
+        obs_name.find("_0") != string::npos ||
+        obs_name.find("0_") == 0)
+        return "0";
+
+    return "";
+}
+
+static inline double CircularMeanWeighted3(double a0, double w0,
+                                           double a1, double w1,
+                                           double a2, double w2)
+{
+    double x = w0 * std::cos(a0) + w1 * std::cos(a1) + w2 * std::cos(a2);
+    double y = w0 * std::sin(a0) + w1 * std::sin(a1) + w2 * std::sin(a2);
+
+    if (std::abs(x) < 1e-14 && std::abs(y) < 1e-14)
+        return 0.0;
+
+    return std::atan2(y, x);
+}
 goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM) : BCModel(), histos(obs)
 {
     int mpi_rank = 0;
@@ -92,14 +144,16 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
     AddParameter("CKM_gamma", (65.7-5*2.5)/180.0 * M_PI, (65.7+5*2.5)/180.0 * M_PI);
 
     // Add mixing angle between eta1 and eta8
-    AddParameter("theta_P", -30. / 180.0 * M_PI, 0.); // in rad
+       AddParameter("theta_P", -30. / 180.0 * M_PI, 0.); // in rad
+    // Add mixing angle between eta1 and eta8
+    //dParameter("theta_P",             (-15.4 - 0.2) / 180.0 * M_PI,   (-15.4 + 0.2) / 180.0 * M_PI); // diagnostic: almost fixed
 
     SetPriorConstantAll();
 
     if (!BJPSIP)
-        GetParameter("myphid").SetPrior(make_shared<BCGaussianPrior>(0.700, 0.015)); // in rad
+        GetParameter("myphid").SetPrior(new BCGaussianPrior(0.700, 0.015)); // in rad
     if (!BJPSIV)
-        GetParameter("myphis").SetPrior(make_shared<BCGaussianPrior>(-0.037, 0.006)); // in rad
+        GetParameter("myphis").SetPrior(new BCGaussianPrior(-0.037, 0.006)); // in rad
         // Enable histogramming only on rank 0; workers only evaluate LogLikelihood.
     if (mpi_rank == 0)
         SetFlagFillHistograms(true, true);
@@ -107,22 +161,22 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         SetFlagFillHistograms(false, false);
 
     // Use lattice QCD result for theta_P
-    GetParameter("theta_P").SetPrior(make_shared<BCGaussianPrior>(-15.4 / 180.0 * M_PI, 2.0 / 180.0 * M_PI)); // in rad from 2503.09895
+    GetParameter("theta_P").SetPrior(new BCGaussianPrior(-15.4 / 180.0 * M_PI, 2.0 / 180.0 * M_PI)); // in rad from 2503.09895
 
     // Set Gaussian priors on CKM parameters if requested
     if (ckm_gaussian_prior) {
-        GetParameter("CKM_Vud").SetPrior(make_shared<BCGaussianPrior>(0.97432, 0.00015));
-        GetParameter("CKM_Vcb").SetPrior(make_shared<BCGaussianPrior>(0.04118, 0.00076));
-        GetParameter("CKM_Vub").SetPrior(make_shared<BCGaussianPrior>(0.00382, 0.00034));
-        GetParameter("CKM_gamma").SetPrior(make_shared<BCGaussianPrior>(65.7/180.0 * M_PI, 2.5/180.0 * M_PI));
+        GetParameter("CKM_Vud").SetPrior(new BCGaussianPrior(0.97432, 0.00015));
+        GetParameter("CKM_Vcb").SetPrior(new BCGaussianPrior(0.04118, 0.00076));
+        GetParameter("CKM_Vub").SetPrior(new BCGaussianPrior(0.00382, 0.00034));
+        GetParameter("CKM_gamma").SetPrior(new BCGaussianPrior(65.7/180.0 * M_PI, 2.5/180.0 * M_PI));
     }
 
     // Set Gaussian priors on EW penguin parameters (better for MCMC than a log-likelihood penalty)
     if (ewp_limit > 0.) {
         for (const auto &name : ewpParamBaseNames) {
             try {
-                GetParameter(name + "_re").SetPrior(make_shared<BCGaussianPrior>(0., ewp_limit));
-                GetParameter(name + "_im").SetPrior(make_shared<BCGaussianPrior>(0., ewp_limit));
+                GetParameter(name + "_re").SetPrior(new BCGaussianPrior(0., ewp_limit));
+                GetParameter(name + "_im").SetPrior(new BCGaussianPrior(0., ewp_limit));
             } catch (...) {}
         }
     }
@@ -451,7 +505,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
         // BR measurements
 
-        meas.insert(pair<string, dato>("BRBsjpsip0", dato(0., 1.2e-5 / 8.03 * 3.2))); // extrapolated from the upper limit in Belle:2023tdz
+	 meas.insert(pair<string, dato>("BRBsjpsip0", dato(0., 1.2e-5 / 8.03 * 3.2))); // extrapolated from the upper limit in Belle:2023tdz
 
         /////////////////////////////
         // Bsjpsik0b
@@ -764,6 +818,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         //  R_Bdjpsiom_Bdjpsirho from LHCb:2012cw
         meas.insert(pair<string, dato>("R_Bdjpsiom_Bdjpsirho0", dato(0.86, 0.19, 0.10))); // LHCb:2012cw
 
+        
         /////////////////////////////
         // Bdjpsikst0
         /////////////////////////////
@@ -886,14 +941,8 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         // CP asymmetries from LHCb:2013vga
         meas.insert(pair<string, dato>("ACP_fparal_Bdjpsikst0", dato(-0.011, 0.016, 0.005)));      // LHCb:2013vga
         meas.insert(pair<string, dato>("ACP_fperp_Bdjpsikst0", dato(0.032, 0.018, 0.003)));        // LHCb:2013vga
-        meas.insert(pair<string, dato>("ACP_delta_paral_Bdjpsikst0", dato(-0.003, 0.007, 0.002))); // LHCb:2013vga
-        meas.insert(pair<string, dato>("ACP_delta_perp_Bdjpsikst0", dato(0.003, 0.005, 0.001)));   // LHCb:2013vga
-
-        // CBdjpsikst0
-        meas.insert(pair<string, dato>("CBdjpsikst0", dato(0.025, 0.083, 0.054))); // BaBar:2009byl
-
-        // SBdjpsikst0
-        meas.insert(pair<string, dato>("SBdjpsikst0", dato(0.601, 0.239, 0.087))); // BaBar:2009byl
+	// meas.insert(pair<string, dato>("ACP_delta_paral_Bdjpsikst0", dato(-0.003, 0.007, 0.002))); // LHCb:2013vga
+        //meas.insert(pair<string, dato>("ACP_delta_perp_Bdjpsikst0", dato(0.003, 0.005, 0.001)));   // LHCb:2013vga
 
         /////////////////////////////
         // Bdjpsirho0
@@ -1426,7 +1475,8 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("dP2EW_scu_BPJPSI_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP2EW_scu_BPJPSI");
         addAmplitudeParameter("dP2EW_scu_BPJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("EA1_sdcd_BPJPSI_re", -10., 10.); 
+        //addAmplitudeParameter("EA1_sdcd_BPJPSI_re", -10., 10.);
+	 addAmplitudeParameter("EA1_sdcd_BPJPSI_re", -10., 10.); 
     }
     else if (channel == "Bpjpsipp")
     {
@@ -1606,12 +1656,12 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("G2t_scs_BJPSIV_paral_im", -10., 10.);
         addAmplitudeParameter("G2t_scs_BJPSIV_perp_re", -10., 10.);
         addAmplitudeParameter("G2t_scs_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_0_re", -2., 2.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_paral_re", -2., 2.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_perp_re", -2., 2.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_0_re", -1., 1.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_0_im", -1., 1.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_paral_re", -1., 1.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_paral_im", -1., 1.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_perp_re", -1., 1.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_perp_im", -1., 1.);
         addAmplitudeParameter("G4t_css_BJPSIV_0_re", -10., 10.);
         addAmplitudeParameter("G4t_css_BJPSIV_0_im", -10., 10.);
         addAmplitudeParameter("G4t_css_BJPSIV_paral_re", -10., 10.);
@@ -2371,6 +2421,7 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
 
 
 
+
 map<string, double> goldenmodesB_indSU3::DeclareParameters()
 {
 
@@ -2407,12 +2458,22 @@ map<string, double> goldenmodesB_indSU3::DeclareParameters()
 
 TComplex goldenmodesB_indSU3::getPar(const string &baseName) const
 {
+    if (ewp_limit <= 0.0 &&
+        baseName.rfind("dP", 0) == 0 &&
+        baseName.find("EW") != std::string::npos)
+    {
+        return TComplex(0., 0.);
+    }
+
     auto it_real = parameterValues.find(baseName + "_re");
     auto it_imag = parameterValues.find(baseName + "_im");
+
     if (it_real != parameterValues.end() && it_imag != parameterValues.end())
         return TComplex(it_real->second, it_imag->second);
+
     throw runtime_error("Error: Parameter " + baseName + " not found in parameterValues.");
 }
+
 
 // Setter function: sets the value for a given parameter in the map
 void goldenmodesB_indSU3::SetParameterValue(const string &paramName, double value)
@@ -2944,15 +3005,31 @@ goldenmodesB_indSU3::parseChannel(const string &channel) const
         string meson2;
 
         // Look for a valid meson name in mesonMasses
+                // Look for a valid meson name in mesonMasses.
+        // Important: match the longest key first, otherwise e.g.
+        // "rho0" may be parsed as "rh", and "etap" as "eta".
+        vector<string> mesonKeys;
+        mesonKeys.reserve(mesonMasses.size());
+
         for (const auto &meson : mesonMasses)
         {
-            if (remaining.rfind(meson.first, 0) == 0)
+            mesonKeys.push_back(meson.first);
+        }
+
+        sort(mesonKeys.begin(), mesonKeys.end(),
+             [](const string &a, const string &b)
+             {
+                 return a.size() > b.size();
+             });
+
+        for (const auto &key : mesonKeys)
+        {
+            if (remaining.rfind(key, 0) == 0)
             {
-                meson2 = meson.first;
+                meson2 = key;
                 break;
             }
         }
-
         if (meson2.empty())
         {
             throw runtime_error("Error in parseChannel: Unable to parse second final-state meson in channel: " + channel);
@@ -3201,6 +3278,7 @@ pair<double, double> goldenmodesB_indSU3::CalculateS(const TComplex &amplitude, 
     TComplex lambda = q_p * (conjugate_amplitude / amplitude);
 
     // Compute S observable: S = 2 Im(λ) / (1 + |λ|^2)
+    //perche ci sta un meno qua???
     double mod_lambda_squared = lambda.Rho2();
     double S = -(2.0 * lambda.Im()) / (1.0 + mod_lambda_squared);
     double DeltaS = isBd ? S - sin(getParameterValue("myphid")) : S + sin(getParameterValue("myphis"));
@@ -3216,7 +3294,9 @@ tuple<double, double, double> goldenmodesB_indSU3::CalculatePhiAndLambda(const T
         // Return sentinel values: C=0, S=0, |lambda|=1 — LogLikelihood will
         // naturally penalise this point via the data. This avoids a crash when
         // MCMC chains are initialised at symmetric midpoints (amplitude == 0).
-        return {0., 0., 1.};
+      //bug??
+        return {0., 1., 0.};
+      // return {0., 0., 1.};
     }
 
     // Parse the channel to determine the B meson type
@@ -3342,8 +3422,15 @@ map<string, double> goldenmodesB_indSU3::CalculatePolarizations(
     double f_paral = norm_Aparal / norm_amp;
 
     // Calculate CP-averaged relative phases
-    double delta_paral = remainder((amp_paral.Theta() + conj_amp_paral.Theta()) / 2. - (amp_0.Theta() + conj_amp_0.Theta()) / 2., 2. * M_PI);
-    double delta_perp = remainder((amp_perp.Theta() + conj_amp_perp.Theta()) / 2. - (amp_0.Theta() + conj_amp_0.Theta()) / 2., 2. * M_PI);
+    //ADDED DEBUG
+    double delta_paral_B = WrapAngle(amp_paral.Theta() - amp_0.Theta());
+    double delta_perp_B  = WrapAngle(amp_perp.Theta()  - amp_0.Theta());
+
+    double delta_paral_Bbar = WrapAngle(conj_amp_paral.Theta() - conj_amp_0.Theta());
+    double delta_perp_Bbar  = WrapAngle(conj_amp_perp.Theta()  - conj_amp_0.Theta());
+
+    double delta_paral = WrapAngle(CircularMean2(delta_paral_B, delta_paral_Bbar));
+    double delta_perp  = WrapAngle(CircularMean2(delta_perp_B,  delta_perp_Bbar));
 
     // Store the results in the map
     polarization_pars["f_0"] = f_0;
@@ -3539,7 +3626,8 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
             {
                 double observed    = meas.at(delta_paral_key).getMean();
                 double uncertainty = meas.at(delta_paral_key).getSigma();
-                double diff = obs.at("delta_paral_" + channel) - observed;
+		// double diff = obs.at("delta_paral_" + channel) - observed;
+		double diff = AngleDiff(obs.at("delta_paral_" + channel), observed);
                 ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
             }
             string delta_perp_key = "delta_perp_" + channel;
@@ -3547,7 +3635,8 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
             {
                 double observed    = meas.at(delta_perp_key).getMean();
                 double uncertainty = meas.at(delta_perp_key).getSigma();
-                double diff = obs.at("delta_perp_" + channel) - observed;
+		// double diff = obs.at("delta_perp_" + channel) - observed;
+		double diff = AngleDiff(obs.at("delta_perp_" + channel), observed);
                 ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
             }
         }
@@ -3572,7 +3661,8 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
         {
             continue; // Skip if either channel is not in the list
         }
-        double BR1, BR2;
+        double BR1 = 0.0;
+	double BR2 = 0.0;
         bool is_vector_channel1 = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), rchannels.first) != vectorMesonChannels.end();  // channel1 is a vector meson channel
         bool is_vector_channel2 = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), rchannels.second) != vectorMesonChannels.end(); // channel2 is a vector meson channel
         if (is_vector_channel1)
@@ -3613,11 +3703,14 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
         {
             if (amplitude_map.find(rchannels.first) != amplitude_map.end())
                 obs["BR_" + rchannels.first] = CalculateBR(amplitude_map.at(rchannels.first).first, amplitude_map.at(rchannels.first).second, rchannels.first);
+  
             else
             {
                 cerr << "Warning: Polarized amplitudes not found for " << rchannels.first << endl;
                 continue;
             }
+	    //this wasnt here before, BUG???
+	      BR1 = obs["BR_" + rchannels.first];
         }
         if (is_vector_channel2)
         {
@@ -3698,7 +3791,8 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
         string acp_key1 = "ACP_" + channelPair.first;
         string acp_key2 = "ACP_" + channelPair.second;
 
-        double ACP1, ACP2;
+        double ACP1 = 0;
+	double ACP2 = 0;
         if (obs.find(acp_key1) != obs.end())
         {
             ACP1 = obs[acp_key1];
@@ -3758,8 +3852,8 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
         {
             // CP-averaged phases for each polarization and channel
             auto cpPhase = [](const pair<TComplex, TComplex> &p) {
-                return remainder((p.first.Theta() + p.second.Theta()) / 2., 2. * M_PI);
-            };
+	      return WrapAngle(CircularMean2(p.first.Theta(), p.second.Theta()));
+	    };
             // CP-averaged squared norms
             auto cpNorm = [](const pair<TComplex, TComplex> &p) {
                 return 0.5 * (p.first.Rho2() + p.second.Rho2());
@@ -3789,7 +3883,8 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
                 {
                     double observed    = meas.at(pd.key).getMean();
                     double uncertainty = meas.at(pd.key).getSigma();
-                    double diff = pd.value - observed;
+		    // double diff = pd.value - observed;
+		    double diff = AngleDiff(pd.value, observed);
                     ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
                 }
             }
@@ -3878,6 +3973,21 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
         const CorrelatedGaussianObservables &corrObs = meas_pair.second;
         const vector<string> &obs_names = corrmeas_channels.at(key);
 
+	
+	// TEMPORARY DEBUG: skip correlated datasets containing angular observables
+	if (//key == "Bsjpsiphi_LHCb2023sim" ||
+	    //key == "Bsjpsiphi_CMS2024znt" ||
+	    //key == "phi_Bsjpsiphi_ATLAS2020B"   ||
+	    key == "Bdjpsikst0_LHCb2013" ||
+	    key == "Bsjpsikbst0_LHCb2025"
+            //key == "Bdjpsirh_LHCb2014xpr" ||
+            //key == "Bdjpsirh_LHCb2026pbn"
+	    )
+	  {
+	    continue;
+	  }
+       
+
         if (obs_names.size() != corrObs.getNObs())
         {
             cerr << "Error: Mismatch in number of observables for " << key << endl;
@@ -3910,7 +4020,8 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
 
                 // Check if it's an averaged vector meson channel
                 bool is_vector_channel = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), basechannel) != vectorMesonChannels.end();
-                bool is_polarized_measurement = obs_name.find("0") != string::npos || obs_name.find("paral") != string::npos || obs_name.find("perp") != string::npos;
+                string pol = GetPolarizationLabel(obs_name);
+		bool is_polarized_measurement = !pol.empty();
 
                 pair<TComplex, TComplex> amp_pair;
                 pair<TComplex, TComplex> amp0_pair;
@@ -3960,16 +4071,17 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
                     }
                     else if (is_vector_channel && is_polarized_measurement)
                     {
+		      string pol = GetPolarizationLabel(obs_name);
                         // Polarized measurement for vector meson channel
-                        if (obs_name.find("0") != string::npos)
+                        if (pol == "0")
                         {
                             c_value = CalculateC(amp0_pair.first, amp0_pair.second, basechannel);
                         }
-                        else if (obs_name.find("paral") != string::npos)
+                        else if (pol == "paral")
                         {
                             c_value = CalculateC(ampparal_pair.first, ampparal_pair.second, basechannel);
                         }
-                        else if (obs_name.find("perp") != string::npos)
+                        else if (pol == "perp")
                         {
                             c_value = CalculateC(ampperp_pair.first, ampperp_pair.second, basechannel);
                         }
@@ -4002,19 +4114,19 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
                     else if (is_vector_channel && is_polarized_measurement)
                     {
                         // Polarized measurement for vector meson channel
-                        if (obs_name.find("0") != string::npos)
+                        if (pol == "0")
                         {
                             auto s_pair = CalculateS(amp0_pair.first, amp0_pair.second, basechannel);
                             s_value = s_pair.first;
                             delta_S = s_pair.second;
                         }
-                        else if (obs_name.find("paral") != string::npos)
+                        else if (pol == "paral")
                         {
                             auto s_pair = CalculateS(ampparal_pair.first, ampparal_pair.second, basechannel);
                             s_value = s_pair.first;
                             delta_S = s_pair.second;
                         }
-                        else if (obs_name.find("perp") != string::npos)
+                        else if (pol == "perp")
                         {
                             auto s_pair = CalculateS(ampperp_pair.first, ampperp_pair.second, basechannel);
                             s_value = s_pair.first;
@@ -4049,8 +4161,12 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
                         double phi_paral = get<0>(phi_lambda_paral);
                         double phi_perp = get<0>(phi_lambda_perp);
 
-                        double phi_avg = phi_0 * polfracs["f_0"] + phi_paral * polfracs["f_paral"] + phi_perp * polfracs["f_perp"];
-                        double delta_phi_avg = get<2>(phi_lambda_0) * polfracs["f_0"] + get<2>(phi_lambda_paral) * polfracs["f_paral"] + get<2>(phi_lambda_perp) * polfracs["f_perp"];
+			//DEBUG
+			double phi_avg = CircularMeanWeighted3( phi_0, polfracs["f_0"], phi_paral, polfracs["f_paral"],phi_perp,  polfracs["f_perp"]);
+			double delta_phi_avg = CircularMeanWeighted3( get<2>(phi_lambda_0), polfracs["f_0"],get<2>(phi_lambda_paral), polfracs["f_paral"], get<2>(phi_lambda_perp),  polfracs["f_perp"]);
+
+                        //double phi_avg = phi_0 * polfracs["f_0"] + phi_paral * polfracs["f_paral"] + phi_perp * polfracs["f_perp"];
+			// double delta_phi_avg = get<2>(phi_lambda_0) * polfracs["f_0"] + get<2>(phi_lambda_paral) * polfracs["f_paral"] + get<2>(phi_lambda_perp) * polfracs["f_perp"];
                         obs[obs_name] = phi_avg;
                         obs["Delta" + obs_name] = delta_phi_avg;
                     }
@@ -4058,19 +4174,19 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
                     {
                         // Polarized measurement for vector meson channel
                         double phi_pol, delta_phi_pol;
-                        if (obs_name.find("0") != string::npos)
+                        if (pol == "0")
                         {
                             auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
                             phi_pol = get<0>(phi_lambda_0);
                             delta_phi_pol = get<2>(phi_lambda_0);
                         }
-                        else if (obs_name.find("paral") != string::npos)
+                        else if (pol == "paral")
                         {
                             auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
                             phi_pol = get<0>(phi_lambda_paral);
                             delta_phi_pol = get<2>(phi_lambda_paral);
                         }
-                        else if (obs_name.find("perp") != string::npos)
+                        else if (pol == "perp")
                         {
                             auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
                             phi_pol = get<0>(phi_lambda_perp);
@@ -4115,17 +4231,17 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
                     {
                         // Polarized measurement for vector meson channel
                         double lambda_pol;
-                        if (obs_name.find("0") != string::npos)
+                        if (pol == "0")
                         {
                             auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
                             lambda_pol = get<1>(phi_lambda_0);
                         }
-                        else if (obs_name.find("paral") != string::npos)
+                        else if (pol == "paral")
                         {
                             auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
                             lambda_pol = get<1>(phi_lambda_paral);
                         }
-                        else if (obs_name.find("perp") != string::npos)
+                        else if (pol == "perp")
                         {
                             auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
                             lambda_pol = get<1>(phi_lambda_perp);
@@ -4244,17 +4360,17 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
                     {
                         // Polarized measurement for vector meson channel
                         double alpha_pol;
-                        if (obs_name.find("0") != string::npos)
+                        if (pol == "0")
                         {
                             double lambda = get<1>(CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel));
                             alpha_pol = (1. - lambda) / (1. + lambda);
                         }
-                        else if (obs_name.find("paral") != string::npos)
+                        else if (pol == "paral")
                         {
                             double lambda = get<1>(CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel));
                             alpha_pol = (1. - lambda) / (1. + lambda);
                         }
-                        else if (obs_name.find("perp") != string::npos)
+                        else if (pol == "perp")
                         {
                             double lambda = get<1>(CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel));
                             alpha_pol = (1. - lambda) / (1. + lambda);
@@ -4286,15 +4402,15 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
                     else if (is_vector_channel && is_polarized_measurement)
                     {
                         // Polarized measurement for vector meson channel
-                        if (obs_name.find("0") != string::npos)
+                        if (pol == "0")
                         {
                             acp_value = CalculateAcp(amp0_pair.first, amp0_pair.second);
                         }
-                        else if (obs_name.find("paral") != string::npos)
+                        else if (pol == "paral")
                         {
                             acp_value = CalculateAcp(ampparal_pair.first, ampparal_pair.second);
                         }
-                        else if (obs_name.find("perp") != string::npos)
+                        else if (pol == "perp")
                         {
                             acp_value = CalculateAcp(ampperp_pair.first, ampperp_pair.second);
                         }
