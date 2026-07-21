@@ -146,14 +146,14 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
     // Add mixing angle between eta1 and eta8
        AddParameter("theta_P", -30. / 180.0 * M_PI, 0.); // in rad
     // Add mixing angle between eta1 and eta8
-    //dParameter("theta_P",             (-15.4 - 0.2) / 180.0 * M_PI,   (-15.4 + 0.2) / 180.0 * M_PI); // diagnostic: almost fixed
+    // AddParameter("theta_P",             (-15.4 - 0.2) / 180.0 * M_PI,   (-15.4 + 0.2) / 180.0 * M_PI); // diagnostic: almost fixed
 
     SetPriorConstantAll();
 
     if (!BJPSIP)
-        GetParameter("myphid").SetPrior(new BCGaussianPrior(0.700, 0.015)); // in rad
+        GetParameter("myphid").SetPrior(make_shared<BCGaussianPrior>(0.700, 0.015)); // in rad
     if (!BJPSIV)
-        GetParameter("myphis").SetPrior(new BCGaussianPrior(-0.037, 0.006)); // in rad
+        GetParameter("myphis").SetPrior(make_shared<BCGaussianPrior>(-0.037, 0.006)); // in rad
         // Enable histogramming only on rank 0; workers only evaluate LogLikelihood.
     if (mpi_rank == 0)
         SetFlagFillHistograms(true, true);
@@ -161,22 +161,22 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         SetFlagFillHistograms(false, false);
 
     // Use lattice QCD result for theta_P
-    GetParameter("theta_P").SetPrior(new BCGaussianPrior(-15.4 / 180.0 * M_PI, 2.0 / 180.0 * M_PI)); // in rad from 2503.09895
+    GetParameter("theta_P").SetPrior(make_shared<BCGaussianPrior>(-15.4 / 180.0 * M_PI, 2.0 / 180.0 * M_PI)); // in rad from 2503.09895
 
     // Set Gaussian priors on CKM parameters if requested
     if (ckm_gaussian_prior) {
-        GetParameter("CKM_Vud").SetPrior(new BCGaussianPrior(0.97432, 0.00015));
-        GetParameter("CKM_Vcb").SetPrior(new BCGaussianPrior(0.04118, 0.00076));
-        GetParameter("CKM_Vub").SetPrior(new BCGaussianPrior(0.00382, 0.00034));
-        GetParameter("CKM_gamma").SetPrior(new BCGaussianPrior(65.7/180.0 * M_PI, 2.5/180.0 * M_PI));
+        GetParameter("CKM_Vud").SetPrior(make_shared<BCGaussianPrior>(0.97432, 0.00015));
+        GetParameter("CKM_Vcb").SetPrior(make_shared<BCGaussianPrior>(0.04118, 0.00076));
+        GetParameter("CKM_Vub").SetPrior(make_shared<BCGaussianPrior>(0.00382, 0.00034));
+        GetParameter("CKM_gamma").SetPrior(make_shared<BCGaussianPrior>(65.7/180.0 * M_PI, 2.5/180.0 * M_PI));
     }
 
     // Set Gaussian priors on EW penguin parameters (better for MCMC than a log-likelihood penalty)
     if (ewp_limit > 0.) {
         for (const auto &name : ewpParamBaseNames) {
             try {
-                GetParameter(name + "_re").SetPrior(new BCGaussianPrior(0., ewp_limit));
-                GetParameter(name + "_im").SetPrior(new BCGaussianPrior(0., ewp_limit));
+                GetParameter(name + "_re").SetPrior(make_shared<BCGaussianPrior>(0., ewp_limit));
+                GetParameter(name + "_im").SetPrior(make_shared<BCGaussianPrior>(0., ewp_limit));
             } catch (...) {}
         }
     }
@@ -941,8 +941,14 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         // CP asymmetries from LHCb:2013vga
         meas.insert(pair<string, dato>("ACP_fparal_Bdjpsikst0", dato(-0.011, 0.016, 0.005)));      // LHCb:2013vga
         meas.insert(pair<string, dato>("ACP_fperp_Bdjpsikst0", dato(0.032, 0.018, 0.003)));        // LHCb:2013vga
-	// meas.insert(pair<string, dato>("ACP_delta_paral_Bdjpsikst0", dato(-0.003, 0.007, 0.002))); // LHCb:2013vga
-        //meas.insert(pair<string, dato>("ACP_delta_perp_Bdjpsikst0", dato(0.003, 0.005, 0.001)));   // LHCb:2013vga
+	    meas.insert(pair<string, dato>("ACP_delta_paral_Bdjpsikst0", dato(0.003, 0.007, 0.002))); // LHCb:2013vga
+        meas.insert(pair<string, dato>("ACP_delta_perp_Bdjpsikst0", dato(0.003, 0.005, 0.001)));   // LHCb:2013vga
+
+        // CBdjpsikst0
+        meas.insert(pair<string, dato>("CBdjpsikst0", dato(0.025, 0.083, 0.054))); // BaBar:2009byl
+
+        // SBdjpsikst0
+        meas.insert(pair<string, dato>("SBdjpsikst0", dato(0.601, 0.239, 0.087))); // BaBar:2009byl
 
         /////////////////////////////
         // Bdjpsirho0
@@ -3291,11 +3297,11 @@ tuple<double, double, double> goldenmodesB_indSU3::CalculatePhiAndLambda(const T
     // Ensure the amplitude is nonzero to avoid division by zero
     if (amplitude.Rho() == 0)
     {
-        // Return sentinel values: C=0, S=0, |lambda|=1 — LogLikelihood will
+        // Return sentinel values: C=0, S=0, |lambda|=0 — LogLikelihood will
         // naturally penalise this point via the data. This avoids a crash when
         // MCMC chains are initialised at symmetric midpoints (amplitude == 0).
       //bug??
-        return {0., 1., 0.};
+        return {0., 0., 0.};
       // return {0., 0., 1.};
     }
 
@@ -3709,8 +3715,6 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
                 cerr << "Warning: Polarized amplitudes not found for " << rchannels.first << endl;
                 continue;
             }
-	    //this wasnt here before, BUG???
-	      BR1 = obs["BR_" + rchannels.first];
         }
         if (is_vector_channel2)
         {
