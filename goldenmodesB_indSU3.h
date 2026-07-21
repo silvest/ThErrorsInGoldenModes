@@ -13,6 +13,7 @@
 #include <tuple>
 #include <algorithm>
 #include <unordered_set>
+#include <cmath>
 
 #include "histo.h"
 #include "dato.h"
@@ -179,6 +180,65 @@ private:
     {
         if (find(ewpParamBaseNames.begin(), ewpParamBaseNames.end(), baseName) == ewpParamBaseNames.end())
             ewpParamBaseNames.push_back(baseName);
+    }
+
+    // Helper: signed angular difference wrapped into (-pi, pi]
+    double AngleDiff(double pred, double meas) const
+    {
+        return std::remainder(pred - meas, 2.0 * M_PI);
+    }
+
+    // Helper: wrap an angle into (-pi, pi]
+    double WrapAngle(double x) const
+    {
+        return std::remainder(x, 2.0 * M_PI);
+    }
+
+    // Helper: circular mean of two angles
+    double CircularMean2(double a, double b) const
+    {
+        double x = std::cos(a) + std::cos(b);
+        double y = std::sin(a) + std::sin(b);
+
+        // Exactly opposite angles: circular mean is undefined.
+        // Returning 0 avoids NaN, but if this happens often it signals ambiguity.
+        if (std::abs(x) < 1e-14 && std::abs(y) < 1e-14)
+            return 0.0;
+
+        return std::atan2(y, x);
+    }
+
+    // Helper: circular mean of three angles weighted by w0, w1, w2
+    double CircularMeanWeighted3(double a0, double w0,
+                                  double a1, double w1,
+                                  double a2, double w2) const
+    {
+        double x = w0 * std::cos(a0) + w1 * std::cos(a1) + w2 * std::cos(a2);
+        double y = w0 * std::sin(a0) + w1 * std::sin(a1) + w2 * std::sin(a2);
+
+        if (std::abs(x) < 1e-14 && std::abs(y) < 1e-14)
+            return 0.0;
+
+        return std::atan2(y, x);
+    }
+
+    // Helper: infer the polarization label ("paral", "perp", "0") from an observable name
+    string GetPolarizationLabel(const string &obs_name) const
+    {
+        if (obs_name.find("_paral_") != string::npos ||
+            obs_name.find("paral_") == 0)
+            return "paral";
+
+        if (obs_name.find("_perp_") != string::npos ||
+            obs_name.find("perp_") == 0)
+            return "perp";
+
+        if (obs_name.find("_0_") != string::npos ||
+            obs_name.find("_0") != string::npos ||
+            obs_name.find("0_") == 0)
+            return "0";
+
+        return "";
     }
 
     string addPolarizationSuffix(string amplitude, string suffix) const

@@ -30,58 +30,6 @@ using namespace std;
 
 static CKMParameters ckm;
 
-static inline double AngleDiff(double pred, double meas)
-{
-    return std::remainder(pred - meas, 2.0 * M_PI);
-}
-
-static inline double WrapAngle(double x)
-{
-    return std::remainder(x, 2.0 * M_PI);
-}
-
-static inline double CircularMean2(double a, double b)
-{
-    double x = std::cos(a) + std::cos(b);
-    double y = std::sin(a) + std::sin(b);
-
-    // Exactly opposite angles: circular mean is undefined.
-    // Returning 0 avoids NaN, but if this happens often it signals ambiguity.
-    if (std::abs(x) < 1e-14 && std::abs(y) < 1e-14)
-        return 0.0;
-
-    return std::atan2(y, x);
-}
-static inline string GetPolarizationLabel(const string &obs_name)
-{
-    if (obs_name.find("_paral_") != string::npos ||
-        obs_name.find("paral_") == 0)
-        return "paral";
-
-    if (obs_name.find("_perp_") != string::npos ||
-        obs_name.find("perp_") == 0)
-        return "perp";
-
-    if (obs_name.find("_0_") != string::npos ||
-        obs_name.find("_0") != string::npos ||
-        obs_name.find("0_") == 0)
-        return "0";
-
-    return "";
-}
-
-static inline double CircularMeanWeighted3(double a0, double w0,
-                                           double a1, double w1,
-                                           double a2, double w2)
-{
-    double x = w0 * std::cos(a0) + w1 * std::cos(a1) + w2 * std::cos(a2);
-    double y = w0 * std::sin(a0) + w1 * std::sin(a1) + w2 * std::sin(a2);
-
-    if (std::abs(x) < 1e-14 && std::abs(y) < 1e-14)
-        return 0.0;
-
-    return std::atan2(y, x);
-}
 goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM) : BCModel(), histos(obs)
 {
     int mpi_rank = 0;
@@ -505,7 +453,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
         // BR measurements
 
-	 meas.insert(pair<string, dato>("BRBsjpsip0", dato(0., 1.2e-5 / 8.03 * 3.2))); // extrapolated from the upper limit in Belle:2023tdz
+	    meas.insert(pair<string, dato>("BRBsjpsip0", dato(0., 1.2e-5 / 8.03 * 3.2))); // extrapolated from the upper limit in Belle:2023tdz
 
         /////////////////////////////
         // Bsjpsik0b
@@ -893,7 +841,9 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
         pdgaverage.setData(data);
         pdgaverage.setName("delta_paral_Bdjpsikst0");
+        pdgaverage.setIsAngle(true);
         pdgaverage.CalculateAverage();
+        pdgaverage.setIsAngle(false);
 
         meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
         data.clear();
@@ -904,7 +854,9 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
         pdgaverage.setData(data);
         pdgaverage.setName("delta_perp_Bdjpsikst0");
+        pdgaverage.setIsAngle(true);
         pdgaverage.CalculateAverage();
+        pdgaverage.setIsAngle(false);
 
         meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
         data.clear();
@@ -3586,7 +3538,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
                 br_obsKey = "BR_Bdjpsik0";
                 br_measKey = "BRBdjpsik0";
                 channel_for_br = "Bdjpsik0";             // Use the non-rotated state for BR
-                amp_pair = amplitude_map.at("Bdjpsik0"); // Use the non-rotated stated for BR
+                amp_pair = amplitude_map.at("Bdjpsik0"); // Use the non-rotated state for BR
             }
             else
             {
@@ -3668,7 +3620,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
             continue; // Skip if either channel is not in the list
         }
         double BR1 = 0.0;
-	double BR2 = 0.0;
+	    double BR2 = 0.0;
         bool is_vector_channel1 = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), rchannels.first) != vectorMesonChannels.end();  // channel1 is a vector meson channel
         bool is_vector_channel2 = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), rchannels.second) != vectorMesonChannels.end(); // channel2 is a vector meson channel
         if (is_vector_channel1)
@@ -3796,7 +3748,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
         string acp_key2 = "ACP_" + channelPair.second;
 
         double ACP1 = 0;
-	double ACP2 = 0;
+	    double ACP2 = 0;
         if (obs.find(acp_key1) != obs.end())
         {
             ACP1 = obs[acp_key1];
@@ -3855,9 +3807,9 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
             it0_rho != amplitude_map.end() && itpa_rho != amplitude_map.end() && itpe_rho != amplitude_map.end())
         {
             // CP-averaged phases for each polarization and channel
-            auto cpPhase = [](const pair<TComplex, TComplex> &p) {
-	      return WrapAngle(CircularMean2(p.first.Theta(), p.second.Theta()));
-	    };
+            auto cpPhase = [this](const pair<TComplex, TComplex> &p) {
+	            return WrapAngle(CircularMean2(p.first.Theta(), p.second.Theta()));
+	        };
             // CP-averaged squared norms
             auto cpNorm = [](const pair<TComplex, TComplex> &p) {
                 return 0.5 * (p.first.Rho2() + p.second.Rho2());
@@ -3876,9 +3828,9 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
 
             // Phase differences
             struct { string key; double value; } phase_diffs[] = {
-                {"delta_0_Bdjpsiom-delta_0_Bdjpsirho0",           remainder(phase_0_om  - phase_0_rho,  2. * M_PI)},
-                {"delta_paral_Bdjpsiom-delta_0_Bdjpsirho0",       remainder(phase_pa_om - phase_0_rho,  2. * M_PI)},
-                {"delta_perp_Bdjpsiom-delta_perp_Bdjpsirho0",     remainder(phase_pe_om - phase_pe_rho, 2. * M_PI)},
+                {"delta_0_Bdjpsiom-delta_0_Bdjpsirho0",           AngleDiff(phase_0_om, phase_0_rho)},
+                {"delta_paral_Bdjpsiom-delta_0_Bdjpsirho0",       AngleDiff(phase_pa_om, phase_0_rho)},
+                {"delta_perp_Bdjpsiom-delta_perp_Bdjpsirho0",     AngleDiff(phase_pe_om, phase_pe_rho)},
             };
             for (const auto &pd : phase_diffs)
             {
@@ -3934,16 +3886,16 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
             double f_perp_B     = itpe->second.first.Rho2()  / norm_B;
             double f_perp_Bbar  = itpe->second.second.Rho2() / norm_Bbar;
 
-            double delta_paral_B    = remainder(itpa->second.first.Theta()  - it0->second.first.Theta(),  2. * M_PI);
-            double delta_paral_Bbar = remainder(itpa->second.second.Theta() - it0->second.second.Theta(), 2. * M_PI);
-            double delta_perp_B     = remainder(itpe->second.first.Theta()  - it0->second.first.Theta(),  2. * M_PI);
-            double delta_perp_Bbar  = remainder(itpe->second.second.Theta() - it0->second.second.Theta(), 2. * M_PI);
+            double delta_paral_B    = AngleDiff(itpa->second.first.Theta(), it0->second.first.Theta());
+            double delta_paral_Bbar = AngleDiff(itpa->second.second.Theta(), it0->second.second.Theta());
+            double delta_perp_B     = AngleDiff(itpe->second.first.Theta(), it0->second.first.Theta());
+            double delta_perp_Bbar  = AngleDiff(itpe->second.second.Theta(), it0->second.second.Theta());
 
             struct { string key; double value; } acp_pols[] = {
                 {"ACP_fparal_Bdjpsikst0",       (f_paral_Bbar    - f_paral_B)    / (f_paral_Bbar    + f_paral_B)},
                 {"ACP_fperp_Bdjpsikst0",        (f_perp_Bbar     - f_perp_B)     / (f_perp_Bbar     + f_perp_B)},
-                {"ACP_delta_paral_Bdjpsikst0",  (delta_paral_Bbar - delta_paral_B) / (delta_paral_Bbar + delta_paral_B)},
-                {"ACP_delta_perp_Bdjpsikst0",   (delta_perp_Bbar  - delta_perp_B)  / (delta_perp_Bbar  + delta_perp_B)},
+                {"ACP_delta_paral_Bdjpsikst0",  AngleDiff(delta_paral_Bbar, delta_paral_B) / (delta_paral_Bbar + delta_paral_B)},
+                {"ACP_delta_perp_Bdjpsikst0",   AngleDiff(delta_perp_Bbar, delta_perp_B)  / (delta_perp_Bbar  + delta_perp_B)},
             };
             for (const auto &ap : acp_pols)
             {
@@ -4025,7 +3977,7 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
                 // Check if it's an averaged vector meson channel
                 bool is_vector_channel = find(vectorMesonChannels.begin(), vectorMesonChannels.end(), basechannel) != vectorMesonChannels.end();
                 string pol = GetPolarizationLabel(obs_name);
-		bool is_polarized_measurement = !pol.empty();
+		        bool is_polarized_measurement = !pol.empty();
 
                 pair<TComplex, TComplex> amp_pair;
                 pair<TComplex, TComplex> amp0_pair;
@@ -4075,7 +4027,7 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
                     }
                     else if (is_vector_channel && is_polarized_measurement)
                     {
-		      string pol = GetPolarizationLabel(obs_name);
+		                string pol = GetPolarizationLabel(obs_name);
                         // Polarized measurement for vector meson channel
                         if (pol == "0")
                         {
@@ -4331,15 +4283,15 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
                         {
                             auto phi_lambda_paral = CalculatePhiAndLambda(ampparal_pair.first, ampparal_pair.second, basechannel);
                             auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
-                            delta_twobeta_pol = remainder(get<0>(phi_lambda_paral) - get<0>(phi_lambda_0), 2. * M_PI);
-                            delta_delta_twobeta_pol = remainder(get<2>(phi_lambda_paral) + get<2>(phi_lambda_0), 2. * M_PI);
+                            delta_twobeta_pol = AngleDiff(get<0>(phi_lambda_paral), get<0>(phi_lambda_0));
+                            delta_delta_twobeta_pol = AngleDiff(get<2>(phi_lambda_paral), get<2>(phi_lambda_0));
                         }
                         else if (obs_name.find("_perp") != string::npos)
                         {
                             auto phi_lambda_perp = CalculatePhiAndLambda(ampperp_pair.first, ampperp_pair.second, basechannel);
                             auto phi_lambda_0 = CalculatePhiAndLambda(amp0_pair.first, amp0_pair.second, basechannel);
-                            delta_twobeta_pol = remainder(get<0>(phi_lambda_perp) - get<0>(phi_lambda_0), 2. * M_PI);
-                            delta_delta_twobeta_pol = remainder(get<2>(phi_lambda_perp) + get<2>(phi_lambda_0), 2. * M_PI);
+                            delta_twobeta_pol = AngleDiff(get<0>(phi_lambda_perp), get<0>(phi_lambda_0));
+                            delta_delta_twobeta_pol = AngleDiff(get<2>(phi_lambda_perp), get<2>(phi_lambda_0));
                         }
                         else
                         {

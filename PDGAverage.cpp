@@ -5,8 +5,9 @@
 PDGAverage::PDGAverage() {};
 
 // constructor
-PDGAverage::PDGAverage(std::string name, const std::vector<dato> & data) : fData(data) {
+PDGAverage::PDGAverage(std::string name, const std::vector<dato> & data, const bool & isAngle) : fData(data) {
     fName = name;   
+    fIsAngle = isAngle;
     CalculateAverage();
 }
 
@@ -15,18 +16,31 @@ PDGAverage::~PDGAverage() {}
 
 // methods
 void PDGAverage::CalculateAverage() {
-    double sum = 0.;
+    double sum = 0., csum = 0.;
     double sum2 = 0.;
     for (std::vector<dato>::iterator it = fData.begin(); it != fData.end(); ++it) {
-        sum += it->getMean() / it->getSigma() / it->getSigma();
-        sum2 += 1. / it->getSigma() / it->getSigma();
+        if (fIsAngle) {
+            csum += cos(it->getMean()) / it->getSigma() / it->getSigma();
+            sum += sin(it->getMean()) / it->getSigma() / it->getSigma();
+            sum2 += 1. / it->getSigma() / it->getSigma();
+            fAverage = atan2(sum, csum);
+            fUncertainty = 1. / sqrt(sum2);
+        } else {
+            sum += it->getMean() / it->getSigma() / it->getSigma();
+            sum2 += 1. / it->getSigma() / it->getSigma();
+            fAverage = sum / sum2;
+            fUncertainty = 1. / sqrt(sum2);
+        }
     }
-    fAverage = sum / sum2;
-    fUncertainty = 1. / sqrt(sum2);
-    // compute the PDG scale factor
+
+   // compute the PDG scale factor
     double chi2 = 0.;
     for (std::vector<dato>::iterator it = fData.begin(); it != fData.end(); ++it) {
-        chi2 += (it->getMean() - fAverage) * (it->getMean() - fAverage) / it->getSigma() / it->getSigma();
+        if (fIsAngle) {
+            chi2 += AngleDiff(it->getMean(), fAverage) * AngleDiff(it->getMean(), fAverage) / it->getSigma() / it->getSigma();
+        } else {
+            chi2 += (it->getMean() - fAverage) * (it->getMean() - fAverage) / it->getSigma() / it->getSigma();
+        }
     }
     fScaleFactor = std::max(1.,sqrt(chi2 / (fData.size() - 1.)));
     // rescale the uncertainty

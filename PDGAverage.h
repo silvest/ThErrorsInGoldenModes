@@ -6,7 +6,7 @@
 class PDGAverage {
 public:
     PDGAverage(); // default constructor
-    PDGAverage(std::string name, const std::vector<dato> & data); // constructor
+    PDGAverage(std::string name, const std::vector<dato> & data, const bool & isAngle = false); // constructor
     ~PDGAverage(); // destructor
 
     // methods
@@ -42,6 +42,11 @@ public:
         fName = newName;
     }
 
+    // setter for fIsAngle
+    void setIsAngle(bool isAngle) {
+        fIsAngle = isAngle;
+    }
+
 private:
     // member variables
     std::string fName;
@@ -49,6 +54,14 @@ private:
     double fAverage;
     double fUncertainty;
     double fScaleFactor;
+    bool fIsAngle;
+
+    // Helper: signed angular difference wrapped into (-pi, pi]
+    double AngleDiff(double pred, double meas) const
+    {
+        return std::remainder(pred - meas, 2.0 * M_PI);
+    }
+
 };
 
 #endif // PDGAVERAGE_H
