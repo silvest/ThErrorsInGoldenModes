@@ -3207,7 +3207,10 @@ pair<double, double> goldenmodesB_indSU3::CalculateS(const TComplex &amplitude, 
     bool isBd = (bMeson == "Bd");
 
     // Having factored out the right CKM element in the amplitude calculation, here we just have 2beta or 2betas plus possible NP phase
-    TComplex q_p = isBd ? TComplex::Exp(TComplex(0, - getParameterValue("myphid"))) : TComplex::Exp(TComplex(0, getParameterValue("myphis")));
+    TComplex q_p =
+        isBd
+        ? TComplex::Exp(TComplex(0., -getParameterValue("myphid")))
+        : TComplex::Exp(TComplex(0., -getParameterValue("myphis")));
 
     // Special case for K0s and K0l channels (apply q/p_KS)
     if (channel == "Bdjpsik0s" || channel == "Bdjpsik0l")
@@ -3239,7 +3242,11 @@ pair<double, double> goldenmodesB_indSU3::CalculateS(const TComplex &amplitude, 
     //perche ci sta un meno qua???
     double mod_lambda_squared = lambda.Rho2();
     double S = -(2.0 * lambda.Im()) / (1.0 + mod_lambda_squared);
-    double DeltaS = isBd ? S - sin(getParameterValue("myphid")) : S + sin(getParameterValue("myphis"));
+    //double DeltaS = isBd ? S - sin(getParameterValue("myphid")) : S + sin(getParameterValue("myphis"));
+    double DeltaS =
+        S - sin(isBd
+                    ? getParameterValue("myphid")
+                    : getParameterValue("myphis"));
 
     return make_pair(S, DeltaS);
 }
@@ -3249,11 +3256,11 @@ tuple<double, double, double> goldenmodesB_indSU3::CalculatePhiAndLambda(const T
     // Ensure the amplitude is nonzero to avoid division by zero
     if (amplitude.Rho() == 0)
     {
-        // Return sentinel values: C=0, S=0, |lambda|=0 — LogLikelihood will
+        // Return sentinel values: C=0, S=0, |lambda|=1 — LogLikelihood will
         // naturally penalise this point via the data. This avoids a crash when
         // MCMC chains are initialised at symmetric midpoints (amplitude == 0).
       //bug??
-        return {0., 0., 0.};
+        return {0., 1., 0.};
       // return {0., 0., 1.};
     }
 
@@ -3263,22 +3270,38 @@ tuple<double, double, double> goldenmodesB_indSU3::CalculatePhiAndLambda(const T
 
     bool isBd = (bMeson == "Bd");
 
-    // Having factored out the right CKM element in the amplitude calculation, here we just have 2beta or 2betas plus possible NP phase. 
-    TComplex q_p = isBd ? TComplex::Exp(TComplex(0, - getParameterValue("myphid"))) : TComplex::Exp(TComplex(0, getParameterValue("myphis")));
-    double sign = -1.;
+    // Having factored out the right CKM element in the amplitude calculation, here we just have 2beta or 2betas plus possible NP phase.
+    //TComplex q_p = isBd ? TComplex::Exp(TComplex(0, - getParameterValue("myphid"))) : TComplex::Exp(TComplex(0, getParameterValue("myphis")));
+    
+    //double sign = -1.;
 
     // Compute lambda = (q/p) * (A_cp / A_conj)
-    TComplex lambda = q_p * (conjugate_amplitude / amplitude);
+    //TComplex lambda = q_p * (conjugate_amplitude / amplitude);
 
     // Compute |lambda|
-    double mod_lambda = lambda.Rho();
+   // double mod_lambda = lambda.Rho();
 
     // Compute phi = sign * arg(lambda)
-    double phi = sign * lambda.Theta();
+   // double phi = sign * lambda.Theta();
 
     // cout << "Channel: " << channel << ", reference angle: " << (isBd ? 2.*ckm.get_beta() : -2.*ckm.get_betas()) << ", calculated phi: " << phi << ", |lambda|: " << mod_lambda << endl;
 
-    return make_tuple(phi, mod_lambda, phi - (isBd ? getParameterValue("myphid") : getParameterValue("myphis")));
+   // return make_tuple(phi, mod_lambda, phi - (isBd ? getParameterValue("myphid") : getParameterValue("myphis")));
+    const double mixingPhase =
+        isBd ? getParameterValue("myphid")
+             : getParameterValue("myphis");
+
+    TComplex q_p =
+        TComplex::Exp(TComplex(0., -mixingPhase));
+
+    TComplex lambda =
+        q_p * (conjugate_amplitude / amplitude);
+
+    double mod_lambda = lambda.Rho();
+    double phi = -lambda.Theta();
+    double delta_phi = WrapAngle(phi - mixingPhase);
+
+    return std::make_tuple(phi, mod_lambda, delta_phi);
 }
 
 // pair<vector<string>, string> goldenmodesB_indSU3::extractChannelFromCorrKey(const string &corr_key)
