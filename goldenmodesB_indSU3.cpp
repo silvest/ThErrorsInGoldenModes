@@ -30,8 +30,14 @@ using namespace std;
 
 static CKMParameters ckm;
 
-goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM) : BCModel(), histos(obs)
+goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP) : BCModel(), histos(obs)
 {
+    
+    flagBJPSIP = BJPSIP;
+    flagBJPSIV = BJPSIV;
+    flagBDDb = BDDb;
+    flagGaussianCKM = gaussianCKM;
+    flagPositiveG2tP = positiveG2tP;
     int mpi_rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     TH1::SetDefaultBufferSize(1000000);
@@ -1308,7 +1314,14 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
 
         addAmplitudeParameter("E2t_ccsd_BJPSIP_re", 0., 5.);
         addAmplitudeParameter("E2t_ccsd_BJPSIP_im", 0., 0.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_re", -20., 20.);
+        if(flagPositiveG2tP)
+        {
+            addAmplitudeParameter("G2t_scd_BJPSIP_re", 0., 20.);
+        }
+        else
+        {
+            addAmplitudeParameter("G2t_scd_BJPSIP_re", -20., 0.);
+        }
         addAmplitudeParameter("G2t_scd_BJPSIP_im", -5., 5.);
     }
     else if (channel == "Bdjpsip0")
@@ -1329,10 +1342,17 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -20., 20.);
         addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -5., 5.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_re", -5., 5.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_re", 0., 5.);
         addAmplitudeParameter("E2t_ccdd_BJPSIP_im", -5., 5.);
         addSU3Pair("E2t_ccdd_BJPSIP", "E2t_ccsd_BJPSIP");
-        addAmplitudeParameter("G2t_dcd_BJPSIP_re", -20., 0.);
+        if(flagPositiveG2tP)
+        {
+            addAmplitudeParameter("G2t_dcd_BJPSIP_re", 0., 20.);
+        }
+        else
+        {
+            addAmplitudeParameter("G2t_dcd_BJPSIP_re", -20., 0.);
+        }
         addAmplitudeParameter("G2t_dcd_BJPSIP_im", -5., 5.);
         addSU3Pair("G2t_dcd_BJPSIP", "G2t_scd_BJPSIP");
     }
@@ -1357,7 +1377,7 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             "G4t_csd_BJPSIP_im"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_re", -5., 5.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_re", 0., 5.);
         addAmplitudeParameter("E2t_ccdd_BJPSIP_im", -5., 5.);
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
@@ -1397,7 +1417,7 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             "G4t_csd_BJPSIP_im"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_re", -5., 5.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_re", 0., 5.);
         addAmplitudeParameter("E2t_ccdd_BJPSIP_im", -5., 5.);
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));

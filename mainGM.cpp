@@ -91,6 +91,7 @@ int main(int argc, char* argv[]) {
     bool flagIndSU3 = false;
     bool flagSU3ReIm = false;
     bool flagGaussianCKM = false;
+    bool flagPositiveG2tP = false;
 
     double dsu3_limit = 0.2;
     double ewp_limit = 0.0;
@@ -135,6 +136,8 @@ int main(int argc, char* argv[]) {
             flagSU3ReIm = true;
         } else if (strcmp(argv[i], "--gaussianCKM") == 0) {
             flagGaussianCKM = true;
+        } else if (strcmp(argv[i], "--positiveG2tP") == 0) {
+            flagPositiveG2tP = true;
         } else if (strcmp(argv[i], "--help") == 0) {
             cout << "Usage: " << argv[0] << " [options]\n"
                  << "Options:\n"
@@ -142,6 +145,7 @@ int main(int argc, char* argv[]) {
                  << "  --flagBJPSIV                    Enable BJPSIV flag\n"
                  << "  --flagBJPSIP                    Enable BJPSIP flag\n"
                  << "  --flagBDDb                     Enable BDDb flag\n"
+                 << "  --positiveG2tP                  Use positive G2t_scd_BJPSIP values\n"
                  << "  --dsu3_limit <value>            Set dsu3 limit (default: 0.2)\n"
                  << "  --ewp_limit <value>             Set ewp limit (default: 0.0)\n"
                  << "  --nPreRun <value>               Set number of pre-run iterations (default: 100000)\n"
@@ -173,6 +177,7 @@ int main(int argc, char* argv[]) {
         cout << "ewp_limit: " << ewp_limit << endl;
         cout << "indSU3 mode: " << (flagIndSU3 ? "true" : "false") << endl;
         if (flagIndSU3) {
+            cout << "positive G2t_scd_BJPSIP: " << (flagPositiveG2tP ? "true" : "false") << endl;
             cout << "su3_sigma: " << (su3_sigma > 0. ? to_string(su3_sigma) : "free") << endl;
             cout << "su3_reIm weight: " << (flagSU3ReIm ? "true" : "false") << endl;
             cout << "Gaussian CKM prior: " << (flagGaussianCKM ? "true" : "false") << endl;
@@ -191,7 +196,7 @@ int main(int argc, char* argv[]) {
     auto start = chrono::high_resolution_clock::now();
 
     if (flagIndSU3) {
-        goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma, flagGaussianCKM);
+        goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma, flagGaussianCKM, flagPositiveG2tP);
         model.SetSU3WeightReIm(flagSU3ReIm);
         if (mpi_rank != 0) {
             workerLoop(model);

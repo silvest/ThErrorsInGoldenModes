@@ -59,7 +59,7 @@ private:
     // Helper: signed angular difference wrapped into (-pi, pi]
     double AngleDiff(double pred, double meas) const
     {
-        return std::remainder(pred - meas, 2.0 * M_PI);
+        return remainder(pred - meas, 2.0 * M_PI);
     }
 
 };
