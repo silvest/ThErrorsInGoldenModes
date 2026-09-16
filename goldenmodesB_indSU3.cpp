@@ -1507,7 +1507,14 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("dP4EW_ucs_BPJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
         registerEWP("dP4EW_ucs_BPJPSI");
         addSU3Pair("dP4EW_ucs_BPJPSI", "dP4EW_ucd_BPJPSI");
-        addAmplitudeParameter("EA2_ddcs_BPJPSI_re", -10., 20.);
+        if(flagPositiveG2tP)
+        {
+            addAmplitudeParameter("EA2_ddcs_BPJPSI_re", -20., 5.);
+        }
+        else
+        {
+            addAmplitudeParameter("EA2_ddcs_BPJPSI_re", -10., 20.);
+        }
         addAmplitudeParameter("EA2_ddcs_BPJPSI_im", -10., 10.);
         addSU3Pair("EA2_ddcs_BPJPSI", "EA2_ddcd_BPJPSI");
     }
