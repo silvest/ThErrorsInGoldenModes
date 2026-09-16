@@ -1390,7 +1390,7 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -5., 5.);
         addAmplitudeParameter("G2t_dcd_BJPSIP_re", -10., 10.);
         addAmplitudeParameter("G2t_dcd_BJPSIP_im", -5., 5.);
-        if(flagPositiveG4tP)
+        if(flagPositiveG2tP)
         {
             addAmplitudeParameter("G4t_cdd_BJPSIP_re", -10., 2.);
         }
