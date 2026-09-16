@@ -92,6 +92,7 @@ int main(int argc, char* argv[]) {
     bool flagSU3ReIm = false;
     bool flagGaussianCKM = false;
     bool flagPositiveG2tP = false;
+    string su3_weight = "abs"; // default SU(3) weight mode for indSU3
 
     double dsu3_limit = 0.2;
     double ewp_limit = 0.0;
@@ -132,8 +133,8 @@ int main(int argc, char* argv[]) {
             flagIndSU3 = true;
         } else if (strcmp(argv[i], "--su3_sigma") == 0 && i + 1 < argc) {
             su3_sigma = atof(argv[++i]);
-        } else if (strcmp(argv[i], "--su3_reIm") == 0) {
-            flagSU3ReIm = true;
+        } else if (strcmp(argv[i], "--su3_weight") == 0 && i + 1 < argc) {
+            su3_weight = argv[++i];
         } else if (strcmp(argv[i], "--gaussianCKM") == 0) {
             flagGaussianCKM = true;
         } else if (strcmp(argv[i], "--positiveG2tP") == 0) {
@@ -154,8 +155,8 @@ int main(int argc, char* argv[]) {
                   "  --nUpdateMax value            Set max number of update iterations (default: 100)\n"
                   "  --nChains value               Set number of chains (default: 10)\n"
                   "  --Univariate                   Enable univariate mode\n"                  "  --indSU3                        Use goldenmodesB_indSU3 (independent SU(3) breaking)\n"
+                  "  --su3_weight <value>            SU(3) weight for indSU3 mode (default: \"abs\")\n"
                   "  --su3_sigma <value>             SU(3) sigma for indSU3 mode (default: free BAT parameter)\n"
-                  "  --su3_reIm                      Use separate Re/Im SU(3) weight instead of |A1-A2|\n"
                   "  --gaussianCKM                   Use Gaussian priors on CKM parameters (indSU3 mode only)\n"
                   "  --help                          Show this help message\n";
             return 0;
@@ -179,7 +180,7 @@ int main(int argc, char* argv[]) {
         if (flagIndSU3) {
             cout << "positive G2t_scd_BJPSIP: " << (flagPositiveG2tP ? "true" : "false") << endl;
             cout << "su3_sigma: " << (su3_sigma > 0. ? to_string(su3_sigma) : "free") << endl;
-            cout << "su3_reIm weight: " << (flagSU3ReIm ? "true" : "false") << endl;
+            cout << "su3_weight: " << su3_weight << endl;
             cout << "Gaussian CKM prior: " << (flagGaussianCKM ? "true" : "false") << endl;
         }
         cout << "nIterationsPreRun: " << nIterationsPreRun << endl;
@@ -197,7 +198,7 @@ int main(int argc, char* argv[]) {
 
     if (flagIndSU3) {
         goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma, flagGaussianCKM, flagPositiveG2tP);
-        model.SetSU3WeightReIm(flagSU3ReIm);
+        model.SetSU3Weight(su3_weight);
         if (mpi_rank != 0) {
             workerLoop(model);
         } else {

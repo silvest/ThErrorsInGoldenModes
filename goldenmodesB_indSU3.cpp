@@ -4702,14 +4702,22 @@ double goldenmodesB_indSU3::CalculateSU3Penalty(double sigma) const
         try {
             TComplex A1 = getPar(p.first);
             TComplex A2 = getPar(p.second);
-            if (!su3_weight_reIm) {
+            if (su3_weight == "abs") {
+                // Penalise |A1| - |A2| normalised by average abs
+                double avg = 0.5 * (A1.Rho() + A2.Rho());
+                if (avg > 1e-10) {
+                    double diff = A1.Rho() - A2.Rho();
+                    penalty -= 0.5 * diff * diff / (avg * avg * sigma * sigma);
+                }
+            } 
+            else if (su3_weight == "complex") {
                 // Default: penalise |A1 - A2| normalised by average modulus
                 double avg = 0.5 * (A1.Rho() + A2.Rho());
                 if (avg > 1e-10) {
                     TComplex diff = A1 - A2;
                     penalty -= 0.5 * diff.Rho2() / (avg * avg * sigma * sigma);
                 }
-            } else {
+            } else if (su3_weight == "reim") {
                 // Alternative: penalise Re and Im parts separately
                 double dRe   = A1.Re() - A2.Re();
                 double dIm   = A1.Im() - A2.Im();
@@ -4719,6 +4727,10 @@ double goldenmodesB_indSU3::CalculateSU3Penalty(double sigma) const
                     penalty -= 0.5 * dRe * dRe / (avgRe * avgRe * sigma * sigma);
                 if (avgIm > 1e-10)
                     penalty -= 0.5 * dIm * dIm / (avgIm * avgIm * sigma * sigma);
+            }
+            else {
+                cerr << "Error: Unknown su3_weight option: " << su3_weight << endl;
+                exit(1);
             }
         } catch (...) {
             // parameter not active (channel not included), skip

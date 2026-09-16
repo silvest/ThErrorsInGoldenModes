@@ -136,8 +136,8 @@ public:
     double CalculateSU3Penalty(double sigma) const;
     double CalculateEWPPenalty() const;
 
-    // Switch SU(3) weight mode: false = |A1-A2| (default), true = separate Re/Im
-    void SetSU3WeightReIm(bool flag) { su3_weight_reIm = flag; }
+    // Switch SU(3) weight modes: "abs", "complex", or "reIm" (default: "abs")
+    void SetSU3Weight(const string &weight) { su3_weight = weight; }
 
     void MCMCUserIterationInterface();
     void SaveHistograms(const string &filename);
@@ -150,7 +150,7 @@ private:
     double ewp_limit = 0.0;
     double su3_sigma = 0.3;    // fixed value (used when su3_sigma_is_free = false)
     bool su3_sigma_is_free = false;
-    bool su3_weight_reIm = false; // if true, penalise Re and Im parts separately
+    string su3_weight = "abs"; // if "abs", penalise |A1| - |A2|; if "complex", penalise |A1 - A2|; if "reIm", penalise Re and Im parts separately
     bool ckm_gaussian_prior = false; // if true, use Gaussian priors on CKM parameters
 
     // List of adjacent SU(3)-related amplitude base-name pairs
