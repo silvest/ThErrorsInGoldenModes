@@ -4011,18 +4011,18 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
 
 	
 	// TEMPORARY DEBUG: skip correlated datasets containing angular observables
-	if (//key == "Bsjpsiphi_LHCb2023sim" ||
+/* 	if (//key == "Bsjpsiphi_LHCb2023sim" ||
 	    //key == "Bsjpsiphi_CMS2024znt" ||
 	    //key == "phi_Bsjpsiphi_ATLAS2020B"   ||
-	    key == "Bdjpsikst0_LHCb2013" ||
-	    key == "Bsjpsikbst0_LHCb2025"
+	    // key == "Bdjpsikst0_LHCb2013" ||
+	    // key == "Bsjpsikbst0_LHCb2025"
             //key == "Bdjpsirh_LHCb2014xpr" ||
             //key == "Bdjpsirh_LHCb2026pbn"
 	    )
 	  {
 	    continue;
 	  }
-       
+ */       
 
         if (obs_names.size() != corrObs.getNObs())
         {
