@@ -30,7 +30,7 @@ using namespace std;
 
 static CKMParameters ckm;
 
-goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP) : BCModel(), histos(obs)
+goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP, bool positiveEA1P) : BCModel(), histos(obs)
 {
     
     flagBJPSIP = BJPSIP;
@@ -38,6 +38,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
     flagBDDb = BDDb;
     flagGaussianCKM = gaussianCKM;
     flagPositiveG2tP = positiveG2tP;
+    flagPositiveEA1P = positiveEA1P;
     int mpi_rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     TH1::SetDefaultBufferSize(1000000);
@@ -1435,7 +1436,14 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("dP2EW_scu_BPJPSI_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
         registerEWP("dP2EW_scu_BPJPSI");
         addAmplitudeParameter("dP2EW_scu_BPJPSI_arg", -M_PI, M_PI);
-        addAmplitudeParameter("EA1_sdcd_BPJPSI_arg", -M_PI, M_PI);
+        if (flagPositiveEA1P)
+        {
+            addAmplitudeParameter("EA1_sdcd_BPJPSI_arg", -M_PI/2., M_PI/2.);
+        }
+        else
+        {
+            addAmplitudeParameter("EA1_sdcd_BPJPSI_arg", M_PI/2., 3*M_PI/2.);
+        }
         addAmplitudeParameter("EA1_sdcd_BPJPSI_abs", 0., 14.1421);
     }
     else if (channel == "Bpjpsipp")

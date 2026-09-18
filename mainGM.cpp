@@ -147,6 +147,7 @@ int main(int argc, char* argv[]) {
                  << "  --flagBJPSIP                    Enable BJPSIP flag\n"
                  << "  --flagBDDb                     Enable BDDb flag\n"
                  << "  --positiveG2tP                  Use positive G2t_scd_BJPSIP values\n"
+                 << "  --positiveEA1P                  Use positive EA1_sdcd_BJPSIP values\n"
                  << "  --dsu3_limit <value>            Set dsu3 limit (default: 0.2)\n"
                  << "  --ewp_limit <value>             Set ewp limit (default: 0.0)\n"
                  << "  --nPreRun <value>               Set number of pre-run iterations (default: 100000)\n"
@@ -179,6 +180,7 @@ int main(int argc, char* argv[]) {
         cout << "indSU3 mode: " << (flagIndSU3 ? "true" : "false") << endl;
         if (flagIndSU3) {
             cout << "positive G2t_scd_BJPSIP: " << (flagPositiveG2tP ? "true" : "false") << endl;
+            cout << "positive EA1_sdcd_BJPSIP: " << (flagPositiveEA1P ? "true" : "false") << endl;
             cout << "su3_sigma: " << (su3_sigma > 0. ? to_string(su3_sigma) : "free") << endl;
             cout << "su3_weight: " << su3_weight << endl;
             cout << "Gaussian CKM prior: " << (flagGaussianCKM ? "true" : "false") << endl;
@@ -197,7 +199,7 @@ int main(int argc, char* argv[]) {
     auto start = chrono::high_resolution_clock::now();
 
     if (flagIndSU3) {
-        goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma, flagGaussianCKM, flagPositiveG2tP);
+        goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma, flagGaussianCKM, flagPositiveG2tP, flagPositiveEA1P);
         model.SetSU3Weight(su3_weight);
         if (mpi_rank != 0) {
             workerLoop(model);
