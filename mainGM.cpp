@@ -92,6 +92,7 @@ int main(int argc, char* argv[]) {
     bool flagSU3ReIm = false;
     bool flagGaussianCKM = false;
     bool flagPositiveG2tP = false;
+    bool flagPositiveEA1P = false;
     string su3_weight = "abs"; // default SU(3) weight mode for indSU3
 
     double dsu3_limit = 0.2;
