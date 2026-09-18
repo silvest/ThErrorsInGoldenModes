@@ -150,7 +150,8 @@ private:
     double ewp_limit = 0.0;
     double su3_sigma = 0.3;    // fixed value (used when su3_sigma_is_free = false)
     bool su3_sigma_is_free = false;
-    string su3_weight = "abs"; // if "abs", penalise |A1| - |A2|; if "complex", penalise |A1 - A2|; if "reIm", penalise Re and Im parts separately
+    string su3_weight = "abs"; // if "abs", penalise |A1| - |A2| using the stored _abs parameters directly (arg is never read);
+                               // if "complex", penalise |A1 - A2| using re/im derived from abs/arg; if "reIm", penalise Re and Im parts separately (also derived from abs/arg)
     bool ckm_gaussian_prior = false; // if true, use Gaussian priors on CKM parameters
 
     // List of adjacent SU(3)-related amplitude base-name pairs
@@ -168,7 +169,7 @@ private:
     unordered_set<string> referenceAmplitudes;
     map<string, pair<TComplex, TComplex>> amplitude_map;
 
-    // Helper: add a SU(3) pair (base names, without _re/_im)
+    // Helper: add a SU(3) pair (base names, without _abs/_arg)
     // For vector channels (isVector=true) all three polarizations are registered
     void addSU3Pair(const string &param1, const string &param2, bool isVector = false)
     {
@@ -249,12 +250,12 @@ private:
 
     string addPolarizationSuffix(string amplitude, string suffix) const
     {
-        size_t pos_re = amplitude.find("_re");
-        size_t pos_im = amplitude.find("_im");
-        if (pos_re != string::npos)
-            amplitude.insert(pos_re, suffix);
-        else if (pos_im != string::npos)
-            amplitude.insert(pos_im, suffix);
+        size_t pos_abs = amplitude.find("_abs");
+        size_t pos_arg = amplitude.find("_arg");
+        if (pos_abs != string::npos)
+            amplitude.insert(pos_abs, suffix);
+        else if (pos_arg != string::npos)
+            amplitude.insert(pos_arg, suffix);
         else {
             cerr << "Target substring not found!" << endl;
             exit(1);

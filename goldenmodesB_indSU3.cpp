@@ -125,12 +125,12 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         GetParameter("CKM_gamma").SetPrior(make_shared<BCGaussianPrior>(65.7/180.0 * M_PI, 2.5/180.0 * M_PI));
     }
 
-    // Set Gaussian priors on EW penguin parameters (better for MCMC than a log-likelihood penalty)
+    // Set a Gaussian prior on the EW penguin amplitude modulus (better for MCMC than a log-likelihood penalty);
+    // the phase (_arg) is left with its default uniform prior since it carries no directional preference.
     if (ewp_limit > 0.) {
         for (const auto &name : ewpParamBaseNames) {
             try {
-                GetParameter(name + "_re").SetPrior(make_shared<BCGaussianPrior>(0., ewp_limit));
-                GetParameter(name + "_im").SetPrior(make_shared<BCGaussianPrior>(0., ewp_limit));
+                GetParameter(name + "_abs").SetPrior(make_shared<BCGaussianPrior>(0., ewp_limit));
             } catch (...) {}
         }
     }
@@ -1207,40 +1207,15 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
     // Create histograms for all observables
 
-    vector<string> paramsfor2dhistos;
-
     for (const auto &channel : channelNamesSU3)
     {
-        // create histos for mod and phase as well as real and imaginary parts for the effective parameters
+        // The BAT parameters are already the abs/arg (modulus/phase) of each amplitude,
+        // so a single histogram per parameter suffices (no derived _abs/_arg needed).
         for (const auto &param : channelParameters[channel])
         {
             histos.createH1D(param, 500, 0.0, 0.0);
-            string newStr;
-            size_t length = param.length();
-
-            newStr.reserve(length + 1);
-
-            if (length >= 3 && param.substr(length - 3) == "_re")
-            {
-                newStr.append(param, 0, length - 3); // Append text before "_re"
-                // strip the possible trailing "delta_" from the parameter name to get the full parameter
-                newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0);                                                            // Remove "delta_" if it exists at the start
-                histos.createH1D(newStr + "_abs", 500, 0.0, 0.0);   
-                paramsfor2dhistos.push_back(newStr + "_abs"); 
-            }
-            else if (length >= 3 && param.substr(length - 3) == "_im")
-            {
-                newStr.append(param, 0, length - 3); // Append text before "_im"
-                newStr.erase(0, newStr.find("delta_") == 0 ? 6 : 0);                                                            // Remove "delta_" if it exists at the start
-                histos.createH1D(newStr + "_arg", 500, 0.0, 0.0);
-                paramsfor2dhistos.push_back(newStr + "_arg");    
-            }
-
         }
     }
-
-    // 2D histos for _abs/_arg are omitted: BAT already tracks _re/_im
-    // correlations for all amplitude parameters via its own TH2D system.
 
     for (const auto &channel : channels)
     {
@@ -1305,962 +1280,947 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
     if (channel == "Bdjpsik0")
     {
         vector<string> params = {
-            "E2t_ccsd_BJPSIP_re",
-            "E2t_ccsd_BJPSIP_im",
-            "G2t_scd_BJPSIP_re",
-            "G2t_scd_BJPSIP_im",
+            "E2t_ccsd_BJPSIP_abs",
+            "E2t_ccsd_BJPSIP_arg",
+            "G2t_scd_BJPSIP_abs",
+            "G2t_scd_BJPSIP_arg",
         };
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccsd_BJPSIP_re", 0., 5.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIP_im", 0., 0.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIP_abs", 0., 5.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIP_arg", 0., 0.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_abs", 0., 20.6155);
         if(flagPositiveG2tP)
         {
-            addAmplitudeParameter("G2t_scd_BJPSIP_re", 0., 20.);
+            addAmplitudeParameter("G2t_scd_BJPSIP_arg", -M_PI/2., M_PI/2.);
         }
         else
         {
-            addAmplitudeParameter("G2t_scd_BJPSIP_re", -20., 0.);
+            addAmplitudeParameter("G2t_scd_BJPSIP_arg", M_PI/2., 3.*M_PI/2.);
         }
-        addAmplitudeParameter("G2t_scd_BJPSIP_im", -5., 5.);
     }
     else if (channel == "Bdjpsip0")
     {
         vector<string> params = {
-            "E2t_ccdd_BJPSIP_re",
-            "E2t_ccdd_BJPSIP_im",
-            "dP4EW_ucd_BPJPSI_re",
-            "dP4EW_ucd_BPJPSI_im",
-            "EA2_ddcd_BPJPSI_re",
-            "EA2_ddcd_BPJPSI_im",
-            "G2t_dcd_BJPSIP_re",
-            "G2t_dcd_BJPSIP_im"};
+            "E2t_ccdd_BJPSIP_abs",
+            "E2t_ccdd_BJPSIP_arg",
+            "dP4EW_ucd_BPJPSI_abs",
+            "dP4EW_ucd_BPJPSI_arg",
+            "EA2_ddcd_BPJPSI_abs",
+            "EA2_ddcd_BPJPSI_arg",
+            "G2t_dcd_BJPSIP_abs",
+            "G2t_dcd_BJPSIP_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucd_BPJPSI_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
         registerEWP("dP4EW_ucd_BPJPSI");
-        addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -20., 20.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -5., 5.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_re", 0., 5.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_im", -5., 5.);
+        addAmplitudeParameter("dP4EW_ucd_BPJPSI_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_abs", 0., 20.6155);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_arg", -M_PI, M_PI);
         addSU3Pair("E2t_ccdd_BJPSIP", "E2t_ccsd_BJPSIP");
+        addAmplitudeParameter("G2t_dcd_BJPSIP_abs", 0., 20.6155);
         if(flagPositiveG2tP)
         {
-            addAmplitudeParameter("G2t_dcd_BJPSIP_re", 0., 20.);
+            addAmplitudeParameter("G2t_dcd_BJPSIP_arg", -M_PI/2., M_PI/2.);
         }
         else
         {
-            addAmplitudeParameter("G2t_dcd_BJPSIP_re", -20., 0.);
+            addAmplitudeParameter("G2t_dcd_BJPSIP_arg", M_PI/2., 3.*M_PI/2.);
         }
-        addAmplitudeParameter("G2t_dcd_BJPSIP_im", -5., 5.);
         addSU3Pair("G2t_dcd_BJPSIP", "G2t_scd_BJPSIP");
     }
     else if (channel == "Bdjpsieta8")
     {
         vector<string> params = {
-            "E2t_ccdd_BJPSIP_re",
-            "E2t_ccdd_BJPSIP_im",
-            "dP4EW_ucd_BPJPSI_re",
-            "dP4EW_ucd_BPJPSI_im",
-            "EA2t_ccdd_BJPSIP_re",
-            "EA2t_ccdd_BJPSIP_im",
-            "EA2t_ccsd_BJPSIP_re",
-            "EA2t_ccsd_BJPSIP_im",
-            "EA2_ddcd_BPJPSI_re",
-            "EA2_ddcd_BPJPSI_im",
-            "G2t_dcd_BJPSIP_re",
-            "G2t_dcd_BJPSIP_im",
-            "G4t_cdd_BJPSIP_re",
-            "G4t_cdd_BJPSIP_im",
-            "G4t_csd_BJPSIP_re",
-            "G4t_csd_BJPSIP_im"};
+            "E2t_ccdd_BJPSIP_abs",
+            "E2t_ccdd_BJPSIP_arg",
+            "dP4EW_ucd_BPJPSI_abs",
+            "dP4EW_ucd_BPJPSI_arg",
+            "EA2t_ccdd_BJPSIP_abs",
+            "EA2t_ccdd_BJPSIP_arg",
+            "EA2t_ccsd_BJPSIP_abs",
+            "EA2t_ccsd_BJPSIP_arg",
+            "EA2_ddcd_BPJPSI_abs",
+            "EA2_ddcd_BPJPSI_arg",
+            "G2t_dcd_BJPSIP_abs",
+            "G2t_dcd_BJPSIP_arg",
+            "G4t_cdd_BJPSIP_abs",
+            "G4t_cdd_BJPSIP_arg",
+            "G4t_csd_BJPSIP_abs",
+            "G4t_csd_BJPSIP_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_re", 0., 5.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_im", -5., 5.);
-        addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -5., 5.);
-        addAmplitudeParameter("EA2t_ccsd_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("EA2t_ccsd_BJPSIP_im", -5., 5.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("dP4EW_ucd_BPJPSI_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP4EW_ucd_BPJPSI_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIP_arg", -M_PI, M_PI);
         addSU3Pair("EA2t_ccsd_BJPSIP", "EA2t_ccdd_BJPSIP");
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -5., 5.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -5., 5.);
-        addAmplitudeParameter("G2t_dcd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIP_im", -5., 5.);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_abs", 0., 7.0711);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcd_BJPSIP_abs", 0., 11.1803);
+        addAmplitudeParameter("G2t_dcd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_abs", 0., 22.3607);
         if(flagPositiveG2tP)
         {
-            addAmplitudeParameter("G4t_cdd_BJPSIP_re", -10., 2.);
+            addAmplitudeParameter("G4t_cdd_BJPSIP_arg", -M_PI, M_PI);
         }
         else
         {
-            addAmplitudeParameter("G4t_cdd_BJPSIP_re", 0., 20.);
+            addAmplitudeParameter("G4t_cdd_BJPSIP_arg", -M_PI/2., M_PI/2.);
         }
-        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -10., 10.);
-        addAmplitudeParameter("G4t_csd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G4t_csd_BJPSIP_im", -10., 10.);
+        addAmplitudeParameter("G4t_csd_BJPSIP_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_csd_BJPSIP_arg", -M_PI, M_PI);
         addSU3Pair("G4t_csd_BJPSIP", "G4t_cdd_BJPSIP");
     }
     else if (channel == "Bdjpsieta1")
     {
         vector<string> params = {
-            "E2t_ccdd_BJPSIP_re",
-            "E2t_ccdd_BJPSIP_im",
-            "dP4EW_ucd_BPJPSI_re",
-            "dP4EW_ucd_BPJPSI_im",
-            "EA2t_ccdd_BJPSIP_re",
-            "EA2t_ccdd_BJPSIP_im",
-            "EA2t_ccsd_BJPSIP_re",
-            "EA2t_ccsd_BJPSIP_im",
-            "EA2_ddcd_BPJPSI_re",
-            "EA2_ddcd_BPJPSI_im",
-            "G2t_dcd_BJPSIP_re",
-            "G2t_dcd_BJPSIP_im",
-            "G4t_cdd_BJPSIP_re",
-            "G4t_cdd_BJPSIP_im",
-            "G4t_csd_BJPSIP_re",
-            "G4t_csd_BJPSIP_im"};
+            "E2t_ccdd_BJPSIP_abs",
+            "E2t_ccdd_BJPSIP_arg",
+            "dP4EW_ucd_BPJPSI_abs",
+            "dP4EW_ucd_BPJPSI_arg",
+            "EA2t_ccdd_BJPSIP_abs",
+            "EA2t_ccdd_BJPSIP_arg",
+            "EA2t_ccsd_BJPSIP_abs",
+            "EA2t_ccsd_BJPSIP_arg",
+            "EA2_ddcd_BPJPSI_abs",
+            "EA2_ddcd_BPJPSI_arg",
+            "G2t_dcd_BJPSIP_abs",
+            "G2t_dcd_BJPSIP_arg",
+            "G4t_cdd_BJPSIP_abs",
+            "G4t_cdd_BJPSIP_arg",
+            "G4t_csd_BJPSIP_abs",
+            "G4t_csd_BJPSIP_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_re", 0., 5.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_im", -5., 5.);
-        addAmplitudeParameter("dP4EW_ucd_BPJPSI_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP4EW_ucd_BPJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIP_im", -5., 5.);
-        addAmplitudeParameter("EA2t_ccsd_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("EA2t_ccsd_BJPSIP_im", -5., 5.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_re", -5., 5.);
-        addAmplitudeParameter("EA2_ddcd_BPJPSI_im", -5., 5.);
-        addAmplitudeParameter("G2t_dcd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIP_im", -5., 5.);
-        addAmplitudeParameter("G4t_cdd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G4t_cdd_BJPSIP_im", -10., 10.);
-        addAmplitudeParameter("G4t_csd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G4t_csd_BJPSIP_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("dP4EW_ucd_BPJPSI_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP4EW_ucd_BPJPSI_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_abs", 0., 7.0711);
+        addAmplitudeParameter("EA2_ddcd_BPJPSI_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcd_BJPSIP_abs", 0., 11.1803);
+        addAmplitudeParameter("G2t_dcd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_cdd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_csd_BJPSIP_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_csd_BJPSIP_arg", -M_PI, M_PI);
     }
     else if (channel == "Bpjpsikp")
     {
         vector<string> params = {
-            "E2t_ccsd_BJPSIP_re",
-            "E2t_ccsd_BJPSIP_im",
-            "G2t_scd_BJPSIP_re",
-            "G2t_scd_BJPSIP_im",
-            "dP2EW_scu_BPJPSI_re",
-            "dP2EW_scu_BPJPSI_im",
-            "EA1_sdcd_BPJPSI_re",
-            "EA1_sdcd_BPJPSI_im"};
+            "E2t_ccsd_BJPSIP_abs",
+            "E2t_ccsd_BJPSIP_arg",
+            "G2t_scd_BJPSIP_abs",
+            "G2t_scd_BJPSIP_arg",
+            "dP2EW_scu_BPJPSI_abs",
+            "dP2EW_scu_BPJPSI_arg",
+            "EA1_sdcd_BPJPSI_abs",
+            "EA1_sdcd_BPJPSI_arg"};
         channelParameters[channel] = params;
-        addAmplitudeParameter("E2t_ccsd_BJPSIP_re", 0., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIP_im", 0., 0.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIP_im", -10., 10.);
-        addAmplitudeParameter("dP2EW_scu_BPJPSI_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("E2t_ccsd_BJPSIP_abs", 0., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIP_arg", 0., 0.);
+        addAmplitudeParameter("G2t_scd_BJPSIP_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("dP2EW_scu_BPJPSI_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
         registerEWP("dP2EW_scu_BPJPSI");
-        addAmplitudeParameter("dP2EW_scu_BPJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("EA1_sdcd_BPJPSI_im", -10., 10.);
-        addAmplitudeParameter("EA1_sdcd_BPJPSI_re", -10., 10.);
+        addAmplitudeParameter("dP2EW_scu_BPJPSI_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA1_sdcd_BPJPSI_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA1_sdcd_BPJPSI_abs", 0., 14.1421);
     }
     else if (channel == "Bpjpsipp")
     {
         vector<string> params = {
-            "E2t_ccdd_BJPSIP_re",
-            "E2t_ccdd_BJPSIP_im",
-            "G2t_dcd_BJPSIP_re",
-            "G2t_dcd_BJPSIP_im",
-            "dP2EW_dcu_BPJPSI_re",
-            "dP2EW_dcu_BPJPSI_im",
-            "EA1_ddcd_BPJPSI_re",
-            "EA1_ddcd_BPJPSI_im"};
+            "E2t_ccdd_BJPSIP_abs",
+            "E2t_ccdd_BJPSIP_arg",
+            "G2t_dcd_BJPSIP_abs",
+            "G2t_dcd_BJPSIP_arg",
+            "dP2EW_dcu_BPJPSI_abs",
+            "dP2EW_dcu_BPJPSI_arg",
+            "EA1_ddcd_BPJPSI_abs",
+            "EA1_ddcd_BPJPSI_arg"};
         channelParameters[channel] = params;
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_im", -5., 5.);
-        addAmplitudeParameter("G2t_dcd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIP_im", -10., 10.);
-        addAmplitudeParameter("dP2EW_dcu_BPJPSI_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP2EW_dcu_BPJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcd_BJPSIP_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("dP2EW_dcu_BPJPSI_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP2EW_dcu_BPJPSI_arg", -M_PI, M_PI);
         registerEWP("dP2EW_dcu_BPJPSI");
         addSU3Pair("dP2EW_dcu_BPJPSI", "dP2EW_scu_BPJPSI");
+        addAmplitudeParameter("EA1_ddcd_BPJPSI_abs", 0., 14.1421);
         if(flagPositiveG2tP)
         {
-            addAmplitudeParameter("EA1_ddcd_BPJPSI_re", 0., 10.);
+            addAmplitudeParameter("EA1_ddcd_BPJPSI_arg", -M_PI/2., M_PI/2.);
         }
         else
         {
-            addAmplitudeParameter("EA1_ddcd_BPJPSI_re", -5., 5.);
+            addAmplitudeParameter("EA1_ddcd_BPJPSI_arg", -M_PI, M_PI);
         }
-        addAmplitudeParameter("EA1_ddcd_BPJPSI_im", -10., 10.);
         addSU3Pair("EA1_ddcd_BPJPSI", "EA1_sdcd_BPJPSI");
     }
     else if (channel == "Bsjpsip0")
     {
         vector<string> params = {
-            "dP4EW_ucs_BPJPSI_re",
-            "dP4EW_ucs_BPJPSI_im",
-            "EA2_ddcs_BPJPSI_re",
-            "EA2_ddcs_BPJPSI_im"};
+            "dP4EW_ucs_BPJPSI_abs",
+            "dP4EW_ucs_BPJPSI_arg",
+            "EA2_ddcs_BPJPSI_abs",
+            "EA2_ddcs_BPJPSI_arg"};
         channelParameters[channel] = params;
-        addAmplitudeParameter("dP4EW_ucs_BPJPSI_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP4EW_ucs_BPJPSI_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BPJPSI_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP4EW_ucs_BPJPSI_arg", -M_PI, M_PI);
         registerEWP("dP4EW_ucs_BPJPSI");
         addSU3Pair("dP4EW_ucs_BPJPSI", "dP4EW_ucd_BPJPSI");
-        if(flagPositiveG2tP)
-        {
-            addAmplitudeParameter("EA2_ddcs_BPJPSI_re", -20., 5.);
-        }
-        else
-        {
-            addAmplitudeParameter("EA2_ddcs_BPJPSI_re", -10., 20.);
-        }
-        addAmplitudeParameter("EA2_ddcs_BPJPSI_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BPJPSI_abs", 0., 22.3607);
+        addAmplitudeParameter("EA2_ddcs_BPJPSI_arg", -M_PI, M_PI);
         addSU3Pair("EA2_ddcs_BPJPSI", "EA2_ddcd_BPJPSI");
     }
     else if (channel == "Bsjpsik0b")
     {
         vector<string> params = {
-            "E2t_ccdd_BJPSIP_re",
-            "E2t_ccdd_BJPSIP_im",
-            "E2t_ccds_BJPSIP_re",
-            "E2t_ccds_BJPSIP_im",
-            "G2t_dcd_BJPSIP_re",
-            "G2t_dcd_BJPSIP_im",
-            "G2t_dcs_BJPSIP_re",
-            "G2t_dcs_BJPSIP_im"};
+            "E2t_ccdd_BJPSIP_abs",
+            "E2t_ccdd_BJPSIP_arg",
+            "E2t_ccds_BJPSIP_abs",
+            "E2t_ccds_BJPSIP_arg",
+            "G2t_dcd_BJPSIP_abs",
+            "G2t_dcd_BJPSIP_arg",
+            "G2t_dcs_BJPSIP_abs",
+            "G2t_dcs_BJPSIP_arg"};
         channelParameters[channel] = params;
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_im", -5., 5.);
-        addAmplitudeParameter("E2t_ccds_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("E2t_ccds_BJPSIP_im", -5., 5.);
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("E2t_ccdd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccds_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("E2t_ccds_BJPSIP_arg", -M_PI, M_PI);
         addSU3Pair("E2t_ccds_BJPSIP", "E2t_ccdd_BJPSIP");
-        addAmplitudeParameter("G2t_dcd_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIP_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIP_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcd_BJPSIP_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcd_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcs_BJPSIP_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcs_BJPSIP_arg", -M_PI, M_PI);
         addSU3Pair("G2t_dcs_BJPSIP", "G2t_dcd_BJPSIP");
     }
     else if (channel == "Bsjpsieta8")
     {
         vector<string> params = {
-            "E2t_ccss_BJPSIP_re",
-            "E2t_ccss_BJPSIP_im",
-            "EA2_ddcs_BPJPSI_re",
-            "EA2_ddcs_BPJPSI_im",
-            "G2t_scs_BJPSIP_re",
-            "G2t_scs_BJPSIP_im",
-            "G4t_cds_BJPSIP_re",
-            "G4t_cds_BJPSIP_im",
-            "G4t_css_BJPSIP_re",
-            "G4t_css_BJPSIP_im",
-            "EA2t_ccds_BJPSIP_re",
-            "EA2t_ccds_BJPSIP_im",
-            "EA2t_ccss_BJPSIP_re",
-            "EA2t_ccss_BJPSIP_im"};
+            "E2t_ccss_BJPSIP_abs",
+            "E2t_ccss_BJPSIP_arg",
+            "EA2_ddcs_BPJPSI_abs",
+            "EA2_ddcs_BPJPSI_arg",
+            "G2t_scs_BJPSIP_abs",
+            "G2t_scs_BJPSIP_arg",
+            "G4t_cds_BJPSIP_abs",
+            "G4t_cds_BJPSIP_arg",
+            "G4t_css_BJPSIP_abs",
+            "G4t_css_BJPSIP_arg",
+            "EA2t_ccds_BJPSIP_abs",
+            "EA2t_ccds_BJPSIP_arg",
+            "EA2t_ccss_BJPSIP_abs",
+            "EA2t_ccss_BJPSIP_arg"};
         channelParameters[channel] = params;
-        addAmplitudeParameter("E2t_ccss_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("E2t_ccss_BJPSIP_im", -5., 5.);
+        addAmplitudeParameter("E2t_ccss_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("E2t_ccss_BJPSIP_arg", -M_PI, M_PI);
         addSU3Pair("E2t_ccss_BJPSIP", "E2t_ccsd_BJPSIP");
         // [skip orphan: P4EW_ucs_BPJPSI]
-        addAmplitudeParameter("EA2_ddcs_BPJPSI_re", -5., 5.);
-        addAmplitudeParameter("EA2_ddcs_BPJPSI_im", -5., 5.);
+        addAmplitudeParameter("EA2_ddcs_BPJPSI_abs", 0., 7.0711);
+        addAmplitudeParameter("EA2_ddcs_BPJPSI_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_scs_BJPSIP_abs", 0., 41.2311);
         if(flagPositiveG2tP)
         {
-            addAmplitudeParameter("G2t_scs_BJPSIP_re", 0., 40.);
+            addAmplitudeParameter("G2t_scs_BJPSIP_arg", -M_PI/2., M_PI/2.);
         }
         else
         {
-            addAmplitudeParameter("G2t_scs_BJPSIP_re", -40., 0.);
+            addAmplitudeParameter("G2t_scs_BJPSIP_arg", M_PI/2., 3.*M_PI/2.);
         }
-        addAmplitudeParameter("G2t_scs_BJPSIP_im", -10., 10.);
         addSU3Pair("G2t_scs_BJPSIP", "G2t_scd_BJPSIP");
-        addAmplitudeParameter("G4t_cds_BJPSIP_re", -20., 20.);
-        addAmplitudeParameter("G4t_cds_BJPSIP_im", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIP_abs", 0., 22.3607);
+        addAmplitudeParameter("G4t_cds_BJPSIP_arg", -M_PI, M_PI);
         addSU3Pair("G4t_cds_BJPSIP", "G4t_cdd_BJPSIP");
-        if(flagPositiveG2tP)
-        {
-            addAmplitudeParameter("G4t_css_BJPSIP_re", -30., 5.);
-        }
-        else
-        {
-            addAmplitudeParameter("G4t_css_BJPSIP_re", -5., 30.);
-        }
-        addAmplitudeParameter("G4t_css_BJPSIP_im", -10., 10.);
+        addAmplitudeParameter("G4t_css_BJPSIP_abs", 0., 31.6228);
+        addAmplitudeParameter("G4t_css_BJPSIP_arg", -M_PI, M_PI);
         addSU3Pair("G4t_css_BJPSIP", "G4t_cds_BJPSIP");
-        addAmplitudeParameter("EA2t_ccds_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIP_im", -5., 5.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("EA2t_ccds_BJPSIP_arg", -M_PI, M_PI);
         addSU3Pair("EA2t_ccds_BJPSIP", "EA2t_ccdd_BJPSIP");
-        addAmplitudeParameter("EA2t_ccss_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIP_im", -5., 5.);
+        addAmplitudeParameter("EA2t_ccss_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("EA2t_ccss_BJPSIP_arg", -M_PI, M_PI);
         addSU3Pair("EA2t_ccss_BJPSIP", "EA2t_ccds_BJPSIP");
     }
     else if (channel == "Bsjpsieta1")
     {
         vector<string> params = {
-            "E2t_ccss_BJPSIP_re",
-            "E2t_ccss_BJPSIP_im",
-            "EA2_ddcs_BPJPSI_re",
-            "EA2_ddcs_BPJPSI_im",
-            "G2t_scs_BJPSIP_re",
-            "G2t_scs_BJPSIP_im",
-            "G4t_cds_BJPSIP_re",
-            "G4t_cds_BJPSIP_im",
-            "G4t_css_BJPSIP_re",
-            "G4t_css_BJPSIP_im",
-            "EA2t_ccds_BJPSIP_re",
-            "EA2t_ccds_BJPSIP_im",
-            "EA2t_ccss_BJPSIP_re",
-            "EA2t_ccss_BJPSIP_im"};
+            "E2t_ccss_BJPSIP_abs",
+            "E2t_ccss_BJPSIP_arg",
+            "EA2_ddcs_BPJPSI_abs",
+            "EA2_ddcs_BPJPSI_arg",
+            "G2t_scs_BJPSIP_abs",
+            "G2t_scs_BJPSIP_arg",
+            "G4t_cds_BJPSIP_abs",
+            "G4t_cds_BJPSIP_arg",
+            "G4t_css_BJPSIP_abs",
+            "G4t_css_BJPSIP_arg",
+            "EA2t_ccds_BJPSIP_abs",
+            "EA2t_ccds_BJPSIP_arg",
+            "EA2t_ccss_BJPSIP_abs",
+            "EA2t_ccss_BJPSIP_arg"};
         channelParameters[channel] = params;
-        addAmplitudeParameter("E2t_ccss_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("E2t_ccss_BJPSIP_im", -5., 5.);
+        addAmplitudeParameter("E2t_ccss_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("E2t_ccss_BJPSIP_arg", -M_PI, M_PI);
         // [skip orphan: P4EW_ucs_BPJPSI]
-        addAmplitudeParameter("EA2_ddcs_BPJPSI_re", -5., 5.);
-        addAmplitudeParameter("EA2_ddcs_BPJPSI_im", -5., 5.);
-        addAmplitudeParameter("G2t_scs_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G2t_scs_BJPSIP_im", -10., 10.);
-        addAmplitudeParameter("G4t_cds_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G4t_cds_BJPSIP_im", -10., 10.);
-        addAmplitudeParameter("G4t_css_BJPSIP_re", -10., 10.);
-        addAmplitudeParameter("G4t_css_BJPSIP_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIP_im", -5., 5.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIP_re", -5., 5.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIP_im", -5., 5.);
+        addAmplitudeParameter("EA2_ddcs_BPJPSI_abs", 0., 7.0711);
+        addAmplitudeParameter("EA2_ddcs_BPJPSI_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_scs_BJPSIP_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scs_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_cds_BJPSIP_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_cds_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_css_BJPSIP_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_css_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccds_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("EA2t_ccds_BJPSIP_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccss_BJPSIP_abs", 0., 7.0711);
+        addAmplitudeParameter("EA2t_ccss_BJPSIP_arg", -M_PI, M_PI);
     }
     // Vector channels with helicity amplitudes
     else if (channel == "Bsjpsiphi")
     {
         vector<string> params = {
-            "E2t_ccss_BJPSIV_0_re",
-            "E2t_ccss_BJPSIV_0_im",
-            "G2t_scs_BJPSIV_0_re",
-            "G2t_scs_BJPSIV_0_im",
-            "EA2t_ccss_BJPSIV_0_re",
-            "EA2t_ccss_BJPSIV_0_im",
-            "G4t_css_BJPSIV_0_re",
-            "G4t_css_BJPSIV_0_im",
-            "E2t_ccss_BJPSIV_paral_re",
-            "E2t_ccss_BJPSIV_paral_im",
-            "G2t_scs_BJPSIV_paral_re",
-            "G2t_scs_BJPSIV_paral_im",
-            "EA2t_ccss_BJPSIV_paral_re",
-            "EA2t_ccss_BJPSIV_paral_im",
-            "G4t_css_BJPSIV_paral_re",
-            "G4t_css_BJPSIV_paral_im",
-            "E2t_ccss_BJPSIV_perp_re",
-            "E2t_ccss_BJPSIV_perp_im",
-            "G2t_scs_BJPSIV_perp_re",
-            "G2t_scs_BJPSIV_perp_im",
-            "EA2t_ccss_BJPSIV_perp_re",
-            "EA2t_ccss_BJPSIV_perp_im",
-            "G4t_css_BJPSIV_perp_re",
-            "G4t_css_BJPSIV_perp_im"};
+            "E2t_ccss_BJPSIV_0_abs",
+            "E2t_ccss_BJPSIV_0_arg",
+            "G2t_scs_BJPSIV_0_abs",
+            "G2t_scs_BJPSIV_0_arg",
+            "EA2t_ccss_BJPSIV_0_abs",
+            "EA2t_ccss_BJPSIV_0_arg",
+            "G4t_css_BJPSIV_0_abs",
+            "G4t_css_BJPSIV_0_arg",
+            "E2t_ccss_BJPSIV_paral_abs",
+            "E2t_ccss_BJPSIV_paral_arg",
+            "G2t_scs_BJPSIV_paral_abs",
+            "G2t_scs_BJPSIV_paral_arg",
+            "EA2t_ccss_BJPSIV_paral_abs",
+            "EA2t_ccss_BJPSIV_paral_arg",
+            "G4t_css_BJPSIV_paral_abs",
+            "G4t_css_BJPSIV_paral_arg",
+            "E2t_ccss_BJPSIV_perp_abs",
+            "E2t_ccss_BJPSIV_perp_arg",
+            "G2t_scs_BJPSIV_perp_abs",
+            "G2t_scs_BJPSIV_perp_arg",
+            "EA2t_ccss_BJPSIV_perp_abs",
+            "EA2t_ccss_BJPSIV_perp_arg",
+            "G4t_css_BJPSIV_perp_abs",
+            "G4t_css_BJPSIV_perp_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccss_BJPSIV_0_re", 0., 2.);
-        addAmplitudeParameter("E2t_ccss_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccss_BJPSIV_paral_re", -2., 2.);
-        addAmplitudeParameter("E2t_ccss_BJPSIV_paral_im", -2., 2.);
-        addAmplitudeParameter("E2t_ccss_BJPSIV_perp_re", -2., 2.);
-        addAmplitudeParameter("E2t_ccss_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("G2t_scs_BJPSIV_0_re", -20., 20.);
-        addAmplitudeParameter("G2t_scs_BJPSIV_0_im", -20., 20.);
-        addAmplitudeParameter("G2t_scs_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G2t_scs_BJPSIV_paral_im", 0., 10.);
-        addAmplitudeParameter("G2t_scs_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G2t_scs_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_0_re", -1., 1.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_0_im", -1., 1.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_paral_re", -1., 1.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_paral_im", -1., 1.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_perp_re", -1., 1.);
-        addAmplitudeParameter("EA2t_ccss_BJPSIV_perp_im", -1., 1.);
-        addAmplitudeParameter("G4t_css_BJPSIV_0_re", -20., 20.);
-        addAmplitudeParameter("G4t_css_BJPSIV_0_im", -20., 20.);
-        addAmplitudeParameter("G4t_css_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G4t_css_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G4t_css_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G4t_css_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_0_abs", 0., 10.198);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_paral_abs", 0., 2.8284);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_perp_abs", 0., 10.198);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_scs_BJPSIV_0_abs", 0., 28.2843);
+        addAmplitudeParameter("G2t_scs_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_scs_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scs_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_scs_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scs_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_0_abs", 0., 1.4142);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_paral_abs", 0., 1.4142);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_perp_abs", 0., 1.4142);
+        addAmplitudeParameter("EA2t_ccss_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_css_BJPSIV_0_abs", 0., 28.2843);
+        addAmplitudeParameter("G4t_css_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_css_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_css_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_css_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_css_BJPSIV_perp_arg", -M_PI, M_PI);
     }
     else if (channel == "Bsjpsiom")
     {
         vector<string> params = {
-            "EA2t_ccds_BJPSIV_0_re",
-            "EA2t_ccds_BJPSIV_0_im",
-            "G4t_cds_BJPSIV_0_re",
-            "G4t_cds_BJPSIV_0_im",
-            "dP4EW_ucs_BVJPSI_0_re",
-            "dP4EW_ucs_BVJPSI_0_im",
-            "EA2_ddcs_BVJPSI_0_re",
-            "EA2_ddcs_BVJPSI_0_im",
-            "EA2t_ccds_BJPSIV_paral_re",
-            "EA2t_ccds_BJPSIV_paral_im",
-            "G4t_cds_BJPSIV_paral_re",
-            "G4t_cds_BJPSIV_paral_im",
-            "dP4EW_ucs_BVJPSI_paral_re",
-            "dP4EW_ucs_BVJPSI_paral_im",
-            "EA2_ddcs_BVJPSI_paral_re",
-            "EA2_ddcs_BVJPSI_paral_im",
-            "EA2t_ccds_BJPSIV_perp_re",
-            "EA2t_ccds_BJPSIV_perp_im",
-            "G4t_cds_BJPSIV_perp_re",
-            "G4t_cds_BJPSIV_perp_im",
-            "dP4EW_ucs_BVJPSI_perp_re",
-            "dP4EW_ucs_BVJPSI_perp_im",
-            "EA2_ddcs_BVJPSI_perp_re",
-            "EA2_ddcs_BVJPSI_perp_im"};
+            "EA2t_ccds_BJPSIV_0_abs",
+            "EA2t_ccds_BJPSIV_0_arg",
+            "G4t_cds_BJPSIV_0_abs",
+            "G4t_cds_BJPSIV_0_arg",
+            "dP4EW_ucs_BVJPSI_0_abs",
+            "dP4EW_ucs_BVJPSI_0_arg",
+            "EA2_ddcs_BVJPSI_0_abs",
+            "EA2_ddcs_BVJPSI_0_arg",
+            "EA2t_ccds_BJPSIV_paral_abs",
+            "EA2t_ccds_BJPSIV_paral_arg",
+            "G4t_cds_BJPSIV_paral_abs",
+            "G4t_cds_BJPSIV_paral_arg",
+            "dP4EW_ucs_BVJPSI_paral_abs",
+            "dP4EW_ucs_BVJPSI_paral_arg",
+            "EA2_ddcs_BVJPSI_paral_abs",
+            "EA2_ddcs_BVJPSI_paral_arg",
+            "EA2t_ccds_BJPSIV_perp_abs",
+            "EA2t_ccds_BJPSIV_perp_arg",
+            "G4t_cds_BJPSIV_perp_abs",
+            "G4t_cds_BJPSIV_perp_arg",
+            "dP4EW_ucs_BVJPSI_perp_abs",
+            "dP4EW_ucs_BVJPSI_perp_arg",
+            "EA2_ddcs_BVJPSI_perp_abs",
+            "EA2_ddcs_BVJPSI_perp_arg"};
         channelParameters[channel] = params;
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_0_re", -2., 2.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_re", -2., 2.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_re", -2., 2.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_0_abs", 0., 10.198);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_abs", 0., 10.198);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_abs", 0., 10.198);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("EA2t_ccds_BJPSIV", "EA2t_ccss_BJPSIV", true);
-        addAmplitudeParameter("G4t_cds_BJPSIV_0_re", -20., 20.);
-        addAmplitudeParameter("G4t_cds_BJPSIV_0_im", -20., 20.);
-        addAmplitudeParameter("G4t_cds_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G4t_cds_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G4t_cds_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G4t_cds_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIV_0_abs", 0., 28.2843);
+        addAmplitudeParameter("G4t_cds_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_cds_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_cds_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_cds_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_cds_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("G4t_cds_BJPSIV", "G4t_css_BJPSIV", true);
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_0_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_0_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_0_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_0_arg", -M_PI, M_PI);
         registerEWP("dP4EW_ucs_BVJPSI_0");
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_paral_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_paral_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_paral_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_paral_arg", -M_PI, M_PI);
         registerEWP("dP4EW_ucs_BVJPSI_paral");
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_perp_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_perp_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_perp_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_perp_arg", -M_PI, M_PI);
         registerEWP("dP4EW_ucs_BVJPSI_perp");
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_0_re", -20., 20.);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_0_im", -20., 20.);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_paral_re", -20., 20.);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_paral_im", -20., 20.);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_perp_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_perp_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_0_abs", 0., 28.2843);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_paral_abs", 0., 28.2843);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_perp_arg", -M_PI, M_PI);
     }
     else if (channel == "Bsjpsikbst0")
     {
         vector<string> params = {
-            "E2t_ccds_BJPSIV_0_re",
-            "E2t_ccds_BJPSIV_0_im",
-            "G2t_dcs_BJPSIV_0_re",
-            "G2t_dcs_BJPSIV_0_im",
-            "E2t_ccds_BJPSIV_paral_re",
-            "E2t_ccds_BJPSIV_paral_im",
-            "G2t_dcs_BJPSIV_paral_re",
-            "G2t_dcs_BJPSIV_paral_im",
-            "E2t_ccds_BJPSIV_perp_re",
-            "E2t_ccds_BJPSIV_perp_im",
-            "G2t_dcs_BJPSIV_perp_re",
-            "G2t_dcs_BJPSIV_perp_im"};
+            "E2t_ccds_BJPSIV_0_abs",
+            "E2t_ccds_BJPSIV_0_arg",
+            "G2t_dcs_BJPSIV_0_abs",
+            "G2t_dcs_BJPSIV_0_arg",
+            "E2t_ccds_BJPSIV_paral_abs",
+            "E2t_ccds_BJPSIV_paral_arg",
+            "G2t_dcs_BJPSIV_paral_abs",
+            "G2t_dcs_BJPSIV_paral_arg",
+            "E2t_ccds_BJPSIV_perp_abs",
+            "E2t_ccds_BJPSIV_perp_arg",
+            "G2t_dcs_BJPSIV_perp_abs",
+            "G2t_dcs_BJPSIV_perp_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccds_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("E2t_ccds_BJPSIV", "E2t_ccss_BJPSIV", true);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("G2t_dcs_BJPSIV", "G2t_scs_BJPSIV", true);
     }
     else if (channel == "Bsjpsirho0")
     {
         vector<string> params = {
-            "dP4EW_ucs_BVJPSI_0_re",
-            "dP4EW_ucs_BVJPSI_0_im",
-            "EA2_ddcs_BVJPSI_0_re",
-            "EA2_ddcs_BVJPSI_0_im",
-            "dP4EW_ucs_BVJPSI_paral_re",
-            "dP4EW_ucs_BVJPSI_paral_im",
-            "EA2_ddcs_BVJPSI_paral_re",
-            "EA2_ddcs_BVJPSI_paral_im",
-            "dP4EW_ucs_BVJPSI_perp_re",
-            "dP4EW_ucs_BVJPSI_perp_im",
-            "EA2_ddcs_BVJPSI_perp_re",
-            "EA2_ddcs_BVJPSI_perp_im"};
+            "dP4EW_ucs_BVJPSI_0_abs",
+            "dP4EW_ucs_BVJPSI_0_arg",
+            "EA2_ddcs_BVJPSI_0_abs",
+            "EA2_ddcs_BVJPSI_0_arg",
+            "dP4EW_ucs_BVJPSI_paral_abs",
+            "dP4EW_ucs_BVJPSI_paral_arg",
+            "EA2_ddcs_BVJPSI_paral_abs",
+            "EA2_ddcs_BVJPSI_paral_arg",
+            "dP4EW_ucs_BVJPSI_perp_abs",
+            "dP4EW_ucs_BVJPSI_perp_arg",
+            "EA2_ddcs_BVJPSI_perp_abs",
+            "EA2_ddcs_BVJPSI_perp_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_0_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_0_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_0_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_0_arg", -M_PI, M_PI);
         registerEWP("dP4EW_ucs_BVJPSI_0");
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_paral_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_paral_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_paral_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_paral_arg", -M_PI, M_PI);
         registerEWP("dP4EW_ucs_BVJPSI_paral");
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_perp_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP4EW_ucs_BVJPSI_perp_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_perp_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP4EW_ucs_BVJPSI_perp_arg", -M_PI, M_PI);
         registerEWP("dP4EW_ucs_BVJPSI_perp");
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_0_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_0_im", -10., 10.);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_paral_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_paral_im", -10., 10.);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_perp_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcs_BVJPSI_perp_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_0_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2_ddcs_BVJPSI_perp_arg", -M_PI, M_PI);
     }
     else if (channel == "Bdjpsiom")
     {
         vector<string> params = {
-            "E2t_ccds_BJPSIV_0_re",
-            "E2t_ccds_BJPSIV_0_im",
-            "E2t_ccdd_BJPSIV_0_re",
-            "E2t_ccdd_BJPSIV_0_im",
-            "G2t_dcs_BJPSIV_0_re",
-            "G2t_dcs_BJPSIV_0_im",
-            "G2t_dcd_BJPSIV_0_re",
-            "G2t_dcd_BJPSIV_0_im",
-            "dP4EW_ucd_BVJPSI_0_re",
-            "dP4EW_ucd_BVJPSI_0_im",
-            "EA2t_ccds_BJPSIV_0_re",
-            "EA2t_ccds_BJPSIV_0_im",
-            "EA2t_ccdd_BJPSIV_0_re",
-            "EA2t_ccdd_BJPSIV_0_im",
-            "EA2_ddcd_BVJPSI_0_re",
-            "EA2_ddcd_BVJPSI_0_im",
-            "G4t_cds_BJPSIV_0_re",
-            "G4t_cds_BJPSIV_0_im",
-            "G4t_cdd_BJPSIV_0_re",
-            "G4t_cdd_BJPSIV_0_im",
-            "E2t_ccds_BJPSIV_paral_re",
-            "E2t_ccds_BJPSIV_paral_im",
-            "E2t_ccdd_BJPSIV_paral_re",
-            "E2t_ccdd_BJPSIV_paral_im",
-            "G2t_dcs_BJPSIV_paral_re",
-            "G2t_dcs_BJPSIV_paral_im",
-            "G2t_dcd_BJPSIV_paral_re",
-            "G2t_dcd_BJPSIV_paral_im",
-            "dP4EW_ucd_BVJPSI_paral_re",
-            "dP4EW_ucd_BVJPSI_paral_im",
-            "EA2t_ccds_BJPSIV_paral_re",
-            "EA2t_ccds_BJPSIV_paral_im",
-            "EA2t_ccdd_BJPSIV_paral_re",
-            "EA2t_ccdd_BJPSIV_paral_im",
-            "EA2_ddcd_BVJPSI_paral_re",
-            "EA2_ddcd_BVJPSI_paral_im",
-            "G4t_cds_BJPSIV_paral_re",
-            "G4t_cds_BJPSIV_paral_im",
-            "G4t_cdd_BJPSIV_paral_re",
-            "G4t_cdd_BJPSIV_paral_im",
-            "E2t_ccds_BJPSIV_perp_re",
-            "E2t_ccds_BJPSIV_perp_im",
-            "E2t_ccdd_BJPSIV_perp_re",
-            "E2t_ccdd_BJPSIV_perp_im",
-            "G2t_dcs_BJPSIV_perp_re",
-            "G2t_dcs_BJPSIV_perp_im",
-            "G2t_dcd_BJPSIV_perp_re",
-            "G2t_dcd_BJPSIV_perp_im",
-            "dP4EW_ucd_BVJPSI_perp_re",
-            "dP4EW_ucd_BVJPSI_perp_im",
-            "EA2t_ccds_BJPSIV_perp_re",
-            "EA2t_ccds_BJPSIV_perp_im",
-            "EA2t_ccdd_BJPSIV_perp_re",
-            "EA2t_ccdd_BJPSIV_perp_im",
-            "EA2_ddcd_BVJPSI_perp_re",
-            "EA2_ddcd_BVJPSI_perp_im",
-            "G4t_cds_BJPSIV_perp_re",
-            "G4t_cds_BJPSIV_perp_im",
-            "G4t_cdd_BJPSIV_perp_re",
-            "G4t_cdd_BJPSIV_perp_im"};
+            "E2t_ccds_BJPSIV_0_abs",
+            "E2t_ccds_BJPSIV_0_arg",
+            "E2t_ccdd_BJPSIV_0_abs",
+            "E2t_ccdd_BJPSIV_0_arg",
+            "G2t_dcs_BJPSIV_0_abs",
+            "G2t_dcs_BJPSIV_0_arg",
+            "G2t_dcd_BJPSIV_0_abs",
+            "G2t_dcd_BJPSIV_0_arg",
+            "dP4EW_ucd_BVJPSI_0_abs",
+            "dP4EW_ucd_BVJPSI_0_arg",
+            "EA2t_ccds_BJPSIV_0_abs",
+            "EA2t_ccds_BJPSIV_0_arg",
+            "EA2t_ccdd_BJPSIV_0_abs",
+            "EA2t_ccdd_BJPSIV_0_arg",
+            "EA2_ddcd_BVJPSI_0_abs",
+            "EA2_ddcd_BVJPSI_0_arg",
+            "G4t_cds_BJPSIV_0_abs",
+            "G4t_cds_BJPSIV_0_arg",
+            "G4t_cdd_BJPSIV_0_abs",
+            "G4t_cdd_BJPSIV_0_arg",
+            "E2t_ccds_BJPSIV_paral_abs",
+            "E2t_ccds_BJPSIV_paral_arg",
+            "E2t_ccdd_BJPSIV_paral_abs",
+            "E2t_ccdd_BJPSIV_paral_arg",
+            "G2t_dcs_BJPSIV_paral_abs",
+            "G2t_dcs_BJPSIV_paral_arg",
+            "G2t_dcd_BJPSIV_paral_abs",
+            "G2t_dcd_BJPSIV_paral_arg",
+            "dP4EW_ucd_BVJPSI_paral_abs",
+            "dP4EW_ucd_BVJPSI_paral_arg",
+            "EA2t_ccds_BJPSIV_paral_abs",
+            "EA2t_ccds_BJPSIV_paral_arg",
+            "EA2t_ccdd_BJPSIV_paral_abs",
+            "EA2t_ccdd_BJPSIV_paral_arg",
+            "EA2_ddcd_BVJPSI_paral_abs",
+            "EA2_ddcd_BVJPSI_paral_arg",
+            "G4t_cds_BJPSIV_paral_abs",
+            "G4t_cds_BJPSIV_paral_arg",
+            "G4t_cdd_BJPSIV_paral_abs",
+            "G4t_cdd_BJPSIV_paral_arg",
+            "E2t_ccds_BJPSIV_perp_abs",
+            "E2t_ccds_BJPSIV_perp_arg",
+            "E2t_ccdd_BJPSIV_perp_abs",
+            "E2t_ccdd_BJPSIV_perp_arg",
+            "G2t_dcs_BJPSIV_perp_abs",
+            "G2t_dcs_BJPSIV_perp_arg",
+            "G2t_dcd_BJPSIV_perp_abs",
+            "G2t_dcd_BJPSIV_perp_arg",
+            "dP4EW_ucd_BVJPSI_perp_abs",
+            "dP4EW_ucd_BVJPSI_perp_arg",
+            "EA2t_ccds_BJPSIV_perp_abs",
+            "EA2t_ccds_BJPSIV_perp_arg",
+            "EA2t_ccdd_BJPSIV_perp_abs",
+            "EA2t_ccdd_BJPSIV_perp_arg",
+            "EA2_ddcd_BVJPSI_perp_abs",
+            "EA2_ddcd_BVJPSI_perp_arg",
+            "G4t_cds_BJPSIV_perp_abs",
+            "G4t_cds_BJPSIV_perp_arg",
+            "G4t_cdd_BJPSIV_perp_abs",
+            "G4t_cdd_BJPSIV_perp_arg"};
 
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccds_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_re", 0., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_im", 0., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_re", 0., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_im", 0., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_re", 0., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_im", 0., 10.);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("E2t_ccdd_BJPSIV", "E2t_ccds_BJPSIV", true);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("G2t_dcd_BJPSIV", "G2t_dcs_BJPSIV", true);
-        addAmplitudeParameter("dP4EW_ucd_BVJPSI_0_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP4EW_ucd_BVJPSI_0_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucd_BVJPSI_0_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP4EW_ucd_BVJPSI_0_arg", -M_PI, M_PI);
         registerEWP("dP4EW_ucd_BVJPSI_0");
-        addAmplitudeParameter("dP4EW_ucd_BVJPSI_paral_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP4EW_ucd_BVJPSI_paral_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucd_BVJPSI_paral_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP4EW_ucd_BVJPSI_paral_arg", -M_PI, M_PI);
         registerEWP("dP4EW_ucd_BVJPSI_paral");
-        addAmplitudeParameter("dP4EW_ucd_BVJPSI_perp_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP4EW_ucd_BVJPSI_perp_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP4EW_ucd_BVJPSI_perp_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP4EW_ucd_BVJPSI_perp_arg", -M_PI, M_PI);
         registerEWP("dP4EW_ucd_BVJPSI_perp");
         addSU3Pair("dP4EW_ucd_BVJPSI", "dP4EW_ucs_BVJPSI", true);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("EA2t_ccdd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2t_ccdd_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("EA2t_ccdd_BJPSIV", "EA2t_ccds_BJPSIV", true);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_0_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_0_im", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_paral_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_paral_im", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_perp_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_perp_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_0_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_perp_arg", -M_PI, M_PI);
         addSU3Pair("EA2_ddcd_BVJPSI", "EA2_ddcs_BVJPSI", true);
-        addAmplitudeParameter("G4t_cds_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("G4t_cds_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("G4t_cds_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G4t_cds_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G4t_cds_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G4t_cds_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("G4t_cdd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("G4t_cdd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("G4t_cdd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G4t_cdd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G4t_cdd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G4t_cdd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G4t_cds_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_cds_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_cds_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_cds_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_cds_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_cds_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_cdd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_cdd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_cdd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_cdd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_cdd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_cdd_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("G4t_cdd_BJPSIV", "G4t_cds_BJPSIV", true);
     }
     else if (channel == "Bdjpsikst0")
     {
         vector<string> params = {
-            "E2t_ccsd_BJPSIV_0_re",
-            "E2t_ccsd_BJPSIV_0_im",
-            "G2t_scd_BJPSIV_0_re",
-            "G2t_scd_BJPSIV_0_im",
-            "E2t_ccsd_BJPSIV_paral_re",
-            "E2t_ccsd_BJPSIV_paral_im",
-            "G2t_scd_BJPSIV_paral_re",
-            "G2t_scd_BJPSIV_paral_im",
-            "E2t_ccsd_BJPSIV_perp_re",
-            "E2t_ccsd_BJPSIV_perp_im",
-            "G2t_scd_BJPSIV_perp_re",
-            "G2t_scd_BJPSIV_perp_im"};
+            "E2t_ccsd_BJPSIV_0_abs",
+            "E2t_ccsd_BJPSIV_0_arg",
+            "G2t_scd_BJPSIV_0_abs",
+            "G2t_scd_BJPSIV_0_arg",
+            "E2t_ccsd_BJPSIV_paral_abs",
+            "E2t_ccsd_BJPSIV_paral_arg",
+            "G2t_scd_BJPSIV_paral_abs",
+            "G2t_scd_BJPSIV_paral_arg",
+            "E2t_ccsd_BJPSIV_perp_abs",
+            "E2t_ccsd_BJPSIV_perp_arg",
+            "G2t_scd_BJPSIV_perp_abs",
+            "G2t_scd_BJPSIV_perp_arg"};
         channelParameters[channel] = params;
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("E2t_ccsd_BJPSIV", "E2t_ccss_BJPSIV", true);
-        addAmplitudeParameter("G2t_scd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_scd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_scd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scd_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("G2t_scd_BJPSIV", "G2t_scs_BJPSIV", true);
     }
     else if (channel == "Bdjpsirho0")
     {
         vector<string> params = {
-            "E2t_ccsd_BJPSIV_0_re",
-            "E2t_ccsd_BJPSIV_0_im",
-            "E2t_ccdd_BJPSIV_0_re",
-            "E2t_ccdd_BJPSIV_0_im",
-            "EA2_ddcd_BVJPSI_0_re",
-            "EA2_ddcd_BVJPSI_0_im",
-            "G2t_dcs_BJPSIV_0_re",
-            "G2t_dcs_BJPSIV_0_im",
-            "G2t_dcd_BJPSIV_0_re",
-            "G2t_dcd_BJPSIV_0_im",
-            "E2t_ccsd_BJPSIV_paral_re",
-            "E2t_ccsd_BJPSIV_paral_im",
-            "E2t_ccdd_BJPSIV_paral_re",
-            "E2t_ccdd_BJPSIV_paral_im",
-            "EA2_ddcd_BVJPSI_paral_re",
-            "EA2_ddcd_BVJPSI_paral_im",
-            "G2t_dcs_BJPSIV_paral_re",
-            "G2t_dcs_BJPSIV_paral_im",
-            "G2t_dcd_BJPSIV_paral_re",
-            "G2t_dcd_BJPSIV_paral_im",
-            "E2t_ccsd_BJPSIV_perp_re",
-            "E2t_ccsd_BJPSIV_perp_im",
-            "E2t_ccdd_BJPSIV_perp_re",
-            "E2t_ccdd_BJPSIV_perp_im",
-            "EA2_ddcd_BVJPSI_perp_re",
-            "EA2_ddcd_BVJPSI_perp_im",
-            "G2t_dcs_BJPSIV_perp_re",
-            "G2t_dcs_BJPSIV_perp_im",
-            "G2t_dcd_BJPSIV_perp_re",
-            "G2t_dcd_BJPSIV_perp_im"};
+            "E2t_ccsd_BJPSIV_0_abs",
+            "E2t_ccsd_BJPSIV_0_arg",
+            "E2t_ccdd_BJPSIV_0_abs",
+            "E2t_ccdd_BJPSIV_0_arg",
+            "EA2_ddcd_BVJPSI_0_abs",
+            "EA2_ddcd_BVJPSI_0_arg",
+            "G2t_dcs_BJPSIV_0_abs",
+            "G2t_dcs_BJPSIV_0_arg",
+            "G2t_dcd_BJPSIV_0_abs",
+            "G2t_dcd_BJPSIV_0_arg",
+            "E2t_ccsd_BJPSIV_paral_abs",
+            "E2t_ccsd_BJPSIV_paral_arg",
+            "E2t_ccdd_BJPSIV_paral_abs",
+            "E2t_ccdd_BJPSIV_paral_arg",
+            "EA2_ddcd_BVJPSI_paral_abs",
+            "EA2_ddcd_BVJPSI_paral_arg",
+            "G2t_dcs_BJPSIV_paral_abs",
+            "G2t_dcs_BJPSIV_paral_arg",
+            "G2t_dcd_BJPSIV_paral_abs",
+            "G2t_dcd_BJPSIV_paral_arg",
+            "E2t_ccsd_BJPSIV_perp_abs",
+            "E2t_ccsd_BJPSIV_perp_arg",
+            "E2t_ccdd_BJPSIV_perp_abs",
+            "E2t_ccdd_BJPSIV_perp_arg",
+            "EA2_ddcd_BVJPSI_perp_abs",
+            "EA2_ddcd_BVJPSI_perp_arg",
+            "G2t_dcs_BJPSIV_perp_abs",
+            "G2t_dcs_BJPSIV_perp_arg",
+            "G2t_dcd_BJPSIV_perp_abs",
+            "G2t_dcd_BJPSIV_perp_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("E2t_ccdd_BJPSIV", "E2t_ccsd_BJPSIV", true);
         // [skip orphan: P4EW_ucd_BVJPSI]
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_0_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_0_im", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_paral_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_paral_im", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_perp_re", -10., 10.);
-        addAmplitudeParameter("EA2_ddcd_BVJPSI_perp_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_0_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2_ddcd_BVJPSI_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcs_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_arg", -M_PI, M_PI);
     }
     else if (channel == "Bdjpsiphi")
     {
         vector<string> params = {
-            "EA2t_ccsd_BJPSIV_0_re",
-            "EA2t_ccsd_BJPSIV_0_im",
-            "G4t_csd_BJPSIV_0_re",
-            "G4t_csd_BJPSIV_0_im",
-            "EA2t_ccsd_BJPSIV_paral_re",
-            "EA2t_ccsd_BJPSIV_paral_im",
-            "G4t_csd_BJPSIV_paral_re",
-            "G4t_csd_BJPSIV_paral_im",
-            "EA2t_ccsd_BJPSIV_perp_re",
-            "EA2t_ccsd_BJPSIV_perp_im",
-            "G4t_csd_BJPSIV_perp_re",
-            "G4t_csd_BJPSIV_perp_im"};
+            "EA2t_ccsd_BJPSIV_0_abs",
+            "EA2t_ccsd_BJPSIV_0_arg",
+            "G4t_csd_BJPSIV_0_abs",
+            "G4t_csd_BJPSIV_0_arg",
+            "EA2t_ccsd_BJPSIV_paral_abs",
+            "EA2t_ccsd_BJPSIV_paral_arg",
+            "G4t_csd_BJPSIV_paral_abs",
+            "G4t_csd_BJPSIV_paral_arg",
+            "EA2t_ccsd_BJPSIV_perp_abs",
+            "EA2t_ccsd_BJPSIV_perp_arg",
+            "G4t_csd_BJPSIV_perp_abs",
+            "G4t_csd_BJPSIV_perp_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("EA2t_ccsd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("EA2t_ccsd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccsd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("EA2t_ccsd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("EA2t_ccsd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("EA2t_ccsd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("EA2t_ccsd_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("EA2t_ccsd_BJPSIV", "EA2t_ccss_BJPSIV", true);
-        addAmplitudeParameter("G4t_csd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("G4t_csd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("G4t_csd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G4t_csd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G4t_csd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G4t_csd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G4t_csd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_csd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_csd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_csd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G4t_csd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G4t_csd_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("G4t_csd_BJPSIV", "G4t_css_BJPSIV", true);
     }
     else if (channel == "Bpjpsikstp")
     {
         vector<string> params = {
-            "E2t_ccsd_BJPSIV_0_re",
-            "E2t_ccsd_BJPSIV_0_im",
-            "dP2EW_scu_BJPSIV_0_re",
-            "dP2EW_scu_BJPSIV_0_im",
-            "EA1_sdcd_BVJPSI_0_re",
-            "EA1_sdcd_BVJPSI_0_im",
-            "G2t_scd_BJPSIV_0_re",
-            "G2t_scd_BJPSIV_0_im",
-            "E2t_ccsd_BJPSIV_paral_re",
-            "E2t_ccsd_BJPSIV_paral_im",
-            "dP2EW_scu_BJPSIV_paral_re",
-            "dP2EW_scu_BJPSIV_paral_im",
-            "EA1_sdcd_BVJPSI_paral_re",
-            "EA1_sdcd_BVJPSI_paral_im",
-            "G2t_scd_BJPSIV_paral_re",
-            "G2t_scd_BJPSIV_paral_im",
-            "E2t_ccsd_BJPSIV_perp_re",
-            "E2t_ccsd_BJPSIV_perp_im",
-            "dP2EW_scu_BJPSIV_perp_re",
-            "dP2EW_scu_BJPSIV_perp_im",
-            "EA1_sdcd_BVJPSI_perp_re",
-            "EA1_sdcd_BVJPSI_perp_im",
-            "G2t_scd_BJPSIV_perp_re",
-            "G2t_scd_BJPSIV_perp_im"};
+            "E2t_ccsd_BJPSIV_0_abs",
+            "E2t_ccsd_BJPSIV_0_arg",
+            "dP2EW_scu_BJPSIV_0_abs",
+            "dP2EW_scu_BJPSIV_0_arg",
+            "EA1_sdcd_BVJPSI_0_abs",
+            "EA1_sdcd_BVJPSI_0_arg",
+            "G2t_scd_BJPSIV_0_abs",
+            "G2t_scd_BJPSIV_0_arg",
+            "E2t_ccsd_BJPSIV_paral_abs",
+            "E2t_ccsd_BJPSIV_paral_arg",
+            "dP2EW_scu_BJPSIV_paral_abs",
+            "dP2EW_scu_BJPSIV_paral_arg",
+            "EA1_sdcd_BVJPSI_paral_abs",
+            "EA1_sdcd_BVJPSI_paral_arg",
+            "G2t_scd_BJPSIV_paral_abs",
+            "G2t_scd_BJPSIV_paral_arg",
+            "E2t_ccsd_BJPSIV_perp_abs",
+            "E2t_ccsd_BJPSIV_perp_arg",
+            "dP2EW_scu_BJPSIV_perp_abs",
+            "dP2EW_scu_BJPSIV_perp_arg",
+            "EA1_sdcd_BVJPSI_perp_abs",
+            "EA1_sdcd_BVJPSI_perp_arg",
+            "G2t_scd_BJPSIV_perp_abs",
+            "G2t_scd_BJPSIV_perp_arg"};
 
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("dP2EW_scu_BJPSIV_0_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP2EW_scu_BJPSIV_0_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("dP2EW_scu_BJPSIV_0_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP2EW_scu_BJPSIV_0_arg", -M_PI, M_PI);
         registerEWP("dP2EW_scu_BJPSIV_0");
-        addAmplitudeParameter("dP2EW_scu_BJPSIV_paral_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP2EW_scu_BJPSIV_paral_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP2EW_scu_BJPSIV_paral_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP2EW_scu_BJPSIV_paral_arg", -M_PI, M_PI);
         registerEWP("dP2EW_scu_BJPSIV_paral");
-        addAmplitudeParameter("dP2EW_scu_BJPSIV_perp_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP2EW_scu_BJPSIV_perp_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP2EW_scu_BJPSIV_perp_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP2EW_scu_BJPSIV_perp_arg", -M_PI, M_PI);
         registerEWP("dP2EW_scu_BJPSIV_perp");
-        addAmplitudeParameter("EA1_sdcd_BVJPSI_0_re", -20., 20.);
-        addAmplitudeParameter("EA1_sdcd_BVJPSI_0_im", -20., 20.);
-        addAmplitudeParameter("EA1_sdcd_BVJPSI_paral_re", -20., 20.);
-        addAmplitudeParameter("EA1_sdcd_BVJPSI_paral_im", -20., 20.);
-        addAmplitudeParameter("EA1_sdcd_BVJPSI_perp_re", -20., 20.);
-        addAmplitudeParameter("EA1_sdcd_BVJPSI_perp_im", -20., 20.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_0_abs", 0., 28.2843);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_paral_abs", 0., 28.2843);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_perp_abs", 0., 28.2843);
+        addAmplitudeParameter("EA1_sdcd_BVJPSI_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_scd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_scd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_scd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scd_BJPSIV_perp_arg", -M_PI, M_PI);
     }
     else if (channel == "Bpjpsirhop")
     {
         vector<string> params = {
-            "E2t_ccsd_BJPSIV_0_re",
-            "E2t_ccsd_BJPSIV_0_im",
-            "E2t_ccdd_BJPSIV_0_re",
-            "E2t_ccdd_BJPSIV_0_im",
-            "dP2EW_dcu_BJPSIV_0_re",
-            "dP2EW_dcu_BJPSIV_0_im",
-            "EA1_ddcd_BVJPSI_0_re",
-            "EA1_ddcd_BVJPSI_0_im",
-            "G2t_scd_BJPSIV_0_re",
-            "G2t_scd_BJPSIV_0_im",
-            "G2t_dcd_BJPSIV_0_re",
-            "G2t_dcd_BJPSIV_0_im",
-            "E2t_ccsd_BJPSIV_paral_re",
-            "E2t_ccsd_BJPSIV_paral_im",
-            "E2t_ccdd_BJPSIV_paral_re",
-            "E2t_ccdd_BJPSIV_paral_im",
-            "dP2EW_dcu_BJPSIV_paral_re",
-            "dP2EW_dcu_BJPSIV_paral_im",
-            "EA1_ddcd_BVJPSI_paral_re",
-            "EA1_ddcd_BVJPSI_paral_im",
-            "G2t_scd_BJPSIV_paral_re",
-            "G2t_scd_BJPSIV_paral_im",
-            "G2t_dcd_BJPSIV_paral_re",
-            "G2t_dcd_BJPSIV_paral_im",
-            "E2t_ccsd_BJPSIV_perp_re",
-            "E2t_ccsd_BJPSIV_perp_im",
-            "E2t_ccdd_BJPSIV_perp_re",
-            "E2t_ccdd_BJPSIV_perp_im",
-            "dP2EW_dcu_BJPSIV_perp_re",
-            "dP2EW_dcu_BJPSIV_perp_im",
-            "EA1_ddcd_BVJPSI_perp_re",
-            "EA1_ddcd_BVJPSI_perp_im",
-            "G2t_scd_BJPSIV_perp_re",
-            "G2t_scd_BJPSIV_perp_im",
-            "G2t_dcd_BJPSIV_perp_re",
-            "G2t_dcd_BJPSIV_perp_im"};
+            "E2t_ccsd_BJPSIV_0_abs",
+            "E2t_ccsd_BJPSIV_0_arg",
+            "E2t_ccdd_BJPSIV_0_abs",
+            "E2t_ccdd_BJPSIV_0_arg",
+            "dP2EW_dcu_BJPSIV_0_abs",
+            "dP2EW_dcu_BJPSIV_0_arg",
+            "EA1_ddcd_BVJPSI_0_abs",
+            "EA1_ddcd_BVJPSI_0_arg",
+            "G2t_scd_BJPSIV_0_abs",
+            "G2t_scd_BJPSIV_0_arg",
+            "G2t_dcd_BJPSIV_0_abs",
+            "G2t_dcd_BJPSIV_0_arg",
+            "E2t_ccsd_BJPSIV_paral_abs",
+            "E2t_ccsd_BJPSIV_paral_arg",
+            "E2t_ccdd_BJPSIV_paral_abs",
+            "E2t_ccdd_BJPSIV_paral_arg",
+            "dP2EW_dcu_BJPSIV_paral_abs",
+            "dP2EW_dcu_BJPSIV_paral_arg",
+            "EA1_ddcd_BVJPSI_paral_abs",
+            "EA1_ddcd_BVJPSI_paral_arg",
+            "G2t_scd_BJPSIV_paral_abs",
+            "G2t_scd_BJPSIV_paral_arg",
+            "G2t_dcd_BJPSIV_paral_abs",
+            "G2t_dcd_BJPSIV_paral_arg",
+            "E2t_ccsd_BJPSIV_perp_abs",
+            "E2t_ccsd_BJPSIV_perp_arg",
+            "E2t_ccdd_BJPSIV_perp_abs",
+            "E2t_ccdd_BJPSIV_perp_arg",
+            "dP2EW_dcu_BJPSIV_perp_abs",
+            "dP2EW_dcu_BJPSIV_perp_arg",
+            "EA1_ddcd_BVJPSI_perp_abs",
+            "EA1_ddcd_BVJPSI_perp_arg",
+            "G2t_scd_BJPSIV_perp_abs",
+            "G2t_scd_BJPSIV_perp_arg",
+            "G2t_dcd_BJPSIV_perp_abs",
+            "G2t_dcd_BJPSIV_perp_arg"};
 
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("dP2EW_dcu_BJPSIV_0_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP2EW_dcu_BJPSIV_0_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("E2t_ccdd_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("dP2EW_dcu_BJPSIV_0_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP2EW_dcu_BJPSIV_0_arg", -M_PI, M_PI);
         registerEWP("dP2EW_dcu_BJPSIV_0");
-        addAmplitudeParameter("dP2EW_dcu_BJPSIV_paral_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP2EW_dcu_BJPSIV_paral_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP2EW_dcu_BJPSIV_paral_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP2EW_dcu_BJPSIV_paral_arg", -M_PI, M_PI);
         registerEWP("dP2EW_dcu_BJPSIV_paral");
-        addAmplitudeParameter("dP2EW_dcu_BJPSIV_perp_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP2EW_dcu_BJPSIV_perp_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("dP2EW_dcu_BJPSIV_perp_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP2EW_dcu_BJPSIV_perp_arg", -M_PI, M_PI);
         registerEWP("dP2EW_dcu_BJPSIV_perp");
         addSU3Pair("dP2EW_dcu_BJPSIV", "dP2EW_scu_BJPSIV", true);
-        addAmplitudeParameter("EA1_ddcd_BVJPSI_0_re", -20., 20.);
-        addAmplitudeParameter("EA1_ddcd_BVJPSI_0_im", -20., 20.);
-        addAmplitudeParameter("EA1_ddcd_BVJPSI_paral_re", -10., 10.);
-        addAmplitudeParameter("EA1_ddcd_BVJPSI_paral_im", -20., 20.);
-        addAmplitudeParameter("EA1_ddcd_BVJPSI_perp_re", -10., 10.);
-        addAmplitudeParameter("EA1_ddcd_BVJPSI_perp_im", -10., 10.);
+        addAmplitudeParameter("EA1_ddcd_BVJPSI_0_abs", 0., 28.2843);
+        addAmplitudeParameter("EA1_ddcd_BVJPSI_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA1_ddcd_BVJPSI_paral_abs", 0., 22.3607);
+        addAmplitudeParameter("EA1_ddcd_BVJPSI_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA1_ddcd_BVJPSI_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("EA1_ddcd_BVJPSI_perp_arg", -M_PI, M_PI);
         addSU3Pair("EA1_ddcd_BVJPSI", "EA1_sdcd_BVJPSI", true);
-        addAmplitudeParameter("G2t_scd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G2t_scd_BJPSIV_perp_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_0_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_0_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_im", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_re", -10., 10.);
-        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_im", -10., 10.);
+        addAmplitudeParameter("G2t_scd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_scd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_scd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_scd_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_0_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_0_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_abs", 0., 14.1421);
+        addAmplitudeParameter("G2t_dcd_BJPSIV_perp_arg", -M_PI, M_PI);
     }
     else if (channel == "Bsdspdsm")
     {
         // Bs -> Ds+ Ds- parameters (base channel for s->c)
         // b → c(c̄s), spectator s
         vector<string> params = {
-            "E1t_sccs_BDDb_re", "E1t_sccs_BDDb_im",
-            "A2t_cscs_BDbD_re", "A2t_cscs_BDbD_im",
-            "G1t_scs_BDDb_re", "G1t_scs_BDDb_im",
-            "G3t_css_BDDb_re", "G3t_css_BDDb_im"};
+            "E1t_sccs_BDDb_abs", "E1t_sccs_BDDb_arg",
+            "A2t_cscs_BDbD_abs", "A2t_cscs_BDbD_arg",
+            "G1t_scs_BDDb_abs", "G1t_scs_BDDb_arg",
+            "G3t_css_BDDb_abs", "G3t_css_BDDb_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E1t_sccs_BDDb_re", -20., 20.);
-        addAmplitudeParameter("E1t_sccs_BDDb_im", -20., 20.);
-        addAmplitudeParameter("A2t_cscs_BDbD_re", -20., 20.);
-        addAmplitudeParameter("A2t_cscs_BDbD_im", -20., 20.);
-        addAmplitudeParameter("G1t_scs_BDDb_re", -20., 0.);
-        addAmplitudeParameter("G1t_scs_BDDb_im", -20., 20.);
-        addAmplitudeParameter("G3t_css_BDDb_re", -5., 20.);
-        addAmplitudeParameter("G3t_css_BDDb_im", -20., 20.);
+        addAmplitudeParameter("E1t_sccs_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("E1t_sccs_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("A2t_cscs_BDbD_abs", 0., 28.2843);
+        addAmplitudeParameter("A2t_cscs_BDbD_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G1t_scs_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G1t_scs_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G3t_css_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G3t_css_BDDb_arg", -M_PI, M_PI);
     }
     else if (channel == "Bsdpdsm")
     {
         // b → c(c̄d), spectator s
         vector<string> params = {
-            "E1t_dccs_BDDb_re", "E1t_dccs_BDDb_im",
-            "G1t_dcs_BDDb_re", "G1t_dcs_BDDb_im"};
+            "E1t_dccs_BDDb_abs", "E1t_dccs_BDDb_arg",
+            "G1t_dcs_BDDb_abs", "G1t_dcs_BDDb_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E1t_dccs_BDDb_re", -20., 20.);
-        addAmplitudeParameter("E1t_dccs_BDDb_im", -20., 20.);
+        addAmplitudeParameter("E1t_dccs_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("E1t_dccs_BDDb_arg", -M_PI, M_PI);
         addSU3Pair("E1t_dccs_BDDb", "E1t_sccs_BDDb");
-        addAmplitudeParameter("G1t_dcs_BDDb_re", -20., 0.);
-        addAmplitudeParameter("G1t_dcs_BDDb_im", -20., 20.);
+        addAmplitudeParameter("G1t_dcs_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G1t_dcs_BDDb_arg", -M_PI, M_PI);
         addSU3Pair("G1t_dcs_BDDb", "G1t_scs_BDDb");
     }
     else if (channel == "Bsdpdm")
     {
         // b → c(c̄s), spectator s
         vector<string> params = {
-            "A2t_cdcs_BDbD_re", "A2t_cdcs_BDbD_im",
+            "A2t_cdcs_BDbD_abs", "A2t_cdcs_BDbD_arg",
 };
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("A2t_cdcs_BDbD_re", -20., 20.);
-        addAmplitudeParameter("A2t_cdcs_BDbD_im", -20., 20.);
+        addAmplitudeParameter("A2t_cdcs_BDbD_abs", 0., 28.2843);
+        addAmplitudeParameter("A2t_cdcs_BDbD_arg", -M_PI, M_PI);
         addSU3Pair("A2t_cdcs_BDbD", "A2t_cscs_BDbD");
         // [skip orphan: G3_cds_BDDb]
     }
@@ -2268,163 +2228,163 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
     {
         // b → c(c̄s), spectator s
         vector<string> params = {
-            "A2t_cdcs_BDbD_re", "A2t_cdcs_BDbD_im",
-            "dP3EW_ucs_BDbD_re", "dP3EW_ucs_BDbD_im",
-            "A2_dcds_BDDb_re", "A2_dcds_BDDb_im",
-            "G3t_cds_BDDb_re", "G3t_cds_BDDb_im"};
+            "A2t_cdcs_BDbD_abs", "A2t_cdcs_BDbD_arg",
+            "dP3EW_ucs_BDbD_abs", "dP3EW_ucs_BDbD_arg",
+            "A2_dcds_BDDb_abs", "A2_dcds_BDDb_arg",
+            "G3t_cds_BDDb_abs", "G3t_cds_BDDb_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("A2t_cdcs_BDbD_re", -20., 20.);
-        addAmplitudeParameter("A2t_cdcs_BDbD_im", -20., 20.);
-        addAmplitudeParameter("dP3EW_ucs_BDbD_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("A2t_cdcs_BDbD_abs", 0., 28.2843);
+        addAmplitudeParameter("A2t_cdcs_BDbD_arg", -M_PI, M_PI);
+        addAmplitudeParameter("dP3EW_ucs_BDbD_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
         registerEWP("dP3EW_ucs_BDbD");
-        addAmplitudeParameter("dP3EW_ucs_BDbD_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("A2_dcds_BDDb_re", -20., 0.);
-        addAmplitudeParameter("A2_dcds_BDDb_im", -20.,0.);
-        addAmplitudeParameter("G3t_cds_BDDb_re", -5., 20.);
-        addAmplitudeParameter("G3t_cds_BDDb_im", -20., 20.);
+        addAmplitudeParameter("dP3EW_ucs_BDbD_arg", -M_PI, M_PI);
+        addAmplitudeParameter("A2_dcds_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("A2_dcds_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G3t_cds_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G3t_cds_BDDb_arg", -M_PI, M_PI);
         addSU3Pair("G3t_cds_BDDb", "G3t_css_BDDb");
     }
     else if (channel == "Bddspdsm")
     {
         // b → c(c̄d), spectator d
         vector<string> params = {
-            "A2t_cscd_BDbD_re", "A2t_cscd_BDbD_im",
-            "G3t_csd_BDDb_re", "G3t_csd_BDDb_im"};
+            "A2t_cscd_BDbD_abs", "A2t_cscd_BDbD_arg",
+            "G3t_csd_BDDb_abs", "G3t_csd_BDDb_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("A2t_cscd_BDbD_re", -20., 20.);
-        addAmplitudeParameter("A2t_cscd_BDbD_im", -20., 20.);
+        addAmplitudeParameter("A2t_cscd_BDbD_abs", 0., 28.2843);
+        addAmplitudeParameter("A2t_cscd_BDbD_arg", -M_PI, M_PI);
         addSU3Pair("A2t_cscd_BDbD", "A2t_cscs_BDbD");
-        addAmplitudeParameter("G3t_csd_BDDb_re", -5., 20.);
-        addAmplitudeParameter("G3t_csd_BDDb_im", -20., 20.);
+        addAmplitudeParameter("G3t_csd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G3t_csd_BDDb_arg", -M_PI, M_PI);
         addSU3Pair("G3t_csd_BDDb", "G3t_css_BDDb");
     }
     else if (channel == "Bddspdm")
     {
         // b → c(c̄s), spectator d
         vector<string> params = {
-            "E1t_sccd_BDDb_re", "E1t_sccd_BDDb_im",
-            "G1t_scd_BDDb_re", "G1t_scd_BDDb_im"};
+            "E1t_sccd_BDDb_abs", "E1t_sccd_BDDb_arg",
+            "G1t_scd_BDDb_abs", "G1t_scd_BDDb_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E1t_sccd_BDDb_re", 0., 20.);
-        addAmplitudeParameter("E1t_sccd_BDDb_im", 0., 0.);
+        addAmplitudeParameter("E1t_sccd_BDDb_abs", 0., 20.);
+        addAmplitudeParameter("E1t_sccd_BDDb_arg", 0., 0.);
         addSU3Pair("E1t_sccd_BDDb", "E1t_sccs_BDDb");
-        addAmplitudeParameter("G1t_scd_BDDb_re", -20., 0.);
-        addAmplitudeParameter("G1t_scd_BDDb_im", -20., 20.);
+        addAmplitudeParameter("G1t_scd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G1t_scd_BDDb_arg", -M_PI, M_PI);
         addSU3Pair("G1t_scd_BDDb", "G1t_scs_BDDb");
     }
     else if (channel == "Bddpdm")
     {
         // b → c(c̄d), spectator d
         vector<string> params = {
-            "E1t_dccs_BDDb_re", "E1t_dccs_BDDb_im",
-            "E1t_dccd_BDDb_re", "E1t_dccd_BDDb_im",
-            "A2t_cdcs_BDbD_re", "A2t_cdcs_BDbD_im",
-            "A2t_cdcd_BDbD_re", "A2t_cdcd_BDbD_im",
-            "G1t_dcs_BDDb_re", "G1t_dcs_BDDb_im",
-            "G3t_cds_BDDb_re", "G3t_cds_BDDb_im",
-            "G1t_dcd_BDDb_re", "G1t_dcd_BDDb_im",
-            "G3t_cdd_BDDb_re", "G3t_cdd_BDDb_im"};
+            "E1t_dccs_BDDb_abs", "E1t_dccs_BDDb_arg",
+            "E1t_dccd_BDDb_abs", "E1t_dccd_BDDb_arg",
+            "A2t_cdcs_BDbD_abs", "A2t_cdcs_BDbD_arg",
+            "A2t_cdcd_BDbD_abs", "A2t_cdcd_BDbD_arg",
+            "G1t_dcs_BDDb_abs", "G1t_dcs_BDDb_arg",
+            "G3t_cds_BDDb_abs", "G3t_cds_BDDb_arg",
+            "G1t_dcd_BDDb_abs", "G1t_dcd_BDDb_arg",
+            "G3t_cdd_BDDb_abs", "G3t_cdd_BDDb_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E1t_dccs_BDDb_re", -20., 20.);
-        addAmplitudeParameter("E1t_dccs_BDDb_im", -20., 20.);
-        addAmplitudeParameter("E1t_dccd_BDDb_re", -20., 20.);
-        addAmplitudeParameter("E1t_dccd_BDDb_im", -20., 20.);
+        addAmplitudeParameter("E1t_dccs_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("E1t_dccs_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E1t_dccd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("E1t_dccd_BDDb_arg", -M_PI, M_PI);
         addSU3Pair("E1t_dccd_BDDb", "E1t_dccs_BDDb");
-        addAmplitudeParameter("A2t_cdcs_BDbD_re", -20., 20.);
-        addAmplitudeParameter("A2t_cdcs_BDbD_im", -20., 20.);
-        addAmplitudeParameter("A2t_cdcd_BDbD_re", -20., 20.);
-        addAmplitudeParameter("A2t_cdcd_BDbD_im", -20., 20.);
+        addAmplitudeParameter("A2t_cdcs_BDbD_abs", 0., 28.2843);
+        addAmplitudeParameter("A2t_cdcs_BDbD_arg", -M_PI, M_PI);
+        addAmplitudeParameter("A2t_cdcd_BDbD_abs", 0., 28.2843);
+        addAmplitudeParameter("A2t_cdcd_BDbD_arg", -M_PI, M_PI);
         addSU3Pair("A2t_cdcd_BDbD", "A2t_cdcs_BDbD");
-        addAmplitudeParameter("G1t_dcs_BDDb_re", -20., 0.);
-        addAmplitudeParameter("G1t_dcs_BDDb_im", -20., 20.);
-        addAmplitudeParameter("G3t_cds_BDDb_re", -5., 20.);
-        addAmplitudeParameter("G3t_cds_BDDb_im", -20., 20.);
-        addAmplitudeParameter("G1t_dcd_BDDb_re", -20., 0.);
-        addAmplitudeParameter("G1t_dcd_BDDb_im", -20., 20.);
+        addAmplitudeParameter("G1t_dcs_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G1t_dcs_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G3t_cds_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G3t_cds_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G1t_dcd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G1t_dcd_BDDb_arg", -M_PI, M_PI);
         addSU3Pair("G1t_dcd_BDDb", "G1t_dcs_BDDb");
-        addAmplitudeParameter("G3t_cdd_BDDb_re", -5., 20.);
-        addAmplitudeParameter("G3t_cdd_BDDb_im", -20., 20.);
+        addAmplitudeParameter("G3t_cdd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G3t_cdd_BDDb_arg", -M_PI, M_PI);
         addSU3Pair("G3t_cdd_BDDb", "G3t_cds_BDDb");
     }
     else if (channel == "Bdd0d0b")
     {
         // b → c(c̄d), spectator d
         vector<string> params = {
-            "A2t_cdcs_BDbD_re", "A2t_cdcs_BDbD_im",
-            "A2t_cdcd_BDbD_re", "A2t_cdcd_BDbD_im",
-            "dP3EW_ucd_BDbD_re", "dP3EW_ucd_BDbD_im",
-            "A2_dcdd_BDDb_re", "A2_dcdd_BDDb_im",
-            "G3t_cds_BDDb_re", "G3t_cds_BDDb_im",
-            "G3t_cdd_BDDb_re", "G3t_cdd_BDDb_im"};
+            "A2t_cdcs_BDbD_abs", "A2t_cdcs_BDbD_arg",
+            "A2t_cdcd_BDbD_abs", "A2t_cdcd_BDbD_arg",
+            "dP3EW_ucd_BDbD_abs", "dP3EW_ucd_BDbD_arg",
+            "A2_dcdd_BDDb_abs", "A2_dcdd_BDDb_arg",
+            "G3t_cds_BDDb_abs", "G3t_cds_BDDb_arg",
+            "G3t_cdd_BDDb_abs", "G3t_cdd_BDDb_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("A2t_cdcs_BDbD_re", -20., 20.);
-        addAmplitudeParameter("A2t_cdcs_BDbD_im", -20., 20.);
-        addAmplitudeParameter("A2t_cdcd_BDbD_re", -20., 20.);
-        addAmplitudeParameter("A2t_cdcd_BDbD_im", -20., 20.);
-        addAmplitudeParameter("dP3EW_ucd_BDbD_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP3EW_ucd_BDbD_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("A2t_cdcs_BDbD_abs", 0., 28.2843);
+        addAmplitudeParameter("A2t_cdcs_BDbD_arg", -M_PI, M_PI);
+        addAmplitudeParameter("A2t_cdcd_BDbD_abs", 0., 28.2843);
+        addAmplitudeParameter("A2t_cdcd_BDbD_arg", -M_PI, M_PI);
+        addAmplitudeParameter("dP3EW_ucd_BDbD_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP3EW_ucd_BDbD_arg", -M_PI, M_PI);
         registerEWP("dP3EW_ucd_BDbD");
         addSU3Pair("dP3EW_ucd_BDbD", "dP3EW_ucs_BDbD");
-        addAmplitudeParameter("A2_dcdd_BDDb_re", -20., 0.);
-        addAmplitudeParameter("A2_dcdd_BDDb_im", -20., 0.);
+        addAmplitudeParameter("A2_dcdd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("A2_dcdd_BDDb_arg", -M_PI, M_PI);
         addSU3Pair("A2_dcdd_BDDb", "A2_dcds_BDDb");
-        addAmplitudeParameter("G3t_cds_BDDb_re", -5., 20.);
-        addAmplitudeParameter("G3t_cds_BDDb_im", -20., 20.);
-        addAmplitudeParameter("G3t_cdd_BDDb_re", -5., 20.);
-        addAmplitudeParameter("G3t_cdd_BDDb_im", -20., 20.);
+        addAmplitudeParameter("G3t_cds_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G3t_cds_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G3t_cdd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G3t_cdd_BDDb_arg", -M_PI, M_PI);
     }
     else if (channel == "Bpdpd0b")
     {
         // b → c(c̄d), spectator u
         vector<string> params = {
-            "E1t_dccs_BDDb_re", "E1t_dccs_BDDb_im",
-            "E1t_dccd_BDDb_re", "E1t_dccd_BDDb_im",
-            "dP1EW_dcu_BDDb_re", "dP1EW_dcu_BDDb_im",
-            "A1_dcdd_BDDb_re", "A1_dcdd_BDDb_im",
-            "G1t_dcd_BDDb_re", "G1t_dcd_BDDb_im",
-            "G1t_dcs_BDDb_re", "G1t_dcs_BDDb_im"};
+            "E1t_dccs_BDDb_abs", "E1t_dccs_BDDb_arg",
+            "E1t_dccd_BDDb_abs", "E1t_dccd_BDDb_arg",
+            "dP1EW_dcu_BDDb_abs", "dP1EW_dcu_BDDb_arg",
+            "A1_dcdd_BDDb_abs", "A1_dcdd_BDDb_arg",
+            "G1t_dcd_BDDb_abs", "G1t_dcd_BDDb_arg",
+            "G1t_dcs_BDDb_abs", "G1t_dcs_BDDb_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E1t_dccs_BDDb_re", -20., 20.);
-        addAmplitudeParameter("E1t_dccs_BDDb_im", -20., 20.);
-        addAmplitudeParameter("E1t_dccd_BDDb_re", -20., 20.);
-        addAmplitudeParameter("E1t_dccd_BDDb_im", -20., 20.);
-        addAmplitudeParameter("dP1EW_dcu_BDDb_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("E1t_dccs_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("E1t_dccs_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E1t_dccd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("E1t_dccd_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("dP1EW_dcu_BDDb_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
         registerEWP("dP1EW_dcu_BDDb");
-        addAmplitudeParameter("dP1EW_dcu_BDDb_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("A1_dcdd_BDDb_re", -20., 0.);
-        addAmplitudeParameter("A1_dcdd_BDDb_im", -20., 20.);
-        addAmplitudeParameter("G1t_dcs_BDDb_re", -20., 0.);
-        addAmplitudeParameter("G1t_dcs_BDDb_im", -20., 20.);
-        addAmplitudeParameter("G1t_dcd_BDDb_re", -20., 0.);
-        addAmplitudeParameter("G1t_dcd_BDDb_im", -20., 20.);
+        addAmplitudeParameter("dP1EW_dcu_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("A1_dcdd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("A1_dcdd_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G1t_dcs_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G1t_dcs_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("G1t_dcd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G1t_dcd_BDDb_arg", -M_PI, M_PI);
     }
     else if (channel == "Bpdspd0b")
     {
         // b → c(c̄s), spectator u
         vector<string> params = {
-            "E1t_sccd_BDDb_re", "E1t_sccd_BDDb_im",
-            "dP1EW_scu_BDDb_re", "dP1EW_scu_BDDb_im",
-            "A1_scdd_BDDb_re", "A1_scdd_BDDb_im",
-            "G1t_scd_BDDb_re", "G1t_scd_BDDb_im"};
+            "E1t_sccd_BDDb_abs", "E1t_sccd_BDDb_arg",
+            "dP1EW_scu_BDDb_abs", "dP1EW_scu_BDDb_arg",
+            "A1_scdd_BDDb_abs", "A1_scdd_BDDb_arg",
+            "G1t_scd_BDDb_abs", "G1t_scd_BDDb_arg"};
         channelParameters[channel] = params;
 
-        addAmplitudeParameter("E1t_sccd_BDDb_re", -20., 20.);
-        addAmplitudeParameter("E1t_sccd_BDDb_im", -20., 20.);
-        addAmplitudeParameter("dP1EW_scu_BDDb_re", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
-        addAmplitudeParameter("dP1EW_scu_BDDb_im", -(ewp_limit>0.?10.*ewp_limit:0.), (ewp_limit>0.?10.*ewp_limit:0.));
+        addAmplitudeParameter("E1t_sccd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("E1t_sccd_BDDb_arg", -M_PI, M_PI);
+        addAmplitudeParameter("dP1EW_scu_BDDb_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
+        addAmplitudeParameter("dP1EW_scu_BDDb_arg", -M_PI, M_PI);
         registerEWP("dP1EW_scu_BDDb");
         addSU3Pair("dP1EW_scu_BDDb", "dP1EW_dcu_BDDb");
-        addAmplitudeParameter("A1_scdd_BDDb_re", -20., 0.);
-        addAmplitudeParameter("A1_scdd_BDDb_im", -20., 20.);
+        addAmplitudeParameter("A1_scdd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("A1_scdd_BDDb_arg", -M_PI, M_PI);
         addSU3Pair("A1_scdd_BDDb", "A1_dcdd_BDDb");
-        addAmplitudeParameter("G1t_scd_BDDb_re", -20., 20.);
-        addAmplitudeParameter("G1t_scd_BDDb_im", -20., 20.);
+        addAmplitudeParameter("G1t_scd_BDDb_abs", 0., 28.2843);
+        addAmplitudeParameter("G1t_scd_BDDb_arg", -M_PI, M_PI);
     }
     else
     {
@@ -2480,11 +2440,11 @@ TComplex goldenmodesB_indSU3::getPar(const string &baseName) const
         return TComplex(0., 0.);
     }
 
-    auto it_real = parameterValues.find(baseName + "_re");
-    auto it_imag = parameterValues.find(baseName + "_im");
+    auto it_abs = parameterValues.find(baseName + "_abs");
+    auto it_arg = parameterValues.find(baseName + "_arg");
 
-    if (it_real != parameterValues.end() && it_imag != parameterValues.end())
-        return TComplex(it_real->second, it_imag->second);
+    if (it_abs != parameterValues.end() && it_arg != parameterValues.end())
+        return TComplex(it_abs->second, it_arg->second, kTRUE); // polar form: re = abs*cos(arg), im = abs*sin(arg)
 
     throw runtime_error("Error: Parameter " + baseName + " not found in parameterValues.");
 }
@@ -4534,14 +4494,14 @@ double goldenmodesB_indSU3::LogLikelihood(const vector<double> &parameters)
     lamst_bd_c = ckm.getVcb() * TComplex::Conjugate(ckm.getVcd());
     lamst_bd_u = ckm.getVub() * TComplex::Conjugate(ckm.getVud());
 
-    // Fill obs histograms for amplitude modulus and phase
+    // Fill obs histograms for amplitude modulus and phase (canonicalised: abs >= 0, arg in (-pi, pi])
     for (const auto &channel : channelNamesSU3)
     {
         for (const auto &param : channelParameters[channel])
         {
-            if (param.size() >= 3 && param.substr(param.size() - 3) == "_re")
+            if (param.size() >= 4 && param.substr(param.size() - 4) == "_abs")
             {
-                string baseName = param.substr(0, param.size() - 3);
+                string baseName = param.substr(0, param.size() - 4);
                 obs[baseName + "_abs"] = getPar(baseName).Rho();
                 obs[baseName + "_arg"] = getPar(baseName).Theta();
             }
@@ -4700,17 +4660,22 @@ double goldenmodesB_indSU3::CalculateSU3Penalty(double sigma) const
     double penalty = 0.;
     for (const auto &p : su3Pairs) {
         try {
-            TComplex A1 = getPar(p.first);
-            TComplex A2 = getPar(p.second);
             if (su3_weight == "abs") {
-                // Penalise |A1| - |A2| normalised by average abs
-                double avg = 0.5 * (A1.Rho() + A2.Rho());
+                // Penalise |A1| - |A2| using the stored _abs parameters directly; arg is never read.
+                double a1 = std::abs(getParameterValue(p.first + "_abs"));
+                double a2 = std::abs(getParameterValue(p.second + "_abs"));
+                double avg = 0.5 * (a1 + a2);
                 if (avg > 1e-10) {
-                    double diff = A1.Rho() - A2.Rho();
+                    double diff = a1 - a2;
                     penalty -= 0.5 * diff * diff / (avg * avg * sigma * sigma);
                 }
-            } 
-            else if (su3_weight == "complex") {
+                continue;
+            }
+
+            // "complex" and "reim" modes need the full amplitude, with re/im derived from abs/arg
+            TComplex A1 = getPar(p.first);
+            TComplex A2 = getPar(p.second);
+            if (su3_weight == "complex") {
                 // Default: penalise |A1 - A2| normalised by average modulus
                 double avg = 0.5 * (A1.Rho() + A2.Rho());
                 if (avg > 1e-10) {
