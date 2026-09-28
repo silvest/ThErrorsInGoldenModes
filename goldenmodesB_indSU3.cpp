@@ -1529,7 +1529,7 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             "EA2t_ccds_BJPSIP_abs",
             "EA2t_ccds_BJPSIP_arg",
             "EA2t_ccss_BJPSIP_abs",
-            "EA2t_ccss_BJPSIP_arg"
+            "EA2t_ccss_BJPSIP_arg",
             "dP4EW_ucs_BPJPSI_abs",
             "dP4EW_ucs_BPJPSI_arg"};
         channelParameters[channel] = params;
