@@ -2263,7 +2263,7 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             "E1t_dccd_BDDb_abs", "E1t_dccd_BDDb_arg",
             "dP1EW_dcu_BDDb_abs", "dP1EW_dcu_BDDb_arg",
             "A1_dcdd_BDDb_abs", "A1_dcdd_BDDb_arg",
-            "G1t_dcd_BDDb_abs", "G1t_dcd_BDDb_arg",
+            "G1t_dcd_BDDb_abs", "G1t_dcd_BDDb_arg"};
         channelParameters[channel] = params;
 
         addAmplitudeParameter("E1t_dccd_BDDb_abs", 0., 28.2843);
