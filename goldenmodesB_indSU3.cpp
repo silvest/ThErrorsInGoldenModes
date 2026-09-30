@@ -30,7 +30,7 @@ using namespace std;
 
 static CKMParameters ckm;
 
-goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP, bool positiveEA1P, bool positiveImEA2tP) : BCModel(), histos(obs)
+goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP, bool positiveEA1P, bool positiveImEA2tP, bool smallE2tP) : BCModel(), histos(obs)
 {
     
     flagBJPSIP = BJPSIP;
@@ -39,7 +39,8 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
     flagGaussianCKM = gaussianCKM;
     flagPositiveG2tP = positiveG2tP;
     flagPositiveEA1P = positiveEA1P;
-    flagPositiveImEA2tP = positiveImEA2tP; 
+    flagPositiveImEA2tP = positiveImEA2tP;
+    flagSmallE2tP = smallE2tP; 
     int mpi_rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     TH1::SetDefaultBufferSize(1000000);
@@ -1320,7 +1321,14 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_arg", -M_PI, M_PI);
         addAmplitudeParameter("EA2_ddcd_BPJPSI_abs", 0., 4.);
         addAmplitudeParameter("EA2_ddcd_BPJPSI_arg", -M_PI, M_PI);
-        addAmplitudeParameter("E2t_ccdd_BJPSIP_abs", 0.75, 4.);
+        if (flagSmallE2tP)
+        {
+            addAmplitudeParameter("E2t_ccdd_BJPSIP_abs", 0., 0.75);
+        }
+        else
+        {
+            addAmplitudeParameter("E2t_ccdd_BJPSIP_abs", 0.75, 4.);
+        }
         addAmplitudeParameter("E2t_ccdd_BJPSIP_arg", 0., 0.);
         addSU3Pair("E2t_ccdd_BJPSIP", "E2t_ccsd_BJPSIP");
         addAmplitudeParameter("G2t_dcd_BJPSIP_abs", 0., 4.);
