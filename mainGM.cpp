@@ -95,6 +95,7 @@ int main(int argc, char* argv[]) {
     bool flagPositiveEA1P = false;
     bool flagPositiveImEA2tP = false;
     bool flagSmallE2tP = false;
+    bool flagMinimal = false;
     string su3_weight = "abs"; // default SU(3) weight mode for indSU3
 
     double dsu3_limit = 0.2;
@@ -148,6 +149,8 @@ int main(int argc, char* argv[]) {
             flagSmallE2tP = true;
         } else if (strcmp(argv[i], "--positiveEA1P") == 0) {
             flagPositiveEA1P = true;
+        } else if (strcmp(argv[i], "--minimal") == 0) {
+            flagMinimal = true;
         } else if (strcmp(argv[i], "--help") == 0) {
             cout << "Usage: " << argv[0] << " [options]\n"
                  << "Options:\n"
@@ -159,6 +162,7 @@ int main(int argc, char* argv[]) {
                  << "  --positiveEA1P                  Use positive EA1_sdcd_BJPSIP values\n"
                  << "  --positiveImEA2tP               Use positive Im(EA2t_ccds_BJPSIP) values\n"
                  << "  --smallE2tP                     Use small E2t_ccdd_BJPSIP values\n"
+                 << "  --minimal                       Use minimal set of observables\n"
                  << "  --dsu3_limit <value>            Set dsu3 limit (default: 0.2)\n"
                  << "  --ewp_limit <value>             Set ewp limit (default: 0.0)\n"
                  << "  --nPreRun <value>               Set number of pre-run iterations (default: 100000)\n"
@@ -194,6 +198,7 @@ int main(int argc, char* argv[]) {
             cout << "positive EA1_sdcd_BJPSIP: " << (flagPositiveEA1P ? "true" : "false") << endl;
             cout << "positive Im(EA2t_ccds_BJPSIP): " << (flagPositiveImEA2tP ? "true" : "false") << endl;
             cout << "small E2t_ccdd_BJPSIP: " << (flagSmallE2tP ? "true" : "false") << endl;
+            cout << "minimal observables: " << (flagMinimal ? "true" : "false") << endl;
             cout << "su3_sigma: " << (su3_sigma > 0. ? to_string(su3_sigma) : "free") << endl;
             cout << "su3_weight: " << su3_weight << endl;
             cout << "Gaussian CKM prior: " << (flagGaussianCKM ? "true" : "false") << endl;
@@ -212,7 +217,7 @@ int main(int argc, char* argv[]) {
     auto start = chrono::high_resolution_clock::now();
 
     if (flagIndSU3) {
-        goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma, flagGaussianCKM, flagPositiveG2tP, flagPositiveEA1P, flagPositiveImEA2tP, flagSmallE2tP);
+        goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma, flagGaussianCKM, flagPositiveG2tP, flagPositiveEA1P, flagPositiveImEA2tP, flagSmallE2tP, flagMinimal);
         model.SetSU3Weight(su3_weight);
         if (mpi_rank != 0) {
             workerLoop(model);

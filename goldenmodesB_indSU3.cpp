@@ -30,7 +30,7 @@ using namespace std;
 
 static CKMParameters ckm;
 
-goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP, bool positiveEA1P, bool positiveImEA2tP, bool smallE2tP) : BCModel(), histos(obs)
+goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP, bool positiveEA1P, bool positiveImEA2tP, bool smallE2tP, bool minimal) : BCModel(), histos(obs)
 {
     
     flagBJPSIP = BJPSIP;
@@ -41,6 +41,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
     flagPositiveEA1P = positiveEA1P;
     flagPositiveImEA2tP = positiveImEA2tP;
     flagSmallE2tP = smallE2tP; 
+    flagMinimal = minimal;
     int mpi_rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
     TH1::SetDefaultBufferSize(1000000);
@@ -284,6 +285,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
         data.clear();
 
+        if (!flagMinimal) {
         ////////////////////////////
         // Bdjpsip0
         ////////////////////////////
@@ -463,7 +465,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         // BR measurements
 
 	    meas.insert(pair<string, dato>("BRBsjpsip0", dato(0., 1.2e-5 / 8.03 * 3.2))); // extrapolated from the upper limit in Belle:2023tdz
-
+        }
         /////////////////////////////
         // Bsjpsik0b
         /////////////////////////////
@@ -511,6 +513,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         CorrData.clear();
         names.clear();
 
+        if (!flagMinimal) {
         /////////////////////////////
         // Bsjpsieta
         /////////////////////////////
@@ -540,6 +543,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
         meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
         data.clear();
+        }
     }
     if (BJPSIP || BJPSIV)
     {
