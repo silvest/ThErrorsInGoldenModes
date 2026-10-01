@@ -1655,9 +1655,9 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("E2t_ccss_BJPSIV_0_abs", 0., 10.198);
         addAmplitudeParameter("E2t_ccss_BJPSIV_0_arg", 0., 0.);
         addAmplitudeParameter("E2t_ccss_BJPSIV_paral_abs", 0., 2.8284);
-        addAmplitudeParameter("E2t_ccss_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_paral_arg", 0., 2.*M_PI);
         addAmplitudeParameter("E2t_ccss_BJPSIV_perp_abs", 0., 10.198);
-        addAmplitudeParameter("E2t_ccss_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccss_BJPSIV_perp_arg", 0., 2.*M_PI);
         addAmplitudeParameter("G2t_scs_BJPSIV_0_abs", 0., 28.2843);
         addAmplitudeParameter("G2t_scs_BJPSIV_0_arg", -M_PI, M_PI);
         addAmplitudeParameter("G2t_scs_BJPSIV_paral_abs", 0., 14.1421);
@@ -1708,9 +1708,9 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("EA2t_ccds_BJPSIV_0_abs", 0., 10.198);
         addAmplitudeParameter("EA2t_ccds_BJPSIV_0_arg", 0., 0.);
         addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_abs", 0., 10.198);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_paral_arg", 0., 2.*M_PI);
         addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_abs", 0., 10.198);
-        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("EA2t_ccds_BJPSIV_perp_arg", 0., 2.*M_PI);
         addSU3Pair("EA2t_ccds_BJPSIV", "EA2t_ccss_BJPSIV", true);
         addAmplitudeParameter("G4t_cds_BJPSIV_0_abs", 0., 28.2843);
         addAmplitudeParameter("G4t_cds_BJPSIV_0_arg", -M_PI, M_PI);
@@ -1755,7 +1755,7 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("E2t_ccds_BJPSIV_0_abs", 0., 14.1421);
         addAmplitudeParameter("E2t_ccds_BJPSIV_0_arg", 0., 0.);
         addAmplitudeParameter("E2t_ccds_BJPSIV_paral_abs", 0., 14.1421);
-        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccds_BJPSIV_paral_arg", 0., 2.*M_PI);
         addAmplitudeParameter("E2t_ccds_BJPSIV_perp_abs", 0., 14.1421);
         addAmplitudeParameter("E2t_ccds_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("E2t_ccds_BJPSIV", "E2t_ccss_BJPSIV", true);
@@ -1907,9 +1907,9 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("E2t_ccsd_BJPSIV_0_abs", 0., 14.1421);
         addAmplitudeParameter("E2t_ccsd_BJPSIV_0_arg", 0., 0.);
         addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_abs", 0., 14.1421);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_paral_arg", 0., 2.*M_PI);
         addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_abs", 0., 14.1421);
-        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_arg", -M_PI, M_PI);
+        addAmplitudeParameter("E2t_ccsd_BJPSIV_perp_arg", 0., 2.*M_PI);
         addSU3Pair("E2t_ccsd_BJPSIV", "E2t_ccss_BJPSIV", true);
         addAmplitudeParameter("G2t_scd_BJPSIV_0_abs", 0., 14.1421);
         addAmplitudeParameter("G2t_scd_BJPSIV_0_arg", -M_PI, M_PI);
