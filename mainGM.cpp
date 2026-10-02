@@ -96,6 +96,8 @@ int main(int argc, char* argv[]) {
     bool flagPositiveImEA2tP = false;
     bool flagSmallE2tP = false;
     bool flagMinimal = false;
+    bool flagPositiveE2tV = false;
+    bool flagPositiveG2tV = false;
     string su3_weight = "abs"; // default SU(3) weight mode for indSU3
 
     double dsu3_limit = 0.2;
@@ -151,6 +153,10 @@ int main(int argc, char* argv[]) {
             flagPositiveEA1P = true;
         } else if (strcmp(argv[i], "--minimal") == 0) {
             flagMinimal = true;
+        } else if (strcmp(argv[i], "--positiveE2tV") == 0) {
+            flagPositiveE2tV = true;
+        } else if (strcmp(argv[i], "--positiveG2tV") == 0) {
+            flagPositiveG2tV = true;
         } else if (strcmp(argv[i], "--help") == 0) {
             cout << "Usage: " << argv[0] << " [options]\n"
                  << "Options:\n"
@@ -217,7 +223,7 @@ int main(int argc, char* argv[]) {
     auto start = chrono::high_resolution_clock::now();
 
     if (flagIndSU3) {
-        goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma, flagGaussianCKM, flagPositiveG2tP, flagPositiveEA1P, flagPositiveImEA2tP, flagSmallE2tP, flagMinimal);
+        goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma, flagGaussianCKM, flagPositiveG2tP, flagPositiveEA1P, flagPositiveImEA2tP, flagSmallE2tP, flagMinimal, flagPositiveE2tV, flagPositiveG2tV);
         model.SetSU3Weight(su3_weight);
         if (mpi_rank != 0) {
             workerLoop(model);
