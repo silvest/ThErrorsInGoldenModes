@@ -45,7 +45,7 @@ using namespace std;
 class goldenmodesB_indSU3 : public BCModel
 {
 public:
-    goldenmodesB_indSU3(double &ewp_limit, bool BJPSIP = true, bool BJPSIV = true, bool BDDb = true, double su3_sigma_in = 0.3, bool gaussianCKM = false, bool positiveG2tP = false, bool positiveEA1P = false, bool positiveImEA2tP = false, bool smallE2tP = false, bool minimal = false, bool positiveE2tV = false, bool positiveG2tV = false, bool smallEA1P = false);
+    goldenmodesB_indSU3(double &ewp_limit, bool BJPSIP = true, bool BJPSIV = true, bool BDDb = true, double su3_sigma_in = 0.3, bool gaussianCKM = false, bool positiveG2tP = false, bool positiveEA1P = false, bool positiveImEA2tP = false, bool smallE2tP = false, bool minimal = false, bool positiveE2tV = false, bool positiveG2tV = false, bool smallEA1P = false, bool positiveG1tD = false, bool positiveA1D = false);
     ~goldenmodesB_indSU3();
 
     // map to store all the parameters used in amplitudes
@@ -72,6 +72,8 @@ public:
     bool flagPositiveG2tV;
     bool flagMinimal;
     bool flagSmallEA1P;
+    bool flagPositiveG1tD;
+    bool flagPositiveA1D;
     // channel lists
     vector<string> channelNames = {"Bpjpsipp", "Bpjpsikp", "Bdjpsip0", "Bdjpsik0s", "Bdjpsik0l", "Bdjpsik0", "Bdjpsieta", "Bdjpsietap", "Bsjpsip0", "Bsjpsik0s", "Bsjpsik0l", "Bsjpsik0b", "Bsjpsieta", "Bsjpsietap", "Bpjpsirp", "Bpjpsikstp", "Bdjpsirho0", "Bdjpsikst0", "Bdjpsiphi", "Bdjpsiom", "Bsjpsirho0", "Bsjpsikbst0", "Bsjpsiphi", "Bsjpsiom", "Bpdpd0b", "Bpdspd0b", "Bddpdm", "Bddspdm", "Bddspdsm", "Bdd0d0b", "Bsdpdm", "Bsdpdsm", "Bsdspdsm", "Bsd0d0b"};
     vector<string> channelNamesSU3;
