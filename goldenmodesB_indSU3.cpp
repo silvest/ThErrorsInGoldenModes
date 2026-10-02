@@ -552,7 +552,10 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
         // R_Bsjpsietap_Bsjpsiphi
         meas.insert(pair<string, dato>("R_Bsjpsietap_Bsjpsiphi", dato(0.370, 0.013, 0.018, 0.011))); // LHCb:2025sgp
+    }
 
+    if (BJPSIV)
+    {
         /////////////////////////////
         // Bsjpsiphi
         /////////////////////////////
@@ -568,10 +571,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
         meas.insert(pair<string, dato>(pdgaverage.getName(), dato(pdgaverage.getAverage(), pdgaverage.getUncertainty())));
         data.clear();
-    }
-
-    if (BJPSIV)
-    {
+    
 
         // Correlated data sets for polarization fractions and CP asymmetries
 
