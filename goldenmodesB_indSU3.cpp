@@ -30,7 +30,7 @@ using namespace std;
 
 static CKMParameters ckm;
 
-goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP, bool positiveEA1P, bool positiveImEA2tP, bool smallE2tP, bool minimal, bool positiveE2tV, bool positiveG2tV) : BCModel(), histos(obs)
+goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP, bool positiveEA1P, bool positiveImEA2tP, bool smallE2tP, bool minimal, bool positiveE2tV, bool positiveG2tV, bool smallEA1P) : BCModel(), histos(obs)
 {
     
     flagBJPSIP = BJPSIP;
@@ -39,6 +39,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
     flagGaussianCKM = gaussianCKM;
     flagPositiveG2tP = positiveG2tP;
     flagPositiveEA1P = positiveEA1P;
+    flagSmallEA1P = smallEA1P;
     flagPositiveImEA2tP = positiveImEA2tP;
     flagSmallE2tP = smallE2tP; 
     flagPositiveE2tV = positiveE2tV;
@@ -1457,13 +1458,21 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("dP2EW_scu_BPJPSI_arg", -M_PI, M_PI);
         if (flagPositiveEA1P)
         {
+            if (flagSmallEA1P)
+            {
+                addAmplitudeParameter("EA1_sdcd_BPJPSI_abs", 0., 1.5);
+            }
+            else
+            {
+                addAmplitudeParameter("EA1_sdcd_BPJPSI_abs", 1.5, 4.);
+            }
             addAmplitudeParameter("EA1_sdcd_BPJPSI_arg", -M_PI/2., M_PI/2.);
         }
         else
         {
+            addAmplitudeParameter("EA1_sdcd_BPJPSI_abs", 0., 4.);
             addAmplitudeParameter("EA1_sdcd_BPJPSI_arg", M_PI/2., 3*M_PI/2.);
         }
-        addAmplitudeParameter("EA1_sdcd_BPJPSI_abs", 0., 4.);
     }
     else if (channel == "Bpjpsipp")
     {
@@ -1488,10 +1497,19 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("EA1_ddcd_BPJPSI_abs", 0., 4.);
         if(flagPositiveEA1P)
         {
+            if(flagSmallEA1P)
+            {
+                addAmplitudeParameter("EA1_ddcd_BPJPSI_abs", 0., 1.5);
+            }
+            else
+            {
+                addAmplitudeParameter("EA1_ddcd_BPJPSI_abs", 1.5, 4.);
+            }
             addAmplitudeParameter("EA1_ddcd_BPJPSI_arg", -M_PI/2., M_PI/2.);
         }
         else
         {
+            addAmplitudeParameter("EA1_ddcd_BPJPSI_abs", 0., 4.);
             addAmplitudeParameter("EA1_ddcd_BPJPSI_arg", M_PI/2., 3*M_PI/2.);
         }
         addSU3Pair("EA1_ddcd_BPJPSI", "EA1_sdcd_BPJPSI");
