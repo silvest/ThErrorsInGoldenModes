@@ -4729,7 +4729,25 @@ void goldenmodesB_indSU3::MCMCUserIterationInterface()
                 TComplex A1 = getPar(p.first);
                 TComplex A2 = getPar(p.second);
                 double avg = 0.5 * (A1.Rho() + A2.Rho());
-                obs[hname] = (avg > 1e-10) ? TComplex(A1 - A2).Rho() / avg : 0.;
+                if (su3_weight == "abs") {
+                    obs[hname] = (avg > 1e-10) ? std::abs(A1.Rho() - A2.Rho()) / avg : 0.;
+                }
+                else if (su3_weight == "complex") {
+                    obs[hname] = (avg > 1e-10) ? TComplex(A1 - A2).Rho() / avg : 0.;
+                }
+                else if (su3_weight == "reim") {
+                    double dRe   = A1.Re() - A2.Re();
+                    double dIm   = A1.Im() - A2.Im();
+                    double avgRe = 0.5 * (std::abs(A1.Re()) + std::abs(A2.Re()));
+                    double avgIm = 0.5 * (std::abs(A1.Im()) + std::abs(A2.Im()));
+                    double ratioRe = (avgRe > 1e-10) ? std::abs(dRe) / avgRe : 0.;
+                    double ratioIm = (avgIm > 1e-10) ? std::abs(dIm) / avgIm : 0.;
+                    obs[hname] = std::max(ratioRe, ratioIm);
+                }
+                else {
+                    cerr << "Error: Unknown su3_weight option: " << su3_weight << endl;
+                    exit(1);
+                }
             } catch (...) {
                 obs[hname] = 0.;
             }
