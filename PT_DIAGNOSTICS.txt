@@ -61,7 +61,7 @@ Analyze a PT run
 ----------------
 python /Users/silvest/Documents/GitHub/bat_MPI/diagnostics/analyze_mcmc.py \
   results/run_cold_chains.root \
-  --regions /Users/silvest/Documents/GitHub/bat_MPI/diagnostics/goldenmodes_partitions.json \
+  --regions /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/diagnostics/goldenmodes_partitions.json \
   --output results/run_diagnostics
 
 The transport prefix results/run_ is inferred from the cold ROOT filename.
@@ -70,7 +70,7 @@ Use --tree TREE_NAME if the ROOT file contains several MCMC trees.
 
 Several independent runs may be compared by passing multiple ROOT files:
   python analyze_mcmc.py run1_cold_chains.root run2_cold_chains.root \
-    --regions goldenmodes_partitions.json --output comparison
+    --regions /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/diagnostics/goldenmodes_partitions.json --output comparison
 Each file's chains remain separate and retain run:chain labels. Do not
 split one continuing chain into files and treat the pieces as independent.
 If giving transport prefixes explicitly, repeat --transport-prefix in the
@@ -121,7 +121,7 @@ phase branch cut makes raw angles misleading.
 
 Region definitions
 ------------------
-The supplied goldenmodes_partitions.json defines separate binary cuts for
+The model-owned diagnostics/goldenmodes_partitions.json defines separate binary cuts for
 all 14 parameters affected by the old prior-region flags. It uses cos/sin
 for real/imaginary signs and the original 0.75 / 1.5 modulus thresholds.
 Partitions for absent channel-specific parameters are skipped and listed.
@@ -134,7 +134,7 @@ be unvisited by construction: interpret the flag with your chosen domain.
 
 For joint modes, supply a JSON file with an explicitly disjoint regions
 list. A BJPSIP example is included at:
-  diagnostics/goldenmodes_joint_regions.example.json
+  /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/diagnostics/goldenmodes_joint_regions.example.json
 It splits the two G2t phases jointly by real-part sign and E2t magnitude.
 Mixed sign configurations possible under full priors are placed in other.
 Adapt these definitions to the modes of scientific interest.
@@ -237,3 +237,10 @@ Modern R-hat/ESS:
   https://arxiv.org/abs/1903.08008
 PT transport and round trips:
   https://arxiv.org/abs/cond-mat/0602085
+
+Repository ownership
+--------------------
+GoldenModes-specific JSON definitions live in ThErrorsInGoldenModes/diagnostics/.
+The generic analyzer, dependencies and statistical tests live in bat_MPI/diagnostics/
+and bat_MPI/test/. The analyzer accepts any configuration path via --regions;
+it contains no built-in GoldenModes parameter names or partition definitions.

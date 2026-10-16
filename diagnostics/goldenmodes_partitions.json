@@ -1,0 +1,201 @@
+{
+  "description": "Separate binary views of every parameter split by the old GoldenModes region flags. Different partitions overlap and their probabilities must not be added. Missing channel-specific parameters are skipped. Use an explicit disjoint regions list for joint modes.",
+  "partitions": [
+    {
+      "name": "G2t_scd_BJPSIP_arg",
+      "optional": true,
+      "true_label": "positive",
+      "false_label": "negative",
+      "conditions": [
+        {
+          "parameter": "G2t_scd_BJPSIP_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "name": "G2t_dcd_BJPSIP_arg",
+      "optional": true,
+      "true_label": "positive",
+      "false_label": "negative",
+      "conditions": [
+        {
+          "parameter": "G2t_dcd_BJPSIP_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "name": "E2t_ccdd_BJPSIP_abs",
+      "optional": true,
+      "true_label": "small",
+      "false_label": "large",
+      "conditions": [
+        {
+          "parameter": "E2t_ccdd_BJPSIP_abs",
+          "transform": "identity",
+          "op": "<",
+          "value": 0.75
+        }
+      ]
+    },
+    {
+      "name": "EA1_sdcd_BPJPSI_arg",
+      "optional": true,
+      "true_label": "positive",
+      "false_label": "negative",
+      "conditions": [
+        {
+          "parameter": "EA1_sdcd_BPJPSI_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "name": "EA1_ddcd_BPJPSI_arg",
+      "optional": true,
+      "true_label": "positive",
+      "false_label": "negative",
+      "conditions": [
+        {
+          "parameter": "EA1_ddcd_BPJPSI_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "name": "EA1_sdcd_BPJPSI_abs",
+      "optional": true,
+      "true_label": "small",
+      "false_label": "large",
+      "conditions": [
+        {
+          "parameter": "EA1_sdcd_BPJPSI_abs",
+          "transform": "identity",
+          "op": "<",
+          "value": 1.5
+        }
+      ]
+    },
+    {
+      "name": "EA1_ddcd_BPJPSI_abs",
+      "optional": true,
+      "true_label": "small",
+      "false_label": "large",
+      "conditions": [
+        {
+          "parameter": "EA1_ddcd_BPJPSI_abs",
+          "transform": "identity",
+          "op": "<",
+          "value": 1.5
+        }
+      ]
+    },
+    {
+      "name": "EA2t_ccds_BJPSIP_arg",
+      "optional": true,
+      "true_label": "positive",
+      "false_label": "negative",
+      "conditions": [
+        {
+          "parameter": "EA2t_ccds_BJPSIP_arg",
+          "transform": "sin",
+          "op": ">=",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "name": "E2t_ccds_BJPSIV_paral_arg",
+      "optional": true,
+      "true_label": "positive",
+      "false_label": "negative",
+      "conditions": [
+        {
+          "parameter": "E2t_ccds_BJPSIV_paral_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "name": "G2t_dcs_BJPSIV_0_arg",
+      "optional": true,
+      "true_label": "positive",
+      "false_label": "negative",
+      "conditions": [
+        {
+          "parameter": "G2t_dcs_BJPSIV_0_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "name": "G2t_dcs_BJPSIV_paral_arg",
+      "optional": true,
+      "true_label": "positive",
+      "false_label": "negative",
+      "conditions": [
+        {
+          "parameter": "G2t_dcs_BJPSIV_paral_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "name": "G2t_dcs_BJPSIV_perp_arg",
+      "optional": true,
+      "true_label": "positive",
+      "false_label": "negative",
+      "conditions": [
+        {
+          "parameter": "G2t_dcs_BJPSIV_perp_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "name": "G1t_scd_BDDb_arg",
+      "optional": true,
+      "true_label": "positive",
+      "false_label": "negative",
+      "conditions": [
+        {
+          "parameter": "G1t_scd_BDDb_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0.0
+        }
+      ]
+    },
+    {
+      "name": "A1_scdd_BDDb_arg",
+      "optional": true,
+      "true_label": "positive",
+      "false_label": "negative",
+      "conditions": [
+        {
+          "parameter": "A1_scdd_BDDb_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0.0
+        }
+      ]
+    }
+  ]
+}

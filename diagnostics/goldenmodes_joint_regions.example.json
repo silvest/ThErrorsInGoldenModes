@@ -1,0 +1,93 @@
+{
+  "description": "Example disjoint bins for BJPSIP. Mixed signs of the two G2t phases are intentionally reported as other; these can occur with full priors. These diagnostic bins need not coincide with physical posterior modes.",
+  "regions": [
+    {
+      "name": "positive_G2tP_small_E2tP",
+      "conditions": [
+        {
+          "parameter": "G2t_scd_BJPSIP_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0
+        },
+        {
+          "parameter": "G2t_dcd_BJPSIP_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0
+        },
+        {
+          "parameter": "E2t_ccdd_BJPSIP_abs",
+          "op": "<",
+          "value": 0.75
+        }
+      ]
+    },
+    {
+      "name": "positive_G2tP_large_E2tP",
+      "conditions": [
+        {
+          "parameter": "G2t_scd_BJPSIP_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0
+        },
+        {
+          "parameter": "G2t_dcd_BJPSIP_arg",
+          "transform": "cos",
+          "op": ">=",
+          "value": 0
+        },
+        {
+          "parameter": "E2t_ccdd_BJPSIP_abs",
+          "op": ">=",
+          "value": 0.75
+        }
+      ]
+    },
+    {
+      "name": "negative_G2tP_small_E2tP",
+      "conditions": [
+        {
+          "parameter": "G2t_scd_BJPSIP_arg",
+          "transform": "cos",
+          "op": "<",
+          "value": 0
+        },
+        {
+          "parameter": "G2t_dcd_BJPSIP_arg",
+          "transform": "cos",
+          "op": "<",
+          "value": 0
+        },
+        {
+          "parameter": "E2t_ccdd_BJPSIP_abs",
+          "op": "<",
+          "value": 0.75
+        }
+      ]
+    },
+    {
+      "name": "negative_G2tP_large_E2tP",
+      "conditions": [
+        {
+          "parameter": "G2t_scd_BJPSIP_arg",
+          "transform": "cos",
+          "op": "<",
+          "value": 0
+        },
+        {
+          "parameter": "G2t_dcd_BJPSIP_arg",
+          "transform": "cos",
+          "op": "<",
+          "value": 0
+        },
+        {
+          "parameter": "E2t_ccdd_BJPSIP_abs",
+          "op": ">=",
+          "value": 0.75
+        }
+      ]
+    }
+  ]
+}
