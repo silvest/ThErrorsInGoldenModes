@@ -23,7 +23,8 @@ template <typename Model>
 void runModel(Model &model, const string &outputFileName,
               int nChains, int nIterationsPreRun, int nIterationsRun,
               int nIterationsPreRunFactorized, int nIterationsUpdateMax,
-              bool Univariate, const vector<double>& temperatures, unsigned swapInterval)
+              bool Univariate, const vector<double>& temperatures, unsigned swapInterval,
+              const string& proposalInput, const string& proposalOutput, unsigned proposalWarmup)
 {
     model.SetNChains(nChains);
     if (!temperatures.empty()) {
@@ -44,6 +45,8 @@ void runModel(Model &model, const string &outputFileName,
     model.SetNIterationsPreRunFactorized(nIterationsPreRunFactorized);
     model.SetNIterationsPreRunCheck(nIterationsUpdateMax);
     model.SetInitialPositionScheme(BCEngineMCMC::kInitRandomPrior);
+    model.SetProposalFunctionOutput(proposalOutput.empty() ? outputFileName + "proposal.txt" : proposalOutput);
+    if (!proposalInput.empty()) model.LoadProposalFunction(proposalInput, proposalWarmup);
 
     for (unsigned i = 0; i < model.GetNParameters(); ++i)
         cout << "Parameter " << i << ": " << model.GetParameter(i).GetName()
@@ -134,9 +137,26 @@ int main(int argc, char* argv[]) {
     int nChains = 10;
     vector<double> temperatures;
     unsigned swapInterval = 10;
+    string proposalInput, proposalOutput;
+    unsigned proposalWarmup = 1000;
 
     for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "--pt-full-priors") == 0) {
+        if (strcmp(argv[i], "--load-proposal") == 0 || strcmp(argv[i], "--save-proposal") == 0) {
+            const bool load = strcmp(argv[i], "--load-proposal") == 0;
+            if (i + 1 >= argc || !*argv[i+1]) { cerr << argv[i] << " requires a filename" << endl; return 1; }
+            (load ? proposalInput : proposalOutput) = argv[++i];
+        } else if (strcmp(argv[i], "--proposal-warmup") == 0) {
+            if (i + 1 >= argc) { cerr << "--proposal-warmup requires a nonnegative integer" << endl; return 1; }
+            try {
+                string value = argv[++i]; size_t used = 0;
+                long long n = stoll(value, &used);
+                if (used != value.size() || n < 0 || n > numeric_limits<int>::max())
+                    throw invalid_argument("out of range");
+                proposalWarmup = static_cast<unsigned>(n);
+            } catch (const exception& e) {
+                cerr << "Invalid proposal warmup: " << e.what() << endl; return 1;
+            }
+        } else if (strcmp(argv[i], "--pt-full-priors") == 0) {
             ptFullPriors = true;
         } else if (strcmp(argv[i], "--pt-temperatures") == 0) {
             if (i + 1 >= argc) { cerr << "--pt-temperatures requires a comma-separated list" << endl; return 1; }
@@ -245,6 +265,9 @@ int main(int argc, char* argv[]) {
                  << "  --nPreRunFactorized <value>     Set number of factorized pre-run iterations (default: 1000)\n"
                   "  --nUpdateMax value            Set max number of update iterations (default: 100)\n"
                   "  --nChains value               Set number of chains (default: 10)\n"
+                  "  --save-proposal <file>         Save tuned proposal after pre-run (default: <outfile>proposal.txt)\n"
+                  "  --load-proposal <file>         Reuse proposal and replica positions; skip adaptation\n"
+                  "  --proposal-warmup <value>      Discard sweeps on load (default: 1000; 0 allowed)\n"
                   "  --pt-temperatures <1,2,...>    Enable PT with explicit temperatures (likelihood only)\n"
                   "  --pt-full-priors              Use unsplit indSU3 prior ranges; override positive/small flags\n"
                   "                                Requires --indSU3 and --pt-temperatures\n"
@@ -318,7 +341,7 @@ int main(int argc, char* argv[]) {
                 cout << "Model (indSU3) constructed correctly, running with "
                      << mpi_size << " MPI process(es)" << endl;
                 runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
-                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval);
+                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup);
                 terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
             }
         } else {
@@ -330,7 +353,7 @@ int main(int argc, char* argv[]) {
                 cout << "Model constructed correctly, running with "
                      << mpi_size << " MPI process(es)" << endl;
                 runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
-                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval);
+                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup);
                 terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
             }
         }

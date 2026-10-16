@@ -186,3 +186,11 @@ cmake -S /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes \
 cmake --build /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/build/pt -j 4
 ctest --test-dir /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/build/pt \
   -R '^prior_ranges$' --output-on-failure
+
+Proposal persistence (new)
+--------------------------
+The driver now saves <outfile>proposal.txt after pre-run. Use --save-proposal
+<file> to choose the path. On a later matching run use --load-proposal <file>
+and --proposal-warmup 1000 to skip adaptation and discard a fixed-proposal
+warm-up. See PROPOSAL_REUSE.txt for compatibility checks, stored replica
+positions and convergence considerations.
