@@ -1,3 +1,20 @@
+CMake installation (primary build workflow)
+===========================================
+
+bat_MPI now installs a CMake package and bat-config. Prefer a dedicated BAT
+prefix, then configure a fresh GoldenModes build with:
+
+  cmake -S . -B build-cmake -DCMAKE_PREFIX_PATH=/path/to/installed/bat-pt \
+    -DCMAKE_INSTALL_PREFIX=/path/to/ThErrorsInGoldenModes/dist
+  cmake --build build-cmake -j 4
+  cmake --install build-cmake
+
+The package supplies the matching headers, libraries and MPI dependencies.
+Installed mainGM keeps a runtime path to this BAT library directory. Old BAT
+entries in Linux LD_LIBRARY_PATH can override it; check ldd on the compute node.
+The explicit BAT_SOURCE_DIR/BAT_LIBRARY mode documented below still works.
+See bat_MPI/INSTALL.md for the full migration and cluster procedure.
+
 Parallel Tempering per goldenmodesB_indSU3
 ========================================
 
