@@ -4023,7 +4023,7 @@ void goldenmodesB::MCMCUserIterationInterface()
 
     vector<double> pars;
 
-    for (unsigned int i = 0; i < fMCMCNChains; ++i)
+    for (unsigned int i = 0; i < GetNColdChains(); ++i)
     {
         pars = fMCMCStates.at(i).parameters;
         try

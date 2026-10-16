@@ -21,34 +21,35 @@ if(ROOT_FOUND)
     include(${ROOT_USE_FILE})
 endif()
 
-# Find BAT (Bayesian Analysis Toolkit) using bat-config
-execute_process(
-    COMMAND bat-config --cflags
-    OUTPUT_VARIABLE BAT_CFLAGS
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-execute_process(
-    COMMAND bat-config --libs
-    OUTPUT_VARIABLE BAT_LIBS
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-execute_process(
-    COMMAND bat-config --version
-    OUTPUT_VARIABLE BAT_VERSION
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
-if(BAT_VERSION)
-    message(STATUS "BAT found: ${BAT_VERSION}")
-    # Extract include directories from CFLAGS
-    string(REGEX MATCHALL "-I[^ ]+" BAT_INCLUDE_FLAGS ${BAT_CFLAGS})
+# Optional local BAT CMake build, keeping headers and binary ABI consistent.
+set(BAT_SOURCE_DIR "" CACHE PATH "BAT source directory (for a local build)")
+set(BAT_LIBRARY "" CACHE FILEPATH "BAT library from that local build")
+if((BAT_SOURCE_DIR AND NOT BAT_LIBRARY) OR (BAT_LIBRARY AND NOT BAT_SOURCE_DIR))
+    message(FATAL_ERROR "Set both BAT_SOURCE_DIR and BAT_LIBRARY for a local BAT build")
+endif()
+if(BAT_SOURCE_DIR AND BAT_LIBRARY)
+    find_package(MPI REQUIRED COMPONENTS CXX)
+    set(BAT_VERSION "local-PT")
+    set(BAT_INCLUDE_DIRS "${BAT_SOURCE_DIR}")
+    set(BAT_CFLAGS "")
+    set(BAT_LIBS "${BAT_LIBRARY}")
+else()
+    find_program(BAT_CONFIG_EXECUTABLE bat-config)
+    if(NOT BAT_CONFIG_EXECUTABLE)
+        message(FATAL_ERROR "bat-config not found; set BAT_SOURCE_DIR and BAT_LIBRARY for a local build")
+    endif()
+    execute_process(COMMAND ${BAT_CONFIG_EXECUTABLE} --cflags OUTPUT_VARIABLE BAT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND ${BAT_CONFIG_EXECUTABLE} --libs OUTPUT_VARIABLE BAT_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND ${BAT_CONFIG_EXECUTABLE} --version OUTPUT_VARIABLE BAT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(NOT BAT_VERSION)
+        message(FATAL_ERROR "bat-config failed; check the BAT installation")
+    endif()
+    string(REGEX MATCHALL "-I[^ ]+" BAT_INCLUDE_FLAGS "${BAT_CFLAGS}")
     set(BAT_INCLUDE_DIRS "")
     foreach(flag ${BAT_INCLUDE_FLAGS})
         string(SUBSTRING ${flag} 2 -1 include_dir)
-        list(APPEND BAT_INCLUDE_DIRS ${include_dir})
+        list(APPEND BAT_INCLUDE_DIRS "${include_dir}")
     endforeach()
-else()
-    message(FATAL_ERROR "BAT not found. Please install BAT or ensure bat-config is in PATH.")
 endif()
 
 # Include directories
@@ -122,6 +123,10 @@ else()
     )
 endif()
 
+if(TARGET MPI::MPI_CXX)
+    target_link_libraries(mainGM PRIVATE MPI::MPI_CXX)
+endif()
+
 # Installation rules
 install(TARGETS mainGM
     RUNTIME DESTINATION bin
@@ -141,3 +146,15 @@ message(STATUS "  BAT_VERSION: ${BAT_VERSION}")
 message(STATUS "  BAT_CFLAGS: ${BAT_CFLAGS}")
 message(STATUS "  BAT_LIBS: ${BAT_LIBS}")
 message(STATUS "")
+
+option(GOLDENMODES_BUILD_TESTS "Build model prior-range regression test" OFF)
+if(GOLDENMODES_BUILD_TESTS)
+    enable_testing()
+    add_executable(test_prior_ranges tests/prior_ranges.cpp ${LIBRARY_SOURCES})
+    target_compile_options(test_prior_ranges PRIVATE ${BAT_CFLAGS_LIST})
+    target_link_libraries(test_prior_ranges PRIVATE ${BAT_LIBS_LIST} ${ROOT_LIBRARIES})
+    if(TARGET MPI::MPI_CXX)
+        target_link_libraries(test_prior_ranges PRIVATE MPI::MPI_CXX)
+    endif()
+    add_test(NAME prior_ranges COMMAND test_prior_ranges)
+endif()

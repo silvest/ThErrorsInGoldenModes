@@ -30,13 +30,14 @@ using namespace std;
 
 static CKMParameters ckm;
 
-goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP, bool positiveEA1P, bool positiveImEA2tP, bool smallE2tP, bool minimal, bool positiveE2tV, bool positiveG2tV, bool smallEA1P, bool positiveG1tD, bool positiveA1D) : BCModel(), histos(obs)
+goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP, bool positiveEA1P, bool positiveImEA2tP, bool smallE2tP, bool minimal, bool positiveE2tV, bool positiveG2tV, bool smallEA1P, bool positiveG1tD, bool positiveA1D, bool fullPriorRanges) : BCModel(), histos(obs)
 {
     
     flagBJPSIP = BJPSIP;
     flagBJPSIV = BJPSIV;
     flagBDDb = BDDb;
     flagGaussianCKM = gaussianCKM;
+    flagFullPriorRanges = fullPriorRanges;
     flagPositiveG2tP = positiveG2tP;
     flagPositiveEA1P = positiveEA1P;
     flagSmallEA1P = smallEA1P;
@@ -1302,7 +1303,11 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("E2t_ccsd_BJPSIP_abs", 0., 4.);
         addAmplitudeParameter("E2t_ccsd_BJPSIP_arg", 0., 0.);
         addAmplitudeParameter("G2t_scd_BJPSIP_abs", 0., 5.);
-        if(flagPositiveG2tP)
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("G2t_scd_BJPSIP_arg", -M_PI, M_PI);
+        }
+        else if (flagPositiveG2tP)
         {
             addAmplitudeParameter("G2t_scd_BJPSIP_arg", -M_PI/2., M_PI/2.);
         }
@@ -1330,7 +1335,11 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("dP4EW_ucd_BPJPSI_arg", -M_PI, M_PI);
         addAmplitudeParameter("EA2_ddcd_BPJPSI_abs", 0., 4.);
         addAmplitudeParameter("EA2_ddcd_BPJPSI_arg", -M_PI, M_PI);
-        if (flagSmallE2tP)
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("E2t_ccdd_BJPSIP_abs", 0., 4.);
+        }
+        else if (flagSmallE2tP)
         {
             addAmplitudeParameter("E2t_ccdd_BJPSIP_abs", 0., 0.75);
         }
@@ -1341,7 +1350,11 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("E2t_ccdd_BJPSIP_arg", 0., 0.);
         addSU3Pair("E2t_ccdd_BJPSIP", "E2t_ccsd_BJPSIP");
         addAmplitudeParameter("G2t_dcd_BJPSIP_abs", 0., 4.);
-        if(flagPositiveG2tP)
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("G2t_dcd_BJPSIP_arg", -M_PI, M_PI);
+        }
+        else if (flagPositiveG2tP)
         {
             addAmplitudeParameter("G2t_dcd_BJPSIP_arg", -M_PI/2., M_PI/2.);
         }
@@ -1458,7 +1471,12 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("dP2EW_scu_BPJPSI_abs", 0., (ewp_limit>0.?10.*ewp_limit*sqrt(2.):0.));
         registerEWP("dP2EW_scu_BPJPSI");
         addAmplitudeParameter("dP2EW_scu_BPJPSI_arg", -M_PI, M_PI);
-        if (flagPositiveEA1P)
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("EA1_sdcd_BPJPSI_abs", 0., 4.);
+            addAmplitudeParameter("EA1_sdcd_BPJPSI_arg", -M_PI, M_PI);
+        }
+        else if (flagPositiveEA1P)
         {
             if (flagSmallEA1P)
             {
@@ -1497,7 +1515,12 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         registerEWP("dP2EW_dcu_BPJPSI");
         addSU3Pair("dP2EW_dcu_BPJPSI", "dP2EW_scu_BPJPSI");
         addAmplitudeParameter("EA1_ddcd_BPJPSI_abs", 0., 4.);
-        if(flagPositiveEA1P)
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("EA1_ddcd_BPJPSI_abs", 0., 4.);
+            addAmplitudeParameter("EA1_ddcd_BPJPSI_arg", -M_PI, M_PI);
+        }
+        else if (flagPositiveEA1P)
         {
             if(flagSmallEA1P)
             {
@@ -1594,7 +1617,11 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("G4t_css_BJPSIP_arg", -M_PI, M_PI);
         addSU3Pair("G4t_css_BJPSIP", "G4t_cds_BJPSIP");
         addAmplitudeParameter("EA2t_ccds_BJPSIP_abs", 0., 7.0711);
-        if(flagPositiveImEA2tP)
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("EA2t_ccds_BJPSIP_arg", -M_PI, M_PI);
+        }
+        else if (flagPositiveImEA2tP)
         {
             addAmplitudeParameter("EA2t_ccds_BJPSIP_arg", 0., M_PI);
         }
@@ -1637,7 +1664,11 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("G4t_css_BJPSIP_abs", 0., 4.);
         addAmplitudeParameter("G4t_css_BJPSIP_arg", -M_PI, M_PI);
         addAmplitudeParameter("EA2t_ccds_BJPSIP_abs", 0., 7.0711);
-        if(flagPositiveImEA2tP)
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("EA2t_ccds_BJPSIP_arg", -M_PI, M_PI);
+        }
+        else if (flagPositiveImEA2tP)
         {
             addAmplitudeParameter("EA2t_ccds_BJPSIP_arg", 0., M_PI);
         }
@@ -1781,7 +1812,11 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("E2t_ccds_BJPSIV_0_abs", 0., 5.);
         addAmplitudeParameter("E2t_ccds_BJPSIV_0_arg", 0., 0.);
         addAmplitudeParameter("E2t_ccds_BJPSIV_paral_abs", 0., 5.);
-        if(flagPositiveE2tV)
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("E2t_ccds_BJPSIV_paral_arg", -M_PI, M_PI);
+        }
+        else if (flagPositiveE2tV)
         {
             addAmplitudeParameter("E2t_ccds_BJPSIV_paral_arg", -M_PI/2., M_PI/2.);
         }
@@ -1793,7 +1828,11 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("E2t_ccds_BJPSIV_perp_arg", -M_PI, M_PI);
         addSU3Pair("E2t_ccds_BJPSIV", "E2t_ccss_BJPSIV", true);
         addAmplitudeParameter("G2t_dcs_BJPSIV_0_abs", 0., 14.1421);
-        if(flagPositiveG2tV)
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("G2t_dcs_BJPSIV_0_arg", -M_PI, M_PI);
+        }
+        else if (flagPositiveG2tV)
         {
             addAmplitudeParameter("G2t_dcs_BJPSIV_0_arg", -M_PI/2., M_PI/2.);
         }
@@ -1802,7 +1841,11 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             addAmplitudeParameter("G2t_dcs_BJPSIV_0_arg", M_PI/2., 3.*M_PI/2.);
         }
         addAmplitudeParameter("G2t_dcs_BJPSIV_paral_abs", 0., 14.1421);
-        if(flagPositiveG2tV)
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("G2t_dcs_BJPSIV_paral_arg", -M_PI, M_PI);
+        }
+        else if (flagPositiveG2tV)
         {
             addAmplitudeParameter("G2t_dcs_BJPSIV_paral_arg", M_PI/2., 3.*M_PI/2.);
         }
@@ -1811,7 +1854,11 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
             addAmplitudeParameter("G2t_dcs_BJPSIV_paral_arg", -M_PI/2., M_PI/2.);
         }
         addAmplitudeParameter("G2t_dcs_BJPSIV_perp_abs", 0., 14.1421);
-        if(flagPositiveG2tV)
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("G2t_dcs_BJPSIV_perp_arg", -M_PI, M_PI);
+        }
+        else if (flagPositiveG2tV)
         {
             addAmplitudeParameter("G2t_dcs_BJPSIV_perp_arg", -M_PI/2., M_PI/2.);
         }
@@ -2262,7 +2309,11 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         addAmplitudeParameter("E1t_sccd_BDDb_arg", 0., 0.);
         addSU3Pair("E1t_sccd_BDDb", "E1t_sccs_BDDb");
         addAmplitudeParameter("G1t_scd_BDDb_abs", 0., 28.2843);
-        if(flagPositiveG1tD) 
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("G1t_scd_BDDb_arg", -M_PI, M_PI);
+        }
+        else if (flagPositiveG1tD)
         {
             addAmplitudeParameter("G1t_scd_BDDb_arg", -M_PI/2., M_PI/2.);
         }
@@ -2354,7 +2405,11 @@ void goldenmodesB_indSU3::DefineParameters(const string &channel)
         registerEWP("dP1EW_scu_BDDb");
         addSU3Pair("dP1EW_scu_BDDb", "dP1EW_dcu_BDDb");
         addAmplitudeParameter("A1_scdd_BDDb_abs", 0., 28.2843);
-        if(flagPositiveA1D)
+        if (flagFullPriorRanges)
+        {
+            addAmplitudeParameter("A1_scdd_BDDb_arg", -M_PI, M_PI);
+        }
+        else if (flagPositiveA1D)
         {
             addAmplitudeParameter("A1_scdd_BDDb_arg", -M_PI/2., M_PI/2.);
         }
@@ -4709,7 +4764,7 @@ void goldenmodesB_indSU3::MCMCUserIterationInterface()
 
     vector<double> pars;
 
-    for (unsigned int i = 0; i < fMCMCNChains; ++i)
+    for (unsigned int i = 0; i < GetNColdChains(); ++i)
     {
         pars = fMCMCStates.at(i).parameters;
         try

@@ -1,0 +1,188 @@
+Parallel Tempering per goldenmodesB_indSU3
+========================================
+
+Implementazione completata nei repository:
+  /Users/silvest/Documents/GitHub/bat_MPI
+  /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes
+
+Eseguibile compilato:
+  /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/build/pt/mainGM
+Libreria collegata:
+  /Users/silvest/Documents/GitHub/bat_MPI/build-pt/src/libBAT.dylib
+
+La build dedicata usa gli header e la libreria dello stesso bat_MPI aggiornato.
+Il bat-config presente nel PATH punta invece a un'altra installazione BAT,
+in HEPfit/BAT_parallel: per questo la build specifica esplicitamente la libreria.
+Non è stata sostituita l'installazione BAT esistente.
+
+Avvio
+-----
+Aggiungi al comando del tuo fit:
+  --pt-temperatures 1,1.5,2.25,3.375,5.0625,7.59375,11.390625,17.0859375
+  --pt-swap-interval 10
+  --pt-full-priors
+  --nChains 4
+
+Con queste opzioni vengono eseguite quattro scale indipendenti di otto
+repliche: 32 repliche totali, di cui quattro a T=1. Il numero di processi MPI
+è indipendente dal numero di repliche; le valutazioni vengono distribuite
+in gruppi sui processi disponibili. --nRun conta gli sweep per replica.
+
+Esempio di partenza, da adattare ai canali e ai prior della tua analisi:
+
+mkdir -p results
+mpirun --map-by slot --bind-to none -np 4 \
+  /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/build/pt/mainGM \
+  --indSU3 --flagBJPSIP --pt-full-priors \
+  --nChains 4 \
+  --pt-temperatures 1,1.5,2.25,3.375,5.0625,7.59375,11.390625,17.0859375 \
+  --pt-swap-interval 10 \
+  --nPreRun 100000 --nPreRunFactorized 10000 --nUpdateMax 100 \
+  --nRun 100000 --outfile results/run_
+
+La scala e le lunghezze sono un punto di partenza, non una taratura già
+validata sul modello fisico. Mantieni i flag del modello e dei prior che
+corrispondono alla tua analisi.
+
+La nuova opzione --pt-full-priors richiede --indSU3 e --pt-temperatures.
+Ha la precedenza su tutti i flag di suddivisione, qualunque sia l'ordine:
+  --positiveG2tP, --positiveEA1P, --positiveImEA2tP,
+  --smallE2tP, --smallEA1P,
+  --positiveE2tV, --positiveG2tV, --positiveG1tD, --positiveA1D.
+Puoi lasciarli nel comando: con --pt-full-priors non restringono i prior.
+
+Non basta disattivare questi flag: per vari parametri false seleziona la
+regione opposta. --pt-full-priors usa invece l'unione fisica delle regioni:
+le fasi coinvolte coprono un intero periodo [-pi,pi], mentre i moduli E2t
+ed EA1 coinvolti coprono [0,4]. Per le fasi, [-pi,pi] è equivalente modulo
+2pi all'unione dei semiperiodi delle regioni originali.
+
+Restano invariati i prior gaussiani CKM, theta_P e gli eventuali prior EWP,
+le convenzioni delle fasi di riferimento fissate, gli altri limiti fisici,
+i canali selezionati, --minimal, --su3_sigma e --su3_weight.
+Senza --pt-full-priors resta il comportamento regionale precedente.
+
+Senza --pt-temperatures viene eseguito il Metropolis-Hastings ordinario;
+--nChains torna a contare le normali catene posterior.
+
+Algoritmo e output
+------------------
+Ogni replica campiona prior(theta) * likelihood(theta)^(1/T).
+Il prior, anche quando gaussiano, non viene temperato.
+Le proposte adattive sono aggiornate nel pre-run e restano fisse nel main run.
+Dopo uno sweep completo vengono tentati, all'intervallo richiesto, scambi tra
+coppie di temperature adiacenti. I due insiemi di coppie disgiunte si alternano;
+con due sole temperature la coppia viene proposta a ogni evento di scambio.
+RNG, covarianze, efficienze e contatori restano associati alla temperatura.
+Parametri e valori di log densità vengono scambiati insieme.
+
+Per due temperature Ti<Tj:
+  log(alpha_swap) = (1/Ti - 1/Tj) * (logL(theta_j) - logL(theta_i))
+con accettazione min(1, exp(log(alpha_swap))).
+
+Con --outfile results/run_ trovi:
+  results/run_cold_chains.root
+    Vettori congiunti dei parametri delle sole repliche a T=1, con Chain,
+    Iteration, Phase, LogLikelihood, LogPrior e LogProbability non temperati.
+    Comprende gli stati ripetuti dopo i rifiuti; nessun ulteriore peso di
+    likelihood deve essere applicato ai campioni.
+  results/run_pt_temperatures.csv
+    Mappa tra slot, scala indipendente e temperatura.
+  results/run_pt_swaps.csv
+    Tentativi, scambi accettati e frazione di accettazione per coppia di
+    temperature, aggregati sulle scale e riferiti al solo main run.
+  I consueti ROOT/PDF di marginali, correlazioni e osservabili del modello.
+
+Istogrammi BAT, istogrammi personalizzati di entrambi i modelli del driver,
+statistiche posterior aggregate e controllo R-hat usano soltanto le catene
+fredde. Le statistiche per singola replica rimangono disponibili per tutte
+le temperature. Con una sola scala non è possibile un controllo R-hat tra
+catene fredde: il motore lo segnala. Utilizza almeno due scale per confrontarle.
+
+I file cold_chains.root possono essere riletti in un nuovo oggetto modello
+senza PT per analizzare la posterior. Non sono checkpoint del Parallel
+Tempering: non contengono stati caldi, RNG e adattamento per riprendere una
+run PT interrotta.
+
+Controllo della run scientifica
+------------------------------
+Controlla gli scambi su tutta la scala, soprattutto eventuali colli di
+bottiglia con pochi scambi accettati. Aggiungi temperature intermedie se
+necessario e verifica se la temperatura massima consente davvero di cambiare
+regione. Una buona accettazione degli scambi da sola non prova il mixing.
+Esamina le tracce fredde e le visite ripetute alle soluzioni note, confronta
+le loro frequenze tra scale e valuta ESS e stabilità dei pesi tra blocchi
+temporali. Il R-hat preesistente di BAT è un controllo aggiuntivo, non una
+prova che tutti i modi siano stati scoperti.
+
+Build riproducibile
+-------------------
+cmake -S /Users/silvest/Documents/GitHub/bat_MPI \
+  -B /Users/silvest/Documents/GitHub/bat_MPI/build-pt \
+  -DBAT_BUILD_STATIC_LIBS=OFF -DBAT_BUILD_PT_TESTS=ON
+cmake --build /Users/silvest/Documents/GitHub/bat_MPI/build-pt -j 4
+
+cmake -S /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes \
+  -B /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/build/pt \
+  -DBAT_SOURCE_DIR=/Users/silvest/Documents/GitHub/bat_MPI \
+  -DBAT_LIBRARY=/Users/silvest/Documents/GitHub/bat_MPI/build-pt/src/libBAT.dylib
+cmake --build /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/build/pt -j 4
+
+Test MPI sul Mac, con mapping esplicito per evitare problemi di rilevamento
+locale dei core:
+cmake -S /Users/silvest/Documents/GitHub/bat_MPI \
+  -B /Users/silvest/Documents/GitHub/bat_MPI/build-pt \
+  '-DMPIEXEC_PREFLAGS=--map-by;slot;--bind-to;none;--host;localhost:8'
+ctest --test-dir /Users/silvest/Documents/GitHub/bat_MPI/build-pt --output-on-failure
+
+Verifiche effettuate
+--------------------
+Cinque test MPI superati: un processo, gruppi di repliche parziali con tre
+processi, due temperature con cinque processi (più processi che repliche),
+passaggio da warm-up fattorizzato a proposte multivariate, PT disabilitato.
+
+I test verificano medie e masse dei modi rispetto a quadratura numerica
+per una likelihood bimodale e prior gaussiano, anche alle temperature calde;
+verificano inoltre callback, conteggio degli scambi, esclusione dei campioni
+caldi da statistiche/istogrammi/ROOT, consistenza dei valori salvati e rilettura
+della posterior fredda. Il test senza PT usa un problema unimodale.
+
+Prova completa breve su goldenmodesB_indSU3: due processi, due scale,
+T={1,4}, prior CKM gaussiani, canale BJPSIP e flag --minimal,
+100 sweep di pre-run e 10 di produzione. Completata la produzione dei
+ROOT/PDF. Verificati 20 stati freddi e 20 ingressi nell'istogramma personalizzato
+della log-likelihood, con log densità coerenti. Non è una prova di convergenza
+scientifica del modello: una run così breve non è convergente.
+
+File principali modificati
+--------------------------
+bat_MPI/BAT/BCEngineMCMC.h
+bat_MPI/src/BCEngineMCMC.cxx
+bat_MPI/CMakeLists.txt
+bat_MPI/test/ParallelTempering_MPI_TEST.cxx
+ThErrorsInGoldenModes/mainGM.cpp
+ThErrorsInGoldenModes/goldenmodesB_indSU3.cpp
+ThErrorsInGoldenModes/goldenmodesB.cpp
+ThErrorsInGoldenModes/CMakeLists.txt
+
+Nel dispatcher MPI sono stati anche corretti un callback con indice oltre
+il limite, il completamento dei gruppi di proposte, le allocazioni manuali
+non coerenti e direttive OpenMP applicate a chiamate non cicliche. Una
+finestra di controllo pre-run troppo corta ora produce comunque almeno uno
+sweep fattorizzato anziché un ciclo senza avanzamento.
+
+Verifica aggiuntiva di --pt-full-priors
+--------------------------------------
+Eseguibile ricompilato. Test su tutti e tre i settori BJPSIP, BJPSIV e BDDb:
+14 intervalli completi verificati; risultati identici con flag regionali
+attivi o disattivi e con selezioni small/large. Verificata la conservazione
+degli intervalli non coinvolti e dei prior gaussiani CKM/theta_P/EWP.
+Verificato anche il rifiuto della flag senza PT o senza --indSU3.
+
+Per ripetere il test:
+cmake -S /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes \
+  -B /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/build/pt \
+  -DGOLDENMODES_BUILD_TESTS=ON
+cmake --build /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/build/pt -j 4
+ctest --test-dir /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/build/pt \
+  -R '^prior_ranges$' --output-on-failure

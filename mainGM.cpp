@@ -11,6 +11,10 @@
 #include <thread>
 #include <string>
 #include <cstring>
+#include <sstream>
+#include <stdexcept>
+#include <cmath>
+#include <limits>
 
 using namespace std;
 
@@ -19,9 +23,21 @@ template <typename Model>
 void runModel(Model &model, const string &outputFileName,
               int nChains, int nIterationsPreRun, int nIterationsRun,
               int nIterationsPreRunFactorized, int nIterationsUpdateMax,
-              bool Univariate)
+              bool Univariate, const vector<double>& temperatures, unsigned swapInterval)
 {
     model.SetNChains(nChains);
+    if (!temperatures.empty()) {
+        model.SetParallelTempering(temperatures, nChains, swapInterval);
+        cout << "Parallel Tempering: " << model.GetNColdChains() << " independent ladders, "
+             << temperatures.size() << " temperatures, " << model.GetNChains() << " total replicas" << endl;
+        model.WriteMarkovChain(outputFileName + "cold_chains.root", "RECREATE", true, false);
+        ofstream config(outputFileName + "pt_temperatures.csv");
+        if (!config) throw runtime_error("Cannot write PT temperature configuration");
+        config.precision(17);
+        config << "slot,ladder,temperature\n";
+        for (unsigned c = 0; c < model.GetNChains(); ++c)
+            config << c << ',' << c % model.GetNColdChains() << ',' << model.GetChainTemperature(c) << '\n';
+    }
     model.SetNIterationsPreRunMax(nIterationsPreRun);
     model.SetNIterationsRun(nIterationsRun);
     model.SetProposeMultivariate(!Univariate);
@@ -35,6 +51,10 @@ void runModel(Model &model, const string &outputFileName,
              << ", " << model.GetParameter(i).GetUpperLimit() << "]" << endl;
 
     model.MarginalizeAll();
+    if (!temperatures.empty()) {
+        model.WriteParallelTemperingDiagnostics(outputFileName + "pt_swaps.csv");
+        model.CloseOutputFile();
+    }
     model.FindMode();
     model.PrintSummary();
     model.PrintAllMarginalized(outputFileName + "marginalized_parameters.pdf");
@@ -89,6 +109,7 @@ int main(int argc, char* argv[]) {
     bool flagBDDb = false;
     bool Univariate = false;
     bool flagIndSU3 = false;
+    bool ptFullPriors = false;
     bool flagSU3ReIm = false;
     bool flagGaussianCKM = false;
     bool flagPositiveG2tP = false;
@@ -111,9 +132,43 @@ int main(int argc, char* argv[]) {
     int nIterationsPreRunFactorized = 10000;
     int nIterationsUpdateMax = 100;
     int nChains = 10;
+    vector<double> temperatures;
+    unsigned swapInterval = 10;
 
     for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "--outfile") == 0 && i + 1 < argc) {
+        if (strcmp(argv[i], "--pt-full-priors") == 0) {
+            ptFullPriors = true;
+        } else if (strcmp(argv[i], "--pt-temperatures") == 0) {
+            if (i + 1 >= argc) { cerr << "--pt-temperatures requires a comma-separated list" << endl; return 1; }
+            try {
+                string list = argv[++i], token;
+                if (list.empty() || list.back() == ',') throw invalid_argument("empty temperature");
+                istringstream in(list);
+                temperatures.clear();
+                while (getline(in, token, ',')) {
+                    size_t used = 0;
+                    double t = stod(token, &used);
+                    if (used != token.size() || !isfinite(t) || t < 1. ||
+                        (temperatures.empty() ? t != 1. : t <= temperatures.back()))
+                        throw invalid_argument("temperatures must increase strictly from 1");
+                    temperatures.push_back(t);
+                }
+                if (temperatures.size() < 2) throw invalid_argument("at least two temperatures required");
+            } catch (const exception& e) {
+                cerr << "Invalid PT temperatures: " << e.what() << endl; return 1;
+            }
+        } else if (strcmp(argv[i], "--pt-swap-interval") == 0) {
+            if (i + 1 >= argc) { cerr << "--pt-swap-interval requires a positive integer" << endl; return 1; }
+            try {
+                string value = argv[++i]; size_t used = 0;
+                long long n = stoll(value, &used);
+                if (used != value.size() || n <= 0 || n > numeric_limits<unsigned>::max())
+                    throw invalid_argument("out of range");
+                swapInterval = static_cast<unsigned>(n);
+            } catch (const exception& e) {
+                cerr << "Invalid PT swap interval: " << e.what() << endl; return 1;
+            }
+        } else if (strcmp(argv[i], "--outfile") == 0 && i + 1 < argc) {
             outputFileName = argv[++i];
         } else if (strcmp(argv[i], "--flagBJPSIV") == 0) {
             flagBJPSIV = true;
@@ -190,6 +245,11 @@ int main(int argc, char* argv[]) {
                  << "  --nPreRunFactorized <value>     Set number of factorized pre-run iterations (default: 1000)\n"
                   "  --nUpdateMax value            Set max number of update iterations (default: 100)\n"
                   "  --nChains value               Set number of chains (default: 10)\n"
+                  "  --pt-temperatures <1,2,...>    Enable PT with explicit temperatures (likelihood only)\n"
+                  "  --pt-full-priors              Use unsplit indSU3 prior ranges; override positive/small flags\n"
+                  "                                Requires --indSU3 and --pt-temperatures\n"
+                  "  --pt-swap-interval <value>     Sweeps between exchanges (default: 10)\n"
+                  "                                With PT, --nChains counts independent ladders\n"
                   "  --Univariate                   Enable univariate mode\n"                  "  --indSU3                        Use goldenmodesB_indSU3 (independent SU(3) breaking)\n"
                   "  --su3_weight <value>            SU(3) weight for indSU3 mode (default: \"abs\")\n"
                   "  --su3_sigma <value>             SU(3) sigma for indSU3 mode (default: free BAT parameter)\n"
@@ -199,6 +259,15 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    if (ptFullPriors && (!flagIndSU3 || temperatures.empty())) {
+        cerr << "--pt-full-priors requires --indSU3 and --pt-temperatures" << endl;
+        return 1;
+    }
+    if (nChains <= 0 || nIterationsRun <= 0 || nIterationsPreRun <= 0 ||
+        nIterationsPreRunFactorized < 0 || nIterationsUpdateMax <= 0 ||
+        (!temperatures.empty() && temperatures.size() > numeric_limits<unsigned>::max() / unsigned(nChains))) {
+        cerr << "Invalid chain/iteration counts" << endl; return 1;
+    }
     // Initialize MPI first so rank is known before any output or model construction
     MPI_Init(&argc, &argv);
     int mpi_rank = 0, mpi_size = 1;
@@ -214,6 +283,7 @@ int main(int argc, char* argv[]) {
         cout << "ewp_limit: " << ewp_limit << endl;
         cout << "indSU3 mode: " << (flagIndSU3 ? "true" : "false") << endl;
         if (flagIndSU3) {
+            cout << "Full prior ranges (PT): " << (ptFullPriors ? "true (positive/small region flags ignored)" : "false") << endl;
             cout << "positive G2t_scd_BJPSIP: " << (flagPositiveG2tP ? "true" : "false") << endl;
             cout << "positive EA1_sdcd_BJPSIP: " << (flagPositiveEA1P ? "true" : "false") << endl;
             cout << "positive Im(EA2t_ccds_BJPSIP): " << (flagPositiveImEA2tP ? "true" : "false") << endl;
@@ -237,33 +307,38 @@ int main(int argc, char* argv[]) {
     // Start time measurement
     auto start = chrono::high_resolution_clock::now();
 
-    if (flagIndSU3) {
-        goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma, flagGaussianCKM, flagPositiveG2tP, flagPositiveEA1P, flagPositiveImEA2tP, flagSmallE2tP, flagMinimal, flagPositiveE2tV, flagPositiveG2tV, flagSmallEA1P, flagPositiveG1tD, flagPositiveA1D);
-        model.SetSU3Weight(su3_weight);
-        if (mpi_rank != 0) {
-            workerLoop(model);
+    try {
+        if (flagIndSU3) {
+            goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma, flagGaussianCKM, flagPositiveG2tP, flagPositiveEA1P, flagPositiveImEA2tP, flagSmallE2tP, flagMinimal, flagPositiveE2tV, flagPositiveG2tV, flagSmallEA1P, flagPositiveG1tD, flagPositiveA1D, ptFullPriors);
+            model.SetSU3Weight(su3_weight);
+            if (mpi_rank != 0) {
+                workerLoop(model);
+            } else {
+                model.procnum = mpi_size;
+                cout << "Model (indSU3) constructed correctly, running with "
+                     << mpi_size << " MPI process(es)" << endl;
+                runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
+                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval);
+                terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
+            }
         } else {
-            model.procnum = mpi_size;
-            cout << "Model (indSU3) constructed correctly, running with "
-                 << mpi_size << " MPI process(es)" << endl;
-            runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
-                     nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate);
-            terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
+            goldenmodesB model(dsu3_limit, ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb);
+            if (mpi_rank != 0) {
+                workerLoop(model);
+            } else {
+                model.procnum = mpi_size;
+                cout << "Model constructed correctly, running with "
+                     << mpi_size << " MPI process(es)" << endl;
+                runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
+                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval);
+                terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
+            }
         }
-    } else {
-        goldenmodesB model(dsu3_limit, ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb);
-        if (mpi_rank != 0) {
-            workerLoop(model);
-        } else {
-            model.procnum = mpi_size;
-            cout << "Model constructed correctly, running with "
-                 << mpi_size << " MPI process(es)" << endl;
-            runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
-                     nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate);
-            terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
-        }
+    } catch (const exception& e) {
+        cerr << "Rank " << mpi_rank << ": " << e.what() << endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+        return 1;
     }
-
     if (mpi_rank == 0) {
         BCLog::OutSummary("MCMC analysis completed.");
         BCLog::CloseLog();

@@ -45,7 +45,7 @@ using namespace std;
 class goldenmodesB_indSU3 : public BCModel
 {
 public:
-    goldenmodesB_indSU3(double &ewp_limit, bool BJPSIP = true, bool BJPSIV = true, bool BDDb = true, double su3_sigma_in = 0.3, bool gaussianCKM = false, bool positiveG2tP = false, bool positiveEA1P = false, bool positiveImEA2tP = false, bool smallE2tP = false, bool minimal = false, bool positiveE2tV = false, bool positiveG2tV = false, bool smallEA1P = false, bool positiveG1tD = false, bool positiveA1D = false);
+    goldenmodesB_indSU3(double &ewp_limit, bool BJPSIP = true, bool BJPSIV = true, bool BDDb = true, double su3_sigma_in = 0.3, bool gaussianCKM = false, bool positiveG2tP = false, bool positiveEA1P = false, bool positiveImEA2tP = false, bool smallE2tP = false, bool minimal = false, bool positiveE2tV = false, bool positiveG2tV = false, bool smallEA1P = false, bool positiveG1tD = false, bool positiveA1D = false, bool fullPriorRanges = false);
     ~goldenmodesB_indSU3();
 
     // map to store all the parameters used in amplitudes
@@ -64,6 +64,8 @@ public:
     bool flagBJPSIV;
     bool flagBDDb;
     bool flagGaussianCKM;
+    // Use the union of all prior regions selected by the positive/small flags.
+    bool flagFullPriorRanges;
     bool flagPositiveG2tP;
     bool flagPositiveEA1P;
     bool flagSmallE2tP;
