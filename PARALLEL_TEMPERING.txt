@@ -194,3 +194,11 @@ The driver now saves <outfile>proposal.txt after pre-run. Use --save-proposal
 and --proposal-warmup 1000 to skip adaptation and discard a fixed-proposal
 warm-up. See PROPOSAL_REUSE.txt for compatibility checks, stored replica
 positions and convergence considerations.
+
+Production diagnostics (new)
+----------------------------
+New PT runs also write pt_roundtrips.csv and pt_swaps_by_ladder.csv, and the
+cold ROOT tree records physical Replica IDs. Use bat_MPI/diagnostics/analyze_mcmc.py
+for modern production R-hat/ESS/MCSE, region occupancy and plots. See
+PT_DIAGNOSTICS.txt (bat_MPI/diagnostics/README.txt) for installation, examples
+and interpretation. These checks do not certify discovery of every mode.

@@ -1,0 +1,239 @@
+PT diagnostics and regression tests
+===================================
+
+Implemented in:
+  /Users/silvest/Documents/GitHub/bat_MPI
+  /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes
+
+The model executable has been rebuilt:
+  /Users/silvest/Documents/GitHub/ThErrorsInGoldenModes/build/pt/mainGM
+
+Two parts
+---------
+1. The sampler automatically tracks physical replica identities, adjacent
+   swaps per independent ladder, and cold -> hottest -> cold round trips.
+2. A separate Python tool analyzes production cold-chain ROOT samples for
+   modern R-hat, ESS, MCSE, and region occupancy. It uses ArviZ's established
+   estimators rather than a new implementation of these statistics.
+
+These are sampling diagnostics, not a test that the physical model fits
+experimental data, and not proof that every posterior mode was discovered.
+
+New sampler output
+------------------
+With --outfile results/run_, PT runs produce:
+  results/run_pt_swaps.csv              Existing aggregate swap counts
+  results/run_pt_swaps_by_ladder.csv    Counts/rates for each ladder and link
+  results/run_pt_roundtrips.csv         Counts and duration summaries per replica
+  results/run_cold_chains.root          Production cold samples; new Replica branch
+
+Replica IDs move with configurations through swaps. A temperature slot is
+not a replica identity. Journeys and all counters reset at the start of
+production, after both ordinary pre-run and loaded-proposal warm-up. A
+replica initially at a hot temperature must first visit cold before it can
+start a counted trip. RNGs and proposal matrices stay with temperature slots.
+
+Round-trip durations are measured in full sampler sweeps, including waiting
+at cold between visits. They are not the per-parameter Iteration count in a
+factorized chain. CSV journey_stage means:
+  0: has not visited cold in this production run
+  1: visited cold, has not subsequently reached hottest
+  2: reached hottest after cold, has not yet returned cold
+Missing trip durations are nan, not zero. IDs are local to a production run.
+Cold ROOT Replica IDs permit tracking arrivals at cold; the full hot path
+is not written, so a temperature-vs-time plot cannot be reconstructed from
+that file. Round-trip statistics are accumulated inside the engine instead.
+
+Installation of the diagnostic tool
+-----------------------------------
+Use Python 3.10 or newer, preferably in a virtual environment. This does
+not add Python dependencies to the C++ sampler or cluster fitting jobs.
+For example:
+
+python3 -m venv diagnostics-env
+source diagnostics-env/bin/activate
+python -m pip install -r /Users/silvest/Documents/GitHub/bat_MPI/diagnostics/requirements.txt
+
+On the cluster, use the corresponding paths in your checkout. Reports can
+also be generated on your workstation after copying ROOT/CSV output there.
+
+Analyze a PT run
+----------------
+python /Users/silvest/Documents/GitHub/bat_MPI/diagnostics/analyze_mcmc.py \
+  results/run_cold_chains.root \
+  --regions /Users/silvest/Documents/GitHub/bat_MPI/diagnostics/goldenmodes_partitions.json \
+  --output results/run_diagnostics
+
+The transport prefix results/run_ is inferred from the cold ROOT filename.
+For another naming convention, specify --transport-prefix results/run_.
+Use --tree TREE_NAME if the ROOT file contains several MCMC trees.
+
+Several independent runs may be compared by passing multiple ROOT files:
+  python analyze_mcmc.py run1_cold_chains.root run2_cold_chains.root \
+    --regions goldenmodes_partitions.json --output comparison
+Each file's chains remain separate and retain run:chain labels. Do not
+split one continuing chain into files and treat the pieces as independent.
+If giving transport prefixes explicitly, repeat --transport-prefix in the
+same order as the input files.
+
+The tool filters Phase=1 production samples, preserves chain ordering and
+repeated rejected states, and does not silently truncate or thin samples.
+Unequal chain lengths, duplicate/nonmonotonic/irregular iterations and
+explicitly heated input are rejected. A declared fixed parameter must be
+constant. Statistical calculations use all stored draws; only plotted
+traces are decimated for large files.
+
+Analysis outputs
+----------------
+  summary.txt / summary.json
+    Machine-readable issues, configuration, thresholds, provenance and status.
+  diagnostics.csv
+    Rank-normalized split/folded R-hat; bulk/tail ESS; raw-mean ESS and MCSE.
+  region_weights.csv
+    Pooled probabilities, raw-indicator ESS, MCSE, R-hat and transition counts.
+  region_weights_by_chain.csv
+    Region probabilities/uncertainties for each independent ladder.
+  region_weights_by_block.csv
+    Probabilities in successive nonoverlapping time blocks for each ladder.
+  region_weights_cumulative.csv
+    Cumulative probabilities by chain; decimated for plotting/output size.
+  swaps.csv / round_trips.csv
+    Available transport data with source-run identities preserved.
+  traces.png / rank_plots.png
+    Parameter/observable traces and rank distributions across cold chains.
+  region_traces.png
+    Region indicators and cumulative region probabilities.
+  swap_acceptance.png / round_trips.png
+    Per-link transport and completed trips.
+
+Plots show up to eight variables/region entries to remain readable; tables
+cover every requested variable/region. Flagged nonconstant variables get
+priority in the trace/rank plots. Use --var NAME repeatedly to focus the
+analysis on selected variables. All saved numerical parameter/observable
+branches and log densities are considered by default. The GoldenModes
+custom observable histograms alone do not retain sample order: this tool
+cannot recover ESS/MCSE for a derived observable available only as a histogram.
+
+Angular variables ending in _arg automatically also get sin/cos diagnostics.
+Use --angular NAME for other radian variables, e.g. --angular myphid.
+Raw phase diagnostics remain present; inspect circular transforms when the
+phase branch cut makes raw angles misleading.
+
+Region definitions
+------------------
+The supplied goldenmodes_partitions.json defines separate binary cuts for
+all 14 parameters affected by the old prior-region flags. It uses cos/sin
+for real/imaginary signs and the original 0.75 / 1.5 modulus thresholds.
+Partitions for absent channel-specific parameters are skipped and listed.
+
+Each partition's two probabilities sum to one. Probabilities from DIFFERENT
+partitions overlap and must NOT be added or treated as joint mode weights.
+These cuts are useful diagnostics; they do not automatically identify
+physical posterior modes. A cut outside a restricted prior's support may
+be unvisited by construction: interpret the flag with your chosen domain.
+
+For joint modes, supply a JSON file with an explicitly disjoint regions
+list. A BJPSIP example is included at:
+  diagnostics/goldenmodes_joint_regions.example.json
+It splits the two G2t phases jointly by real-part sign and E2t magnitude.
+Mixed sign configurations possible under full priors are placed in other.
+Adapt these definitions to the modes of scientific interest.
+
+A custom file has this structure:
+{
+  "regions": [
+    {"name": "positive_real_G2t", "conditions": [
+      {"parameter": "G2t_scd_BJPSIP_arg", "transform": "cos", "op": ">=", "value": 0}
+    ]},
+    {"name": "negative_real_G2t", "conditions": [
+      {"parameter": "G2t_scd_BJPSIP_arg", "transform": "cos", "op": "<", "value": 0}
+    ]}
+  ]
+}
+Conditions within a region are ANDed. Named joint regions must not overlap;
+uncovered samples are reported as other. Explicitly declared, unvisited
+regions remain in the report. Only identity/sin/cos transforms and ordinary
+comparison operators are allowed; no Python expressions are evaluated.
+
+Flags and interpretation
+------------------------
+Default screening thresholds (configurable):
+  --rhat-limit 1.01
+  --ess-per-chain 100
+  --region-mcse 0.01          Absolute standard error for a region probability
+  --blocks 10
+
+For a region indicator I, the mean ESS/MCSE concern E[I], i.e. that region's
+posterior probability; bulk ESS is not substituted into the MCSE formula.
+A region with no visits or no transitions is NOT reported as precisely zero
+or one. Its uncertainty is unavailable. Likewise an unchanged chain is not
+considered a known constant unless the ROOT parameter metadata declares it
+fixed. The report distinguishes fixed values, stuck chains, short runs,
+missing chains, unvisited regions and nonfinite input. CSV nan means not
+available; summary.json uses null for undefined/nonfinite numeric values.
+
+summary status:
+  attention          Some computed diagnostics are flagged.
+  incomplete         No flags in computed checks, but region/transport checks
+                     were not available or were not configured.
+  screening_passed   Configured, available checks passed the chosen thresholds.
+
+No status proves global exploration. No universal swap acceptance target is
+imposed: zero attempts/accepted swaps are flagged, and all rates are plotted.
+Zero round trips in a ladder and configurations without completed trips
+are flagged. Inspect trip counts/durations, mixing at the hottest level,
+region visits and probability stability; a few trips alone are insufficient.
+
+Without --fail-on-warning the tool exits 0 after successfully producing a
+report, even for attention/incomplete. Add --fail-on-warning to return exit
+code 2 for those states in automated cluster checks. Malformed input exits 1.
+Use --no-plots for tables only. Existing files produced by this tool in the
+chosen output directory are replaced; choose a separate output per analysis.
+
+Existing ROOT files can be analyzed for R-hat/ESS/regions. Existing aggregate
+swap CSVs are read as a fallback. Missing round trips are explicitly marked
+unavailable: new tracking cannot reconstruct past hot-configuration journeys.
+
+Regression tests
+----------------
+The implementation includes:
+  - 9 MPI tests, including existing PT/proposal tests and deterministic tests
+    for accepted/rejected replica swaps, hot-origin exclusion, trip duration,
+    independent ladders and reset at production start.
+  - 23 Python tests covering healthy independent chains, shifted chains,
+    scale mismatches, autocorrelation, stuck chains/modes, unvisited regions,
+    ROOT ordering, production filtering, fixed metadata, unequal lengths,
+    hot input, angular transforms, region boundaries/overlap, transport
+    provenance, incomplete reports and plot generation.
+  - The existing GoldenModes prior-range regression test.
+
+Standalone Python test command:
+  python /Users/silvest/Documents/GitHub/bat_MPI/test/test_mcmc_diagnostics.py
+
+To include Python tests in CTest:
+cmake -S /Users/silvest/Documents/GitHub/bat_MPI \
+  -B /Users/silvest/Documents/GitHub/bat_MPI/build-pt \
+  -DBAT_BUILD_PT_TESTS=ON \
+  -DBAT_DIAGNOSTICS_PYTHON=/absolute/path/to/diagnostics-env/bin/python
+cmake --build /Users/silvest/Documents/GitHub/bat_MPI/build-pt -j 4
+ctest --test-dir /Users/silvest/Documents/GitHub/bat_MPI/build-pt --output-on-failure
+
+Verification on the physics model
+---------------------------------
+A software smoke run used goldenmodesB_indSU3 with full prior ranges,
+two independent ladders, T={1,4}, 5 discarded loaded-proposal warm-up sweeps,
+and 20 production sweeps. The analyzer successfully read the real BAT ROOT
+metadata and generated all tables/plots. It correctly flagged poor mixing,
+uncertain region weights and missing round trips. This deliberately short
+run is an integration test, not a production physics result.
+
+References
+----------
+ArviZ diagnostic API:
+  https://python.arviz.org/en/v0.23.0/api/generated/arviz.rhat.html
+  https://python.arviz.org/en/v0.23.0/api/generated/arviz.ess.html
+  https://python.arviz.org/en/v0.23.0/api/generated/arviz.mcse.html
+Modern R-hat/ESS:
+  https://arxiv.org/abs/1903.08008
+PT transport and round trips:
+  https://arxiv.org/abs/cond-mat/0602085

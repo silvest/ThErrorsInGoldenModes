@@ -56,6 +56,7 @@ void runModel(Model &model, const string &outputFileName,
     model.MarginalizeAll();
     if (!temperatures.empty()) {
         model.WriteParallelTemperingDiagnostics(outputFileName + "pt_swaps.csv");
+        model.WriteParallelTemperingTransport(outputFileName);
         model.CloseOutputFile();
     }
     model.FindMode();
