@@ -1,3 +1,7 @@
+Streaming diagnostics are enabled by default in PT runs. See
+PT_DIAGNOSTICS.txt for --pt-diagnostics-interval, --pt-trace-interval,
+and analysis of ongoing or interrupted runs. Rebuild both BAT and mainGM.
+
 CMake installation (primary build workflow)
 ===========================================
 

@@ -24,11 +24,13 @@ void runModel(Model &model, const string &outputFileName,
               int nChains, int nIterationsPreRun, int nIterationsRun,
               int nIterationsPreRunFactorized, int nIterationsUpdateMax,
               bool Univariate, const vector<double>& temperatures, unsigned swapInterval,
-              const string& proposalInput, const string& proposalOutput, unsigned proposalWarmup)
+              const string& proposalInput, const string& proposalOutput, unsigned proposalWarmup,
+              bool ptDiagnostics, unsigned diagnosticInterval, unsigned traceInterval)
 {
     model.SetNChains(nChains);
     if (!temperatures.empty()) {
         model.SetParallelTempering(temperatures, nChains, swapInterval);
+        if (ptDiagnostics) model.SetPTDiagnosticsOutput(outputFileName.empty() ? "./" : outputFileName, diagnosticInterval, traceInterval);
         cout << "Parallel Tempering: " << model.GetNColdChains() << " independent ladders, "
              << temperatures.size() << " temperatures, " << model.GetNChains() << " total replicas" << endl;
         model.WriteMarkovChain(outputFileName + "cold_chains.root", "RECREATE", true, false);
@@ -53,6 +55,8 @@ void runModel(Model &model, const string &outputFileName,
              << " [" << model.GetParameter(i).GetLowerLimit()
              << ", " << model.GetParameter(i).GetUpperLimit() << "]" << endl;
 
+    if (!Univariate && nIterationsPreRunFactorized >= nIterationsPreRun && proposalInput.empty())
+        BCLog::OutWarning("Factorized warm-up covers the entire prerun: the joint multivariate proposal will have no prerun sampling phase.");
     model.MarginalizeAll();
     if (!temperatures.empty()) {
         model.WriteParallelTemperingDiagnostics(outputFileName + "pt_swaps.csv");
@@ -138,11 +142,27 @@ int main(int argc, char* argv[]) {
     int nChains = 10;
     vector<double> temperatures;
     unsigned swapInterval = 10;
+    bool ptDiagnostics = true, diagnosticOptions = false;
+    unsigned diagnosticInterval = 1000, traceInterval = 100;
     string proposalInput, proposalOutput;
     unsigned proposalWarmup = 1000;
 
     for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "--load-proposal") == 0 || strcmp(argv[i], "--save-proposal") == 0) {
+        if (strcmp(argv[i], "--no-pt-diagnostics") == 0) {
+            ptDiagnostics = false; diagnosticOptions = true;
+        } else if (strcmp(argv[i], "--pt-diagnostics-interval") == 0 || strcmp(argv[i], "--pt-trace-interval") == 0) {
+            const bool trace = strcmp(argv[i], "--pt-trace-interval") == 0;
+            if (i+1 >= argc) { cerr << argv[i] << " requires an integer" << endl; return 1; }
+            const string value = argv[++i];
+            try {
+                size_t used = 0;
+                const long long n = stoll(value, &used);
+                if (used != value.size() || n < (trace ? 0 : 1) || n > numeric_limits<unsigned>::max())
+                    throw invalid_argument("out of range");
+                (trace ? traceInterval : diagnosticInterval) = static_cast<unsigned>(n);
+                diagnosticOptions = true;
+            } catch (const exception& e) { cerr << "Invalid PT diagnostic interval: " << e.what() << endl; return 1; }
+        } else if (strcmp(argv[i], "--load-proposal") == 0 || strcmp(argv[i], "--save-proposal") == 0) {
             const bool load = strcmp(argv[i], "--load-proposal") == 0;
             if (i + 1 >= argc || !*argv[i+1]) { cerr << argv[i] << " requires a filename" << endl; return 1; }
             (load ? proposalInput : proposalOutput) = argv[++i];
@@ -263,7 +283,7 @@ int main(int argc, char* argv[]) {
                  << "  --ewp_limit <value>             Set ewp limit (default: 0.0)\n"
                  << "  --nPreRun <value>               Set number of pre-run iterations (default: 100000)\n"
                  << "  --nRun <value>                  Set number of run iterations (default: 10000)\n"
-                 << "  --nPreRunFactorized <value>     Set number of factorized pre-run iterations (default: 1000)\n"
+                 << "  --nPreRunFactorized <value>     Set number of factorized pre-run iterations (default: 10000)\n"
                   "  --nUpdateMax value            Set max number of update iterations (default: 100)\n"
                   "  --nChains value               Set number of chains (default: 10)\n"
                   "  --save-proposal <file>         Save tuned proposal after pre-run (default: <outfile>proposal.txt)\n"
@@ -272,6 +292,9 @@ int main(int argc, char* argv[]) {
                   "  --pt-temperatures <1,2,...>    Enable PT with explicit temperatures (likelihood only)\n"
                   "  --pt-full-priors              Use unsplit indSU3 prior ranges; override positive/small flags\n"
                   "                                Requires --indSU3 and --pt-temperatures\n"
+                  "  --pt-diagnostics-interval N    Save diagnostic blocks every N sweeps (default: 1000)\n"
+                  "  --pt-trace-interval N          State trace stride (default: 100; 0 disables traces)\n"
+                  "  --no-pt-diagnostics            Disable streaming diagnostics (enabled for PT by default)\n"
                   "  --pt-swap-interval <value>     Sweeps between exchanges (default: 10)\n"
                   "                                With PT, --nChains counts independent ladders\n"
                   "  --Univariate                   Enable univariate mode\n"                  "  --indSU3                        Use goldenmodesB_indSU3 (independent SU(3) breaking)\n"
@@ -283,6 +306,9 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    if (diagnosticOptions && temperatures.empty()) {
+        cerr << "PT diagnostic options require --pt-temperatures" << endl; return 1;
+    }
     if (ptFullPriors && (!flagIndSU3 || temperatures.empty())) {
         cerr << "--pt-full-priors requires --indSU3 and --pt-temperatures" << endl;
         return 1;
@@ -342,7 +368,7 @@ int main(int argc, char* argv[]) {
                 cout << "Model (indSU3) constructed correctly, running with "
                      << mpi_size << " MPI process(es)" << endl;
                 runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
-                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup);
+                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval);
                 terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
             }
         } else {
@@ -354,7 +380,7 @@ int main(int argc, char* argv[]) {
                 cout << "Model constructed correctly, running with "
                      << mpi_size << " MPI process(es)" << endl;
                 runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
-                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup);
+                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval);
                 terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
             }
         }

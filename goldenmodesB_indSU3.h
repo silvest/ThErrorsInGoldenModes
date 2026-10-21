@@ -57,6 +57,9 @@ public:
     map<string, double> obs;
 
     double LogLikelihood(const vector<double> &parameters);
+    std::vector<PTDiagnosticPartition> DefinePTDiagnosticPartitions() const override;
+    void ClassifyPTDiagnosticRegions(const std::vector<double>& parameters,
+                                      std::vector<unsigned>& labels) const override;
 
     void PrintHistogram();
 
@@ -154,6 +157,7 @@ public:
     void PrintObservablePulls(const string &filename);
 
 private:
+    mutable std::vector<std::pair<unsigned, unsigned>> ptRegionIndices;
     TComplex lam_bs_c, lam_bs_u, lam_bd_c, lam_bd_u;
     TComplex lamst_bs_c, lamst_bs_u, lamst_bd_c, lamst_bd_u;
 

@@ -4900,3 +4900,15 @@ void goldenmodesB_indSU3::SaveHistograms(const string &filename)
 //     outfile.close();
 //     cout << "Pull values saved to " << filename << endl;
 // }
+
+// Pure parameter classifiers: no likelihood evaluation or observable mutation.
+#include "diagnostics/GoldenModesPTRegions.h"
+std::vector<BCEngineMCMC::PTDiagnosticPartition> goldenmodesB_indSU3::DefinePTDiagnosticPartitions() const
+{
+    return GoldenModesPT::definitions(*this, ptRegionIndices);
+}
+void goldenmodesB_indSU3::ClassifyPTDiagnosticRegions(const std::vector<double>& parameters,
+                                                    std::vector<unsigned>& labels) const
+{
+    GoldenModesPT::classify(ptRegionIndices, parameters, labels);
+}

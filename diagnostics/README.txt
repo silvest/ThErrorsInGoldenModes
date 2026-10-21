@@ -29,3 +29,7 @@ For joint bins, replace --regions with:
 Install Python dependencies from ../bat_MPI/diagnostics/requirements.txt.
 See ../PT_DIAGNOSTICS.txt (in this repository's root) for complete usage,
 output descriptions and scientific interpretation.
+
+Runtime region labels are defined in GoldenModesPTRegions.h in this directory.
+Tests verify that those cuts match goldenmodes_partitions.json. See the parent
+PT_DIAGNOSTICS.txt for streaming transport analysis and per-temperature output.

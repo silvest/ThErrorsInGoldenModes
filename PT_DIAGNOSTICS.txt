@@ -1,3 +1,58 @@
+Streaming transport diagnostics (new runs)
+==========================================
+Rebuild/install bat_MPI, then rebuild mainGM against that installation.
+Both must use the updated headers and library; rebuilding BAT alone is not
+sufficient because the engine ABI changed. The current local executable is
+build-cmake/mainGM. See bat_MPI/diagnostics/README.txt for all API/file details.
+
+Streaming is enabled by default for PT runs. Add to the existing PT command:
+  --pt-diagnostics-interval 1000 --pt-trace-interval 100
+Intervals are full sweeps per replica. The first controls exact counter
+checkpoints; the second controls decimated state traces (0 disables traces).
+--no-pt-diagnostics disables streaming; the existing final transport exports
+remain available. These diagnostic options require --pt-temperatures.
+Use --outfile results/run_ and an existing output directory. Choose a unique
+prefix for each job. Output starts in prerun, so it helps tune a pilot run
+before production finishes. Loaded-proposal warmup is recorded separately.
+
+The engine records local acceptance, occupancy, local versus swap-induced
+region crossings at EVERY temperature and ladder, block swap rates, and
+region pairs at cold departure/return for completed round trips. It flushes
+counter blocks periodically, retaining bounded sampler memory. A crash loses
+only the unfinished diagnostic window; the analyzer reads the commit ledger.
+These are diagnostic checkpoints, not complete restart files. Existing runs
+cannot supply missing hot-chain crossing events retroactively.
+
+The indSU3 model provides its 14 binary cuts in diagnostics/GoldenModesPTRegions.h.
+Absent channel parameters are skipped. Regression tests compare the C++ cuts
+with diagnostics/goldenmodes_partitions.json and check classification
+boundaries. BAT contains only generic hooks. Different binary partitions
+still overlap and must not be added as joint mode weights. The legacy model
+has generic PT tracking without indSU3-specific regional labels.
+
+Analyze transport while running, after interruption, or without a cold ROOT file:
+  python /path/to/bat_MPI/diagnostics/analyze_mcmc.py --pt-only \
+    --transport-prefix results/run_ --output results/run_transport
+Normal analysis with the cold ROOT file also discovers these streaming CSVs.
+Continue passing --regions diagnostics/goldenmodes_partitions.json for cold
+posterior-region ESS/MCSE. Inspect pt_occupancy.csv, pt_region_crossings.csv,
+pt_region_returns.csv, pt_local_acceptance.csv and pt_swap_acceptance.csv,
+plus pt_regions_runN.png, pt_swap_history.png and pt_paths_runN.png.
+Only committed blocks contribute. summary.json records phases/completion.
+Transport-only status is transport_checked or attention/incomplete: it does
+not certify cold-chain convergence. Hot occupancy is not a posterior weight.
+
+If the hottest chains do not cross AND remain in different regions across
+ladders, investigate top temperature/local proposals. If hot chains cross
+but cold chains remain separated, examine the ladder and swap bottlenecks.
+Round trips can return to the same region; temperature travel alone does
+not show transport between posterior modes. Different departure/return
+labels show a change on the excursion, without identifying its temperature.
+
+The driver warns if --nPreRunFactorized covers the entire prerun while using
+joint proposals: that configuration supplies no joint-kernel prerun sampling.
+Use a shorter factorized phase when evaluating joint proposal adaptation.
+
 PT diagnostics and regression tests
 ===================================
 
@@ -40,7 +95,7 @@ factorized chain. CSV journey_stage means:
   1: visited cold, has not subsequently reached hottest
   2: reached hottest after cold, has not yet returned cold
 Missing trip durations are nan, not zero. IDs are local to a production run.
-Cold ROOT Replica IDs permit tracking arrivals at cold; the full hot path
+Without streaming output, cold ROOT Replica IDs permit tracking arrivals at cold; the full hot path
 is not written, so a temperature-vs-time plot cannot be reconstructed from
 that file. Round-trip statistics are accumulated inside the engine instead.
 
@@ -200,7 +255,7 @@ The implementation includes:
   - 9 MPI tests, including existing PT/proposal tests and deterministic tests
     for accepted/rejected replica swaps, hot-origin exclusion, trip duration,
     independent ladders and reset at production start.
-  - 23 Python tests covering healthy independent chains, shifted chains,
+  - Python statistical and streaming tests covering healthy independent chains, shifted chains,
     scale mismatches, autocorrelation, stuck chains/modes, unvisited regions,
     ROOT ordering, production filtering, fixed metadata, unequal lengths,
     hot input, angular transforms, region boundaries/overlap, transport
