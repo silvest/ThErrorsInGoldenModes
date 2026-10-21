@@ -484,7 +484,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         // ACP measurments
 
         // Bsjpsik0s : C and S observables from LHCb:2015brj
-        CorrData.push_back(dato(0.55, 0.71, 0.06)); // LHCb:2015brj
+	CorrData.push_back(dato(-0.08, 0.40, 0.08)); // LHCb:2015brj
         names.push_back("SBsjpsik0s");
         CorrData.push_back(dato(-0.28, 0.41, 0.08)); // LHCb:2015brj
         names.push_back("CBsjpsik0s");
