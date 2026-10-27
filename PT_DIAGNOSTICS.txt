@@ -1,3 +1,95 @@
+Independent smooth-adaptation option (second patch)
+====================================================
+The new --smooth-adaptation flag selects diminishing log-scale proposal tuning.
+It is independent of --prerun-policy: selecting staged warmup alone continues
+to use the legacy scale adjustments. The recommended comparison is staged
+warmup with and without this new flag, keeping all other settings the same.
+
+Retain your current model/channel, temperature, prior and MPI options. Example
+additional options for two independent jobs:
+
+Test A, patch one only:
+  --Univariate --prerun-policy staged --nPreRun 50000 \
+  --settling-sweeps 20000 --nRun 100000 --outfile All_pt_A_
+
+Test B, patches one and two:
+  --Univariate --prerun-policy staged --nPreRun 50000 \
+  --settling-sweeps 20000 --nRun 100000 --smooth-adaptation --outfile All_pt_B_
+
+The numerical lengths are examples, not established convergence requirements.
+Use distinct output prefixes (and distinct explicit --save-proposal filenames
+if you supply them). Both jobs can run simultaneously. Compare production
+R-hat, region weights, indicator ESS/MCSE and effective samples per wall-clock
+or likelihood-evaluation cost. Acceptance rate alone does not select a winner.
+Use the same --nUpdateMax in both jobs; changing the check interval is a separate
+experiment. The new flag does not change the adaptation or settling budgets.
+
+Defaults are target acceptance 0.25, gain 2.0, decay exponent 0.6, with log-standard-
+deviation changes capped at +/-0.5 per acceptance window. The default target is
+an experimental tuning choice, not a claimed optimum for this model. Separate
+learning-rate schedules are used for coordinate and joint tuning phases.
+Covariance-shape learning is unchanged. Proposals are frozen for settling and
+production under either method. Ordinary non-PT runs support the same flag.
+
+<outfile>warmup_status.csv and the transport report's summary.json record the
+selected scale method, hyperparameters and coordinate/joint update counters.
+The default is scale_adaptation=legacy; Test B records smooth. Cached proposals
+already contain a fixed tuned kernel, so mainGM rejects --smooth-adaptation
+with --load-proposal. Run fresh adaptation for the A/B comparison.
+
+Rebuild/install BAT and rebuild mainGM against matching headers and library.
+The CMake BAT package advertises BAT_HAS_SMOOTH_SCALE_ADAPTATION. See the BAT
+diagnostics/README.txt for the C++ configuration API and exact update formula.
+
+Staged warmup (optional)
+========================
+Rebuild/install the updated bat_MPI, then rebuild mainGM against its matching
+headers and library. Legacy prerun stopping remains the default. This first
+patch changes the warmup lifecycle; it keeps the existing scale/covariance
+adjustment algorithms and acceptance targets.
+
+To select a fixed adaptation budget followed by discarded fixed-proposal
+settling, add to the existing command (PT or ordinary MCMC):
+  --prerun-policy staged --nPreRun 50000 --settling-sweeps 20000
+For the current coordinate-proposal configuration, retain --Univariate.
+These lengths are illustrative, not validated convergence requirements.
+With staged policy, --nPreRun is EXACTLY the adaptation budget; settling is
+additional. --nPreRunFactorized and --nUpdateMax still control tuning within
+that budget. Joint-proposal runs require --nPreRunFactorized < --nPreRun.
+--settling-sweeps defaults to 1000 and permits 0; it requires staged policy.
+
+Use --prerun-policy legacy (or omit the option) for the original stopping
+criteria. The staged budget is not extended by noisy acceptance targets or
+legacy R-values. The final proposal is frozen during settling and production;
+PT exchanges continue. Settling is discarded from production trees, statistics
+and histograms. Starting production means collecting candidate posterior
+samples, not declaring convergence. Assess production R-hat, ESS, region
+weights and MCSE separately.
+
+Every new mainGM run writes <outfile>warmup_status.csv, independently of PT.
+It reports stage, stop reason, exact adaptation/settling counts, proposal
+acceptance outliers/zero-movement kernels, legacy R-check results and whether
+posterior convergence was assessed (false in this patch). The status snapshot
+is replaced atomically as warmup progresses. Budget exhaustion and proposal
+problems are reported explicitly without an endless tuning loop.
+
+PT diagnostics retain prerun / warmup / production as separate phases. Here
+warmup means fixed settling. The transport analyzer displays the latest phase
+and incorporates warmup_status.csv when available. Adaptation and settling
+samples must not be pooled into posterior estimates. All files use the
+existing --outfile prefix: use a different prefix for simultaneous jobs.
+
+--load-proposal already skips adaptation and uses --proposal-warmup. Do not
+combine it with staged policy in mainGM. The proposal cache format is unchanged;
+the saved cache is written after discarded settling. Its replica layout must
+still match any run loading it. Existing running cluster jobs are unaffected
+by these source/build changes; new executables and matching BAT libraries are
+needed to use the new policy.
+
+Tests cover the BAT lifecycle under real MPI, compatibility with ordinary and
+PT sampling, cache reuse, discarded draws, frozen proposals and default legacy
+behavior. GoldenModes also checks CLI errors and a short real-model PT run.
+
 Streaming transport diagnostics (new runs)
 ==========================================
 Rebuild/install bat_MPI, then rebuild mainGM against that installation.

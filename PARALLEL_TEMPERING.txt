@@ -1,3 +1,11 @@
+Independent option --smooth-adaptation selects diminishing log-scale tuning.
+It can be combined with --prerun-policy staged for the A/B comparison documented
+in PT_DIAGNOSTICS.txt. Legacy scale updates remain the default.
+
+Optional staged warmup: --prerun-policy staged uses --nPreRun as an exact
+adaptation budget, followed by --settling-sweeps discarded fixed-proposal sweeps.
+See PT_DIAGNOSTICS.txt. Legacy stopping remains the default.
+
 Streaming diagnostics are enabled by default in PT runs. See
 PT_DIAGNOSTICS.txt for --pt-diagnostics-interval, --pt-trace-interval,
 and analysis of ongoing or interrupted runs. Rebuild both BAT and mainGM.

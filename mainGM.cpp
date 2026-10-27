@@ -25,7 +25,8 @@ void runModel(Model &model, const string &outputFileName,
               int nIterationsPreRunFactorized, int nIterationsUpdateMax,
               bool Univariate, const vector<double>& temperatures, unsigned swapInterval,
               const string& proposalInput, const string& proposalOutput, unsigned proposalWarmup,
-              bool ptDiagnostics, unsigned diagnosticInterval, unsigned traceInterval)
+              bool ptDiagnostics, unsigned diagnosticInterval, unsigned traceInterval,
+              bool stagedWarmup, unsigned settlingSweeps, bool smoothAdaptation)
 {
     model.SetNChains(nChains);
     if (!temperatures.empty()) {
@@ -42,6 +43,9 @@ void runModel(Model &model, const string &outputFileName,
             config << c << ',' << c % model.GetNColdChains() << ',' << model.GetChainTemperature(c) << '\n';
     }
     model.SetNIterationsPreRunMax(nIterationsPreRun);
+    model.SetPreRunPolicy(stagedWarmup ? BCEngineMCMC::kPreRunStaged : BCEngineMCMC::kPreRunLegacy, settlingSweeps);
+    model.SetScaleAdaptation(smoothAdaptation ? BCEngineMCMC::kScaleSmooth : BCEngineMCMC::kScaleLegacy);
+    model.SetPreRunStatusOutput(outputFileName + "warmup_status.csv");
     model.SetNIterationsRun(nIterationsRun);
     model.SetProposeMultivariate(!Univariate);
     model.SetNIterationsPreRunFactorized(nIterationsPreRunFactorized);
@@ -146,9 +150,27 @@ int main(int argc, char* argv[]) {
     unsigned diagnosticInterval = 1000, traceInterval = 100;
     string proposalInput, proposalOutput;
     unsigned proposalWarmup = 1000;
+    bool stagedWarmup = false, settlingExplicit = false, smoothAdaptation = false;
+    unsigned settlingSweeps = 1000;
 
     for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "--no-pt-diagnostics") == 0) {
+        if (strcmp(argv[i], "--smooth-adaptation") == 0) {
+            smoothAdaptation = true;
+        } else if (strcmp(argv[i], "--prerun-policy") == 0) {
+            if (i+1 >= argc) { cerr << "--prerun-policy requires legacy or staged" << endl; return 1; }
+            const string value = argv[++i];
+            if (value != "legacy" && value != "staged") { cerr << "Invalid prerun policy: " << value << endl; return 1; }
+            stagedWarmup = value == "staged";
+        } else if (strcmp(argv[i], "--settling-sweeps") == 0) {
+            if (i+1 >= argc) { cerr << "--settling-sweeps requires a nonnegative integer" << endl; return 1; }
+            try {
+                const string value = argv[++i]; size_t used = 0;
+                const long long count = stoll(value, &used);
+                if (used != value.size() || count < 0 || count > numeric_limits<int>::max())
+                    throw invalid_argument("out of range");
+                settlingSweeps = static_cast<unsigned>(count); settlingExplicit = true;
+            } catch (const exception& e) { cerr << "Invalid settling length: " << e.what() << endl; return 1; }
+        } else if (strcmp(argv[i], "--no-pt-diagnostics") == 0) {
             ptDiagnostics = false; diagnosticOptions = true;
         } else if (strcmp(argv[i], "--pt-diagnostics-interval") == 0 || strcmp(argv[i], "--pt-trace-interval") == 0) {
             const bool trace = strcmp(argv[i], "--pt-trace-interval") == 0;
@@ -286,6 +308,9 @@ int main(int argc, char* argv[]) {
                  << "  --nPreRunFactorized <value>     Set number of factorized pre-run iterations (default: 10000)\n"
                   "  --nUpdateMax value            Set max number of update iterations (default: 100)\n"
                   "  --nChains value               Set number of chains (default: 10)\n"
+                  "  --prerun-policy legacy|staged  Legacy stopping (default), or exact --nPreRun adaptation budget\n"
+                  "  --settling-sweeps N            Additional discarded fixed-proposal sweeps for staged policy (default: 1000)\n"
+                  "  --smooth-adaptation           Opt into diminishing log-scale tuning (independent of prerun policy)\n"
                   "  --save-proposal <file>         Save tuned proposal after pre-run (default: <outfile>proposal.txt)\n"
                   "  --load-proposal <file>         Reuse proposal and replica positions; skip adaptation\n"
                   "  --proposal-warmup <value>      Discard sweeps on load (default: 1000; 0 allowed)\n"
@@ -306,6 +331,18 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    if (settlingExplicit && !stagedWarmup) {
+        cerr << "--settling-sweeps requires --prerun-policy staged" << endl; return 1;
+    }
+    if ((stagedWarmup || smoothAdaptation) && !proposalInput.empty()) {
+        cerr << "--load-proposal already bypasses adaptation; use --proposal-warmup for its discarded fixed-proposal sweeps" << endl; return 1;
+    }
+    if ((stagedWarmup || smoothAdaptation) && (!Univariate && nIterationsPreRunFactorized >= nIterationsPreRun)) {
+        cerr << "Multivariate warmup requires --nPreRunFactorized < --nPreRun" << endl; return 1;
+    }
+    if (stagedWarmup && (nIterationsPreRun <= 0 || settlingSweeps > unsigned(numeric_limits<int>::max() - nIterationsPreRun))) {
+        cerr << "Staged adaptation plus settling must fit in INT_MAX sweeps" << endl; return 1;
+    }
     if (diagnosticOptions && temperatures.empty()) {
         cerr << "PT diagnostic options require --pt-temperatures" << endl; return 1;
     }
@@ -368,7 +405,7 @@ int main(int argc, char* argv[]) {
                 cout << "Model (indSU3) constructed correctly, running with "
                      << mpi_size << " MPI process(es)" << endl;
                 runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
-                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval);
+                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval, stagedWarmup, settlingSweeps, smoothAdaptation);
                 terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
             }
         } else {
@@ -380,7 +417,7 @@ int main(int argc, char* argv[]) {
                 cout << "Model constructed correctly, running with "
                      << mpi_size << " MPI process(es)" << endl;
                 runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
-                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval);
+                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval, stagedWarmup, settlingSweeps, smoothAdaptation);
                 terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
             }
         }

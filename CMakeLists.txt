@@ -41,6 +41,12 @@ else()
         set(BAT_CFLAGS "")
         set(BAT_LIBS "BAT::BAT")
         set(BAT_RUNTIME_LIBRARY_DIR "${BAT_LIBRARY_DIR}")
+        if(NOT BAT_HAS_SMOOTH_SCALE_ADAPTATION)
+            message(FATAL_ERROR "The BAT package lacks smooth scale adaptation; rebuild and install the upgraded bat_MPI")
+        endif()
+        if(NOT BAT_HAS_STAGED_WARMUP)
+            message(FATAL_ERROR "The BAT package lacks staged warmup; rebuild and install the upgraded bat_MPI")
+        endif()
         if(NOT BAT_HAS_PT_STREAMING_DIAGNOSTICS)
             message(FATAL_ERROR "The BAT package lacks streaming PT diagnostics; rebuild and install the upgraded bat_MPI")
         endif()
@@ -189,5 +195,14 @@ if(GOLDENMODES_BUILD_TESTS)
         add_test(NAME pt_region_schema COMMAND ${Python3_EXECUTABLE}
             ${CMAKE_CURRENT_SOURCE_DIR}/tests/pt_region_schema.py $<TARGET_FILE:test_pt_regions>
             ${CMAKE_CURRENT_SOURCE_DIR}/diagnostics/goldenmodes_partitions.json)
+        add_test(NAME staged_warmup_cli COMMAND ${Python3_EXECUTABLE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/staged_warmup_cli.py --executable $<TARGET_FILE:mainGM>
+            --mpiexec ${MPIEXEC_EXECUTABLE} "--mpi-flags=${MPIEXEC_PREFLAGS}")
+        set_tests_properties(staged_warmup_cli PROPERTIES TIMEOUT 150 RUN_SERIAL TRUE)
+        add_test(NAME smooth_adaptation_cli COMMAND ${Python3_EXECUTABLE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/staged_warmup_cli.py --executable $<TARGET_FILE:mainGM>
+            --mpiexec ${MPIEXEC_EXECUTABLE} "--mpi-flags=${MPIEXEC_PREFLAGS}" --smooth)
+        set_tests_properties(smooth_adaptation_cli PROPERTIES TIMEOUT 150 RUN_SERIAL TRUE)
+
     endif()
 endif()
