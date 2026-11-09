@@ -722,9 +722,9 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         names.push_back("ACP_paral_Bsjpsikbst0");
         CorrData.push_back(dato(0.060, 0.059)); // A_CP_perp
         names.push_back("ACP_perp_Bsjpsikbst0");
-        CorrData.push_back(dato(2.879, 0.087)); // delta_paral - delta_0
+        CorrData.push_back(dato(-2.879, 0.087)); // delta_paral - delta_0
         names.push_back("delta_paral_Bsjpsikbst0");
-        CorrData.push_back(dato(0.057, 0.068)); // delta_perp - delta_0
+        CorrData.push_back(dato(M_PI-0.057, 0.068)); // delta_perp - delta_0
         names.push_back("delta_perp_Bsjpsikbst0");
         CorrData.push_back(dato(0.534, 0.015)); // f_0
         names.push_back("f_0_Bsjpsikbst0");
@@ -735,28 +735,28 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
         CorrBsjpsikbst(0, 0) = 1.;
         CorrBsjpsikbst(0, 1) = CorrBsjpsikbst(1, 0) = -0.16;
         CorrBsjpsikbst(0, 2) = CorrBsjpsikbst(2, 0) = -0.08;
-        CorrBsjpsikbst(0, 3) = CorrBsjpsikbst(3, 0) = 0.01;
-        CorrBsjpsikbst(0, 4) = CorrBsjpsikbst(4, 0) = 0.02;
+        CorrBsjpsikbst(0, 3) = CorrBsjpsikbst(3, 0) = - 0.01;
+        CorrBsjpsikbst(0, 4) = CorrBsjpsikbst(4, 0) = - 0.02;
         CorrBsjpsikbst(0, 5) = CorrBsjpsikbst(5, 0) = 0.01;
         CorrBsjpsikbst(0, 6) = CorrBsjpsikbst(6, 0) = -0.01;
         CorrBsjpsikbst(1, 1) = 1.;
         CorrBsjpsikbst(1, 2) = CorrBsjpsikbst(2, 1) = -0.57;
-        CorrBsjpsikbst(1, 3) = CorrBsjpsikbst(3, 1) = -0.03;
-        CorrBsjpsikbst(1, 4) = CorrBsjpsikbst(4, 1) = -0.04;
+        CorrBsjpsikbst(1, 3) = CorrBsjpsikbst(3, 1) =  0.03;
+        CorrBsjpsikbst(1, 4) = CorrBsjpsikbst(4, 1) =  0.04;
         CorrBsjpsikbst(1, 5) = CorrBsjpsikbst(5, 1) = -0.01;
         CorrBsjpsikbst(1, 6) = CorrBsjpsikbst(6, 1) = 0.01;
         CorrBsjpsikbst(2, 2) = 1.;
-        CorrBsjpsikbst(2, 3) = CorrBsjpsikbst(3, 2) = 0.01;
-        CorrBsjpsikbst(2, 4) = CorrBsjpsikbst(4, 2) = 0.02;
+        CorrBsjpsikbst(2, 3) = CorrBsjpsikbst(3, 2) = - 0.01;
+        CorrBsjpsikbst(2, 4) = CorrBsjpsikbst(4, 2) = - 0.02;
         CorrBsjpsikbst(2, 5) = CorrBsjpsikbst(5, 2) = 0.01;
         CorrBsjpsikbst(2, 6) = CorrBsjpsikbst(6, 2) = 0.04;
         CorrBsjpsikbst(3, 3) = 1.;
         CorrBsjpsikbst(3, 4) = CorrBsjpsikbst(4, 3) = 0.69;
-        CorrBsjpsikbst(3, 5) = CorrBsjpsikbst(5, 3) = -0.09;
-        CorrBsjpsikbst(3, 6) = CorrBsjpsikbst(6, 3) = 0.05;
+        CorrBsjpsikbst(3, 5) = CorrBsjpsikbst(5, 3) = 0.09;
+        CorrBsjpsikbst(3, 6) = CorrBsjpsikbst(6, 3) = - 0.05;
         CorrBsjpsikbst(4, 4) = 1.;
-        CorrBsjpsikbst(4, 5) = CorrBsjpsikbst(5, 4) = -0.03;
-        CorrBsjpsikbst(4, 6) = CorrBsjpsikbst(6, 4) = 0.0;
+        CorrBsjpsikbst(4, 5) = CorrBsjpsikbst(5, 4) = 0.03;
+        CorrBsjpsikbst(4, 6) = CorrBsjpsikbst(6, 4) = - 0.0;
         CorrBsjpsikbst(5, 5) = 1.;
         CorrBsjpsikbst(5, 6) = CorrBsjpsikbst(6, 5) = -0.44;
         CorrBsjpsikbst(6, 6) = 1.;
