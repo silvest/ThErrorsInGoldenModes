@@ -182,6 +182,59 @@ private:
     map<string, vector<string>> corrmeas_channels;
     unordered_set<string> referenceAmplitudes;
     map<string, pair<TComplex, TComplex>> amplitude_map;
+        // ---- leading / subleading amplitude bookkeeping ----------------------
+    // For every channel (and every polarization in the V sector) we store the
+    // two hadronic brackets defined by
+    //
+    //     A = lambda_c * leading + lambda_u * subleading
+    //
+    // i.e. before the overall CKM normalisation, which cancels in the ratio.
+    map<string, pair<TComplex, TComplex>> amplitude_parts;
+
+    void setAmplitudeParts(const string &key,
+                           const TComplex &leading,
+                           const TComplex &subleading)
+    {
+        amplitude_parts[key] = make_pair(leading, subleading);
+    }
+
+    // key_out = factor * key_in   (used for the K_S / K_L states)
+    void scaleAmplitudeParts(const string &key_in, const string &key_out,
+                             double factor)
+    {
+        auto it = amplitude_parts.find(key_in);
+        if (it == amplitude_parts.end()) return;
+        amplitude_parts[key_out] = make_pair(factor * it->second.first,
+                                             factor * it->second.second);
+    }
+
+    // key_out = c1 * key1 + c2 * key2   (used for the eta / eta' mixing)
+    void combineAmplitudeParts(const string &key_out,
+                               const string &key1, double c1,
+                               const string &key2, double c2)
+    {
+        auto i1 = amplitude_parts.find(key1);
+        auto i2 = amplitude_parts.find(key2);
+        if (i1 == amplitude_parts.end() || i2 == amplitude_parts.end()) return;
+        amplitude_parts[key_out] =
+            make_pair(c1 * i1->second.first  + c2 * i2->second.first,
+                      c1 * i1->second.second + c2 * i2->second.second);
+    }
+
+    // Keys for which the |subleading / leading| histogram is booked and filled.
+    // The bare name of a vector channel is skipped: only its three transversity
+    // components carry an amplitude of their own.
+    vector<string> ratioKeys() const
+    {
+        vector<string> keys;
+        for (const auto &ch : channels) {
+            if (find(vectorMesonChannels.begin(), vectorMesonChannels.end(), ch)
+                != vectorMesonChannels.end())
+                continue;
+            keys.push_back(ch);
+        }
+        return keys;
+    }
 
     // Helper: add a SU(3) pair (base names, without _abs/_arg)
     // For vector channels (isVector=true) all three polarizations are registered
