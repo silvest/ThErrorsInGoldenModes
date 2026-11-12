@@ -1273,6 +1273,13 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
 
     histos.createH1D("LogLikelihood", 500, 0.0, 0.0);
 
+    // Full |subleading / leading| hadronic amplitude ratio, for every channel
+    // and, in the V sector, for every transversity.  Numerator and denominator
+    // are complex sums evaluated at the SAME MCMC point: never combine
+    // independently marginalized distributions of the component amplitudes.
+    for (const auto &key : ratioKeys())
+        histos.createH1D("FullPenguinRatio_" + key, 500, 0.0, 0.0);
+
     // Create histograms for SU3-breaking ratios (one per pair)
     for (const auto &p : su3Pairs) {
         histos.createH1D("SU3ratio_" + p.first + "_vs_" + p.second, 500, 0., 0.);
@@ -2533,6 +2540,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = lamst_bs_c * getPar("E2t_ccsd_BJPSIP") - lamst_bs_u * getPar("G2t_scd_BJPSIP");
         ampc /= lamst_bd_c; // Normalize by lamst_bd_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          getPar("E2t_ccsd_BJPSIP"),
+                          -getPar("G2t_scd_BJPSIP"));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdjpsip0")
@@ -2546,6 +2558,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
                 lamst_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") + getPar("G2t_dcd_BJPSIP"))) /
                sqrt(2.);
                 ampc /= lamst_bd_c; // Normalize by lamst_bd_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI")) / sqrt(2.),
+                          -(getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") + getPar("G2t_dcd_BJPSIP")) / sqrt(2.));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdjpsieta8")
@@ -2559,6 +2576,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
                 lamst_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") + 2. * getPar("G4t_csd_BJPSIP"))) /
                sqrt(6.);
                 ampc /= lamst_bd_c; // Normalize by lamst_bd_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") - 2. * getPar("EA2t_ccsd_BJPSIP")) / sqrt(6.),
+                          (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") + 2. * getPar("G4t_csd_BJPSIP")) / sqrt(6.));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdjpsieta1")
@@ -2572,6 +2594,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
                 lamst_bd_u * (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") - getPar("G4t_csd_BJPSIP"))) /
                sqrt(3.);
                 ampc /= lamst_bd_c; // Normalize by lamst_bd_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          (getPar("E2t_ccdd_BJPSIP") + getPar("dP4EW_ucd_BPJPSI") + 2. * getPar("EA2t_ccdd_BJPSIP") + getPar("EA2t_ccsd_BJPSIP")) / sqrt(3.),
+                          (getPar("EA2_ddcd_BPJPSI") + getPar("dP4EW_ucd_BPJPSI") - getPar("G2t_dcd_BJPSIP") - 2. * getPar("G4t_cdd_BJPSIP") - getPar("G4t_csd_BJPSIP")) / sqrt(3.));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bpjpsikp")
@@ -2581,6 +2608,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
               lam_bs_u * (getPar("EA1_sdcd_BPJPSI") + getPar("dP2EW_scu_BPJPSI") - getPar("G2t_scd_BJPSIP"));
         ampc = lamst_bs_c * (getPar("E2t_ccsd_BJPSIP") + getPar("dP2EW_scu_BPJPSI")) +
                lamst_bs_u * (getPar("EA1_sdcd_BPJPSI") + getPar("dP2EW_scu_BPJPSI") - getPar("G2t_scd_BJPSIP"));
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          getPar("E2t_ccsd_BJPSIP") + getPar("dP2EW_scu_BPJPSI"),
+                          getPar("EA1_sdcd_BPJPSI") + getPar("dP2EW_scu_BPJPSI") - getPar("G2t_scd_BJPSIP"));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bpjpsipp")
@@ -2590,6 +2622,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
               lam_bd_u * (getPar("EA1_ddcd_BPJPSI") + getPar("dP2EW_dcu_BPJPSI") - getPar("G2t_dcd_BJPSIP"));
         ampc = lamst_bd_c * (getPar("E2t_ccdd_BJPSIP") + getPar("dP2EW_dcu_BPJPSI")) +
                lamst_bd_u * (getPar("EA1_ddcd_BPJPSI") + getPar("dP2EW_dcu_BPJPSI") - getPar("G2t_dcd_BJPSIP"));
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          getPar("E2t_ccdd_BJPSIP") + getPar("dP2EW_dcu_BPJPSI"),
+                          getPar("EA1_ddcd_BPJPSI") + getPar("dP2EW_dcu_BPJPSI") - getPar("G2t_dcd_BJPSIP"));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsip0")
@@ -2599,6 +2636,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = -(lamst_bs_c * getPar("dP4EW_ucs_BPJPSI") + lamst_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI"))) / sqrt(2.);
         ampc /= lamst_bs_c; // Normalize by lamst_bs_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          -getPar("dP4EW_ucs_BPJPSI") / sqrt(2.),
+                          -(getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI")) / sqrt(2.));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsik0b")
@@ -2608,6 +2650,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = lamst_bd_c * getPar("E2t_ccds_BJPSIP") - lamst_bd_u * getPar("G2t_dcs_BJPSIP");
         ampc /= lamst_bs_c; // Normalize by lamst_bs_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          getPar("E2t_ccds_BJPSIP"),
+                          -getPar("G2t_dcs_BJPSIP"));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsieta8")
@@ -2621,6 +2668,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
                 lamst_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") + 2. * getPar("G4t_css_BJPSIP"))) /
                sqrt(6.);
                 ampc /= lamst_bs_c; // Normalize by lamst_bs_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          (-2. * getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") - 2. * getPar("EA2t_ccss_BJPSIP")) / sqrt(6.),
+                          (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") + 2. * getPar("G4t_css_BJPSIP")) / sqrt(6.));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsieta1")
@@ -2634,6 +2686,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
                 lamst_bs_u * (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") - getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") - getPar("G4t_css_BJPSIP"))) /
                sqrt(3.);
                 ampc /= lamst_bs_c; // Normalize by lamst_bs_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          (getPar("E2t_ccss_BJPSIP") + getPar("dP4EW_ucs_BPJPSI") + 2. * getPar("EA2t_ccds_BJPSIP") + getPar("EA2t_ccss_BJPSIP")) / sqrt(3.),
+                          (getPar("EA2_ddcs_BPJPSI") + getPar("dP4EW_ucs_BPJPSI") - getPar("G2t_scs_BJPSIP") - 2. * getPar("G4t_cds_BJPSIP") - getPar("G4t_css_BJPSIP")) / sqrt(3.));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsjpsiphi")
@@ -2657,6 +2714,17 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         ampc_perp = -lamst_bs_c * (getPar("E2t_ccss_BJPSIV_perp") + getPar("EA2t_ccss_BJPSIV_perp")) +
                     lamst_bs_u * (getPar("G2t_scs_BJPSIV_perp") + getPar("G4t_css_BJPSIV_perp"));
                         ampc_perp /= lamst_bs_c; // Normalize by lamst_bs_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel + "_0",
+                          -(getPar("E2t_ccss_BJPSIV_0") + getPar("EA2t_ccss_BJPSIV_0")),
+                          getPar("G2t_scs_BJPSIV_0") + getPar("G4t_css_BJPSIV_0"));
+        setAmplitudeParts(channel + "_paral",
+                          -(getPar("E2t_ccss_BJPSIV_paral") + getPar("EA2t_ccss_BJPSIV_paral")),
+                          getPar("G2t_scs_BJPSIV_paral") + getPar("G4t_css_BJPSIV_paral"));
+        setAmplitudeParts(channel + "_perp",
+                          -(getPar("E2t_ccss_BJPSIV_perp") + getPar("EA2t_ccss_BJPSIV_perp")),
+                          getPar("G2t_scs_BJPSIV_perp") + getPar("G4t_css_BJPSIV_perp"));
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2688,6 +2756,17 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
                      lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_perp") + getPar("dP4EW_ucs_BVJPSI_perp") - 2. * getPar("G4t_cds_BJPSIV_perp"))) /
                     sqrt(2.);
         ampc_perp /= lamst_bs_c; // Normalize by lamst_bs_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel + "_0",
+                          (2. * getPar("EA2t_ccds_BJPSIV_0") + getPar("dP4EW_ucs_BVJPSI_0")) / sqrt(2.),
+                          (getPar("EA2_ddcs_BVJPSI_0") + getPar("dP4EW_ucs_BVJPSI_0") - 2. * getPar("G4t_cds_BJPSIV_0")) / sqrt(2.));
+        setAmplitudeParts(channel + "_paral",
+                          (2. * getPar("EA2t_ccds_BJPSIV_paral") + getPar("dP4EW_ucs_BVJPSI_paral")) / sqrt(2.),
+                          (getPar("EA2_ddcs_BVJPSI_paral") + getPar("dP4EW_ucs_BVJPSI_paral") - 2. * getPar("G4t_cds_BJPSIV_paral")) / sqrt(2.));
+        setAmplitudeParts(channel + "_perp",
+                          (2. * getPar("EA2t_ccds_BJPSIV_perp") + getPar("dP4EW_ucs_BVJPSI_perp")) / sqrt(2.),
+                          (getPar("EA2_ddcs_BVJPSI_perp") + getPar("dP4EW_ucs_BVJPSI_perp") - 2. * getPar("G4t_cds_BJPSIV_perp")) / sqrt(2.));
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2707,6 +2786,17 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         amp_perp /= lam_bs_c; // Normalize by lam_bs_c
         ampc_perp = -lamst_bd_c * getPar("E2t_ccds_BJPSIV_perp") - lamst_bd_u * getPar("G2t_dcs_BJPSIV_perp");
         ampc_perp /= lamst_bs_c; // Normalize by lamst_bs_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel + "_0",
+                          -getPar("E2t_ccds_BJPSIV_0"),
+                          -getPar("G2t_dcs_BJPSIV_0"));
+        setAmplitudeParts(channel + "_paral",
+                          -getPar("E2t_ccds_BJPSIV_paral"),
+                          -getPar("G2t_dcs_BJPSIV_paral"));
+        setAmplitudeParts(channel + "_perp",
+                          -getPar("E2t_ccds_BJPSIV_perp"),
+                          -getPar("G2t_dcs_BJPSIV_perp"));
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2726,6 +2816,17 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         amp_perp /= lam_bs_c; // Normalize by lam_bs_c
         ampc_perp = -(lamst_bs_c * getPar("dP4EW_ucs_BVJPSI_perp") + lamst_bs_u * (getPar("EA2_ddcs_BVJPSI_perp") + getPar("dP4EW_ucs_BVJPSI_perp"))) / sqrt(2.);
         ampc_perp /= lamst_bs_c; // Normalize by lamst_bs_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel + "_0",
+                          -getPar("dP4EW_ucs_BVJPSI_0") / sqrt(2.),
+                          -(getPar("EA2_ddcs_BVJPSI_0") + getPar("dP4EW_ucs_BVJPSI_0")) / sqrt(2.));
+        setAmplitudeParts(channel + "_paral",
+                          -getPar("dP4EW_ucs_BVJPSI_paral") / sqrt(2.),
+                          -(getPar("EA2_ddcs_BVJPSI_paral") + getPar("dP4EW_ucs_BVJPSI_paral")) / sqrt(2.));
+        setAmplitudeParts(channel + "_perp",
+                          -getPar("dP4EW_ucs_BVJPSI_perp") / sqrt(2.),
+                          -(getPar("EA2_ddcs_BVJPSI_perp") + getPar("dP4EW_ucs_BVJPSI_perp")) / sqrt(2.));
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2757,6 +2858,17 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
                      lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") - getPar("G2t_dcd_BJPSIV_perp") - 2. * getPar("G4t_cdd_BJPSIV_perp"))) /
                     sqrt(2.);
                         ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel + "_0",
+                          (getPar("E2t_ccdd_BJPSIV_0") + 2. * getPar("EA2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) / sqrt(2.),
+                          (getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") - getPar("G2t_dcd_BJPSIV_0") - 2. * getPar("G4t_cdd_BJPSIV_0")) / sqrt(2.));
+        setAmplitudeParts(channel + "_paral",
+                          (getPar("E2t_ccdd_BJPSIV_paral") + 2. * getPar("EA2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) / sqrt(2.),
+                          (getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") - getPar("G2t_dcd_BJPSIV_paral") - 2. * getPar("G4t_cdd_BJPSIV_paral")) / sqrt(2.));
+        setAmplitudeParts(channel + "_perp",
+                          (getPar("E2t_ccdd_BJPSIV_perp") + 2. * getPar("EA2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) / sqrt(2.),
+                          (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") - getPar("G2t_dcd_BJPSIV_perp") - 2. * getPar("G4t_cdd_BJPSIV_perp")) / sqrt(2.));
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2776,6 +2888,17 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         amp_perp /= lam_bd_c; // Normalize by lam_bd_c
         ampc_perp = lamst_bs_c * getPar("E2t_ccsd_BJPSIV_perp") - lamst_bs_u * getPar("G2t_scd_BJPSIV_perp");
         ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel + "_0",
+                          getPar("E2t_ccsd_BJPSIV_0"),
+                          -getPar("G2t_scd_BJPSIV_0"));
+        setAmplitudeParts(channel + "_paral",
+                          getPar("E2t_ccsd_BJPSIV_paral"),
+                          -getPar("G2t_scd_BJPSIV_paral"));
+        setAmplitudeParts(channel + "_perp",
+                          getPar("E2t_ccsd_BJPSIV_perp"),
+                          -getPar("G2t_scd_BJPSIV_perp"));
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2807,6 +2930,17 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
                      lamst_bd_u * (getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") + getPar("G2t_dcd_BJPSIV_perp"))) /
                     sqrt(2.);
                         ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel + "_0",
+                          (getPar("E2t_ccdd_BJPSIV_0") + getPar("dP4EW_ucd_BVJPSI_0")) / sqrt(2.),
+                          -(getPar("EA2_ddcd_BVJPSI_0") + getPar("dP4EW_ucd_BVJPSI_0") + getPar("G2t_dcd_BJPSIV_0")) / sqrt(2.));
+        setAmplitudeParts(channel + "_paral",
+                          (getPar("E2t_ccdd_BJPSIV_paral") + getPar("dP4EW_ucd_BVJPSI_paral")) / sqrt(2.),
+                          -(getPar("EA2_ddcd_BVJPSI_paral") + getPar("dP4EW_ucd_BVJPSI_paral") + getPar("G2t_dcd_BJPSIV_paral")) / sqrt(2.));
+        setAmplitudeParts(channel + "_perp",
+                          (getPar("E2t_ccdd_BJPSIV_perp") + getPar("dP4EW_ucd_BVJPSI_perp")) / sqrt(2.),
+                          -(getPar("EA2_ddcd_BVJPSI_perp") + getPar("dP4EW_ucd_BVJPSI_perp") + getPar("G2t_dcd_BJPSIV_perp")) / sqrt(2.));
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2826,6 +2960,17 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         ampc_paral /= lamst_bd_c; // Normalize by lamst_bd_c
         amp_perp /= lam_bd_c; // Normalize by lam_bd_c
         ampc_perp /= lamst_bd_c; // Normalize by lamst_bd_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel + "_0",
+                          -getPar("EA2t_ccsd_BJPSIV_0"),
+                          -getPar("G4t_csd_BJPSIV_0"));
+        setAmplitudeParts(channel + "_paral",
+                          -getPar("EA2t_ccsd_BJPSIV_paral"),
+                          -getPar("G4t_csd_BJPSIV_paral"));
+        setAmplitudeParts(channel + "_perp",
+                          -getPar("EA2t_ccsd_BJPSIV_perp"),
+                          -getPar("G4t_csd_BJPSIV_perp"));
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2845,6 +2990,17 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
                    lam_bd_u * (getPar("EA1_ddcd_BVJPSI_perp") + getPar("dP2EW_dcu_BJPSIV_perp") - getPar("G2t_dcd_BJPSIV_perp"));
         ampc_perp = lamst_bd_c * (getPar("E2t_ccdd_BJPSIV_perp") + getPar("dP2EW_dcu_BJPSIV_perp")) +
                     lamst_bd_u * (getPar("EA1_ddcd_BVJPSI_perp") + getPar("dP2EW_dcu_BJPSIV_perp") - getPar("G2t_dcd_BJPSIV_perp"));
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel + "_0",
+                          getPar("E2t_ccdd_BJPSIV_0") + getPar("dP2EW_dcu_BJPSIV_0"),
+                          getPar("EA1_ddcd_BVJPSI_0") + getPar("dP2EW_dcu_BJPSIV_0") - getPar("G2t_dcd_BJPSIV_0"));
+        setAmplitudeParts(channel + "_paral",
+                          getPar("E2t_ccdd_BJPSIV_paral") + getPar("dP2EW_dcu_BJPSIV_paral"),
+                          getPar("EA1_ddcd_BVJPSI_paral") + getPar("dP2EW_dcu_BJPSIV_paral") - getPar("G2t_dcd_BJPSIV_paral"));
+        setAmplitudeParts(channel + "_perp",
+                          getPar("E2t_ccdd_BJPSIV_perp") + getPar("dP2EW_dcu_BJPSIV_perp"),
+                          getPar("EA1_ddcd_BVJPSI_perp") + getPar("dP2EW_dcu_BJPSIV_perp") - getPar("G2t_dcd_BJPSIV_perp"));
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2864,6 +3020,17 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
                    lam_bs_u * (getPar("EA1_sdcd_BVJPSI_perp") + getPar("dP2EW_scu_BJPSIV_perp") - getPar("G2t_scd_BJPSIV_perp"));
         ampc_perp = lamst_bs_c * (getPar("E2t_ccsd_BJPSIV_perp") + getPar("dP2EW_scu_BJPSIV_perp")) +
                     lamst_bs_u * (getPar("EA1_sdcd_BVJPSI_perp") + getPar("dP2EW_scu_BJPSIV_perp") - getPar("G2t_scd_BJPSIV_perp"));
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel + "_0",
+                          getPar("E2t_ccsd_BJPSIV_0") + getPar("dP2EW_scu_BJPSIV_0"),
+                          getPar("EA1_sdcd_BVJPSI_0") + getPar("dP2EW_scu_BJPSIV_0") - getPar("G2t_scd_BJPSIV_0"));
+        setAmplitudeParts(channel + "_paral",
+                          getPar("E2t_ccsd_BJPSIV_paral") + getPar("dP2EW_scu_BJPSIV_paral"),
+                          getPar("EA1_sdcd_BVJPSI_paral") + getPar("dP2EW_scu_BJPSIV_paral") - getPar("G2t_scd_BJPSIV_paral"));
+        setAmplitudeParts(channel + "_perp",
+                          getPar("E2t_ccsd_BJPSIV_perp") + getPar("dP2EW_scu_BJPSIV_perp"),
+                          getPar("EA1_sdcd_BVJPSI_perp") + getPar("dP2EW_scu_BJPSIV_perp") - getPar("G2t_scd_BJPSIV_perp"));
         amplitude_map[channel + "_0"] = make_pair(amp_0, ampc_0);
         amplitude_map[channel + "_paral"] = make_pair(amp_paral, ampc_paral);
         amplitude_map[channel + "_perp"] = make_pair(amp_perp, ampc_perp);
@@ -2875,15 +3042,25 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = lamst_bs_c * (getPar("E1t_sccs_BDDb") + getPar("A2t_cscs_BDbD")) - lamst_bs_u * (getPar("G1t_scs_BDDb") + getPar("G3t_css_BDDb"));
         ampc /= lamst_bs_c; // Normalize by lamst_bs_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          getPar("E1t_sccs_BDDb") + getPar("A2t_cscs_BDbD"),
+                          -(getPar("G1t_scs_BDDb") + getPar("G3t_css_BDDb")));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsdpdsm")
-    {
+    {    //OSS:BUG?? qui prima ci stava: amp = lam_bd_c * (getPar("E1t_dccs_BDDb")) - lam_bs_u * (getPar("G1t_dcs_BDDb")); 
         // b → c(c̄d), spectator s
-        amp = lam_bd_c * (getPar("E1t_dccs_BDDb")) - lam_bs_u * (getPar("G1t_dcs_BDDb"));
+        amp = lam_bd_c * (getPar("E1t_dccs_BDDb")) - lam_bd_u * (getPar("G1t_dcs_BDDb"));
         amp /= lam_bs_c; // Normalize by lam_bs_c
-        ampc = lamst_bd_c * (getPar("E1t_dccs_BDDb")) - lamst_bs_u * (getPar("G1t_dcs_BDDb"));
+        ampc = lamst_bd_c * (getPar("E1t_dccs_BDDb")) - lamst_bd_u * (getPar("G1t_dcs_BDDb"));
         ampc /= lamst_bs_c; // Normalize by lamst_bs_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          getPar("E1t_dccs_BDDb"),
+                          -getPar("G1t_dcs_BDDb"));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsdpdm")
@@ -2893,6 +3070,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         amp /= lam_bs_c; // Normalize by lam_bs_c
         ampc = lamst_bs_c * (getPar("A2t_cdcs_BDbD")) - lamst_bs_u * (getPar("G3t_cds_BDDb"));
         ampc /= lamst_bs_c; // Normalize by lamst_bs_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          getPar("A2t_cdcs_BDbD"),
+                          -getPar("G3t_cds_BDDb"));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bsd0d0b")
@@ -2904,6 +3086,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         ampc = -lamst_bs_c * (getPar("A2t_cdcs_BDbD") + getPar("dP3EW_ucs_BDbD")) -
                lamst_bs_u * (getPar("A2_dcds_BDDb") + getPar("dP3EW_ucs_BDbD") - getPar("G3t_cds_BDDb"));
         ampc /= lamst_bs_c; // Normalize by lamst_bs_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          -(getPar("A2t_cdcs_BDbD") + getPar("dP3EW_ucs_BDbD")),
+                          -(getPar("A2_dcds_BDDb") + getPar("dP3EW_ucs_BDbD") - getPar("G3t_cds_BDDb")));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bddspdsm")
@@ -2913,6 +3100,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = lamst_bd_c * (getPar("A2t_cscd_BDbD")) - lamst_bd_u * (getPar("G3t_csd_BDDb"));
         ampc /= lamst_bd_c; // Normalize by lamst_bd_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          getPar("A2t_cscd_BDbD"),
+                          -getPar("G3t_csd_BDDb"));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bddspdm")
@@ -2922,6 +3114,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc = lamst_bs_c * (getPar("E1t_sccd_BDDb")) - lamst_bs_u * (getPar("G1t_scd_BDDb"));
         ampc /= lamst_bd_c; // Normalize by lamst_bd_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          getPar("E1t_sccd_BDDb"),
+                          -getPar("G1t_scd_BDDb"));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bddpdm")
@@ -2933,6 +3130,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
         ampc = lamst_bd_c * (getPar("E1t_dccd_BDDb") + getPar("A2t_cdcd_BDbD")) -
                lamst_bd_u * (getPar("G1t_dcd_BDDb") + getPar("G3t_cdd_BDDb"));
         ampc /= lamst_bd_c; // Normalize by lamst_bd_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          getPar("E1t_dccd_BDDb") + getPar("A2t_cdcd_BDbD"),
+                          -(getPar("G1t_dcd_BDDb") + getPar("G3t_cdd_BDDb")));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bdd0d0b")
@@ -2944,6 +3146,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
                lamst_bd_u * (getPar("A2_dcdd_BDDb") + getPar("dP3EW_ucd_BDbD") - getPar("G3t_cdd_BDDb"));
         amp /= lam_bd_c; // Normalize by lam_bd_c
         ampc /= lamst_bd_c; // Normalize by lamst_bd_c
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          -(getPar("A2t_cdcd_BDbD") + getPar("dP3EW_ucd_BDbD")),
+                          -(getPar("A2_dcdd_BDDb") + getPar("dP3EW_ucd_BDbD") - getPar("G3t_cdd_BDDb")));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bpdpd0b")
@@ -2953,6 +3160,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
               lam_bd_u * (getPar("A1_dcdd_BDDb") + getPar("dP1EW_dcu_BDDb") - getPar("G1t_dcd_BDDb"));
         ampc = +lamst_bd_c * (getPar("E1t_dccd_BDDb") + getPar("dP1EW_dcu_BDDb")) +
                lamst_bd_u * (getPar("A1_dcdd_BDDb") + getPar("dP1EW_dcu_BDDb") - getPar("G1t_dcd_BDDb"));
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          getPar("E1t_dccd_BDDb") + getPar("dP1EW_dcu_BDDb"),
+                          getPar("A1_dcdd_BDDb") + getPar("dP1EW_dcu_BDDb") - getPar("G1t_dcd_BDDb"));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else if (channel == "Bpdspd0b")
@@ -2962,6 +3174,11 @@ void goldenmodesB_indSU3::compute_decay_amplitudes(const string &channel)
               lam_bs_u * (getPar("A1_scdd_BDDb") + getPar("dP1EW_scu_BDDb") - getPar("G1t_scd_BDDb"));
         ampc = +lamst_bs_c * (getPar("E1t_sccd_BDDb") + getPar("dP1EW_scu_BDDb")) +
                lamst_bs_u * (getPar("A1_scdd_BDDb") + getPar("dP1EW_scu_BDDb") - getPar("G1t_scd_BDDb"));
+        // Leading (CKM-dominant) and subleading (CKM-suppressed) hadronic
+        // brackets:  A = lambda_c * leading + lambda_u * subleading
+        setAmplitudeParts(channel,
+                          getPar("E1t_sccd_BDDb") + getPar("dP1EW_scu_BDDb"),
+                          getPar("A1_scdd_BDDb") + getPar("dP1EW_scu_BDDb") - getPar("G1t_scd_BDDb"));
         amplitude_map[channel] = make_pair(amp, ampc);
     }
     else
@@ -4546,6 +4763,7 @@ double goldenmodesB_indSU3::LogLikelihood(const vector<double> &parameters)
     // Build the amplitude map using physical amplitudes
 
     amplitude_map.clear();
+    amplitude_parts.clear();
 
     for (const string &channel : channelNamesSU3)
     {
@@ -4556,6 +4774,10 @@ double goldenmodesB_indSU3::LogLikelihood(const vector<double> &parameters)
         {
             amplitude_map["Bdjpsik0s"] = make_pair(amplitude_map.at("Bdjpsik0").first / sqrt(2.), amplitude_map.at("Bdjpsik0").second / sqrt(2.)); 
             amplitude_map["Bdjpsik0l"] = make_pair(amplitude_map.at("Bdjpsik0").first / sqrt(2.), amplitude_map.at("Bdjpsik0").second / sqrt(2.));
+            // the K_S / K_L states are overall rescalings of Bdjpsik0, so the
+            // leading / subleading split carries over with the same factor
+            scaleAmplitudeParts("Bdjpsik0", "Bdjpsik0s", 1. / sqrt(2.));
+            scaleAmplitudeParts("Bdjpsik0", "Bdjpsik0l", 1. / sqrt(2.));
             //    cout << "Mapped Bdjpsik0 to Bdjpsik0s and Bdjpsik0l" << endl;
         }
         else if (channel == "Bsjpsik0b")
@@ -4563,6 +4785,8 @@ double goldenmodesB_indSU3::LogLikelihood(const vector<double> &parameters)
             // Also map Bsjpsik0b -> Bsjpsik0s for observables
             amplitude_map["Bsjpsik0s"] = make_pair(amplitude_map.at("Bsjpsik0b").first / sqrt(2.), amplitude_map.at("Bsjpsik0b").second / sqrt(2.));
             amplitude_map["Bsjpsik0l"] = make_pair(-amplitude_map.at("Bsjpsik0b").first / sqrt(2.), -amplitude_map.at("Bsjpsik0b").second / sqrt(2.));
+            scaleAmplitudeParts("Bsjpsik0b", "Bsjpsik0s",  1. / sqrt(2.));
+            scaleAmplitudeParts("Bsjpsik0b", "Bsjpsik0l", -1. / sqrt(2.));
             //    cout << "Mapped Bsjpsik0b to Bsjpsik0s" << endl;
         }
     }
@@ -4576,6 +4800,12 @@ double goldenmodesB_indSU3::LogLikelihood(const vector<double> &parameters)
                                                cos(theta_P) * amplitude_map.at(channel + "8").second - sin(theta_P) * amplitude_map.at(channel + "1").second);
             amplitude_map[channel + "p"] = make_pair(sin(theta_P) * amplitude_map.at(channel + "8").first + cos(theta_P) * amplitude_map.at(channel + "1").first,
                                                      sin(theta_P) * amplitude_map.at(channel + "8").second + cos(theta_P) * amplitude_map.at(channel + "1").second);
+            // eta and eta' are the same linear combinations of the eta_8 and
+            // eta_1 amplitudes, so their brackets mix in exactly the same way
+            combineAmplitudeParts(channel,       channel + "8",  cos(theta_P),
+                                                 channel + "1", -sin(theta_P));
+            combineAmplitudeParts(channel + "p", channel + "8",  sin(theta_P),
+                                                 channel + "1",  cos(theta_P));
         }
     }
 
@@ -4775,6 +5005,22 @@ void goldenmodesB_indSU3::MCMCUserIterationInterface()
         {
             cerr << "Error in LogLikelihood: " << e.what() << endl;
             return;
+        }
+
+        // |subleading / leading| hadronic ratio for every channel (and every
+        // transversity in the V sector).  Both brackets were filled by the
+        // call to LogLikelihood above, i.e. at this same MCMC state.
+        for (const auto &key : ratioKeys()) {
+            double ratio = 0.0;
+            auto it_parts = amplitude_parts.find(key);
+            if (it_parts != amplitude_parts.end()) {
+                const double norm = it_parts->second.first.Rho();
+                // The exact zero-denominator case can occur at the initial
+                // MCMC midpoint; avoid an undefined ratio in the histogram.
+                if (norm > 1.e-12)
+                    ratio = it_parts->second.second.Rho() / norm;
+            }
+            obs["FullPenguinRatio_" + key] = ratio;
         }
 
         // Compute SU3-breaking ratios and store in obs so fillh1d() picks them up
