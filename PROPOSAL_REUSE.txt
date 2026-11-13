@@ -49,7 +49,12 @@ Second run:
 Continue using --Univariate for both runs if you trained a factorized
 proposal. A multivariate proposal cannot be loaded as factorized or vice
 versa. MPI process count and RNG seed may differ between runs. The number
-of replica slots and their temperatures must match.
+of replica slots and their temperatures must match for an unoptimized v1 cache.
+Caches produced with --pt-adapt-temperatures use format v2 and restore their
+optimized intermediate temperatures automatically. Keep the same number of
+ladders/temperatures and the same endpoints. Remove temperature-adaptation
+flags for reload; only fixed-proposal --proposal-warmup is performed. Older BAT
+cannot load v2 caches. See PARALLEL_TEMPERING.txt for the optimization controls.
 
 The file is useful for repeated runs of the same target. Structural checks
 reject different parameter names/order, bounds, fixed parameters or values,

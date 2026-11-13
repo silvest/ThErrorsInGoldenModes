@@ -9,16 +9,21 @@ p.add_argument('--executable',required=True)
 p.add_argument('--mpiexec',required=True)
 p.add_argument('--mpi-flags',default='')
 p.add_argument('--smooth',action='store_true')
+p.add_argument('--adapt',action='store_true')
 a=p.parse_args();exe=str(Path(a.executable).resolve())
 help_result=subprocess.run([exe,'--help'],text=True,capture_output=True,check=True)
 assert '--prerun-policy' in help_result.stdout and '--settling-sweeps' in help_result.stdout and '--smooth-adaptation' in help_result.stdout
+assert '--pt-adapt-temperatures' in help_result.stdout
 for flags in [ ['--prerun-policy','unknown'], ['--prerun-policy'],
                ['--settling-sweeps','-1'], ['--settling-sweeps','2x'], ['--settling-sweeps','1'],
                ['--prerun-policy','staged','--load-proposal','unused'],
                ['--smooth-adaptation','--load-proposal','unused'],
                ['--smooth-adaptation','--nPreRun','12','--nPreRunFactorized','12'],
                ['--prerun-policy','staged','--nPreRun','12','--nPreRunFactorized','12'],
-               ['--prerun-policy','staged','--Univariate','--nPreRun','2147483647','--settling-sweeps','1'] ]:
+               ['--prerun-policy','staged','--Univariate','--nPreRun','2147483647','--settling-sweeps','1'],
+               ['--pt-adapt-temperatures'], ['--pt-adapt-damping','0'], ['--pt-adapt-damping','nan'],
+               ['--pt-adapt-rounds','31'], ['--pt-adapt-interval','0'], ['--pt-adapt-interval','2'],
+               ['--pt-adapt-temperatures','--prerun-policy','staged','--pt-temperatures','1,4'] ]:
     result=subprocess.run([exe,*flags],text=True,capture_output=True,timeout=10)
     assert result.returncode!=0,(flags,result.stdout,result.stderr)
 with tempfile.TemporaryDirectory(prefix='gm-staged-') as directory:
@@ -28,6 +33,9 @@ with tempfile.TemporaryDirectory(prefix='gm-staged-') as directory:
              '--prerun-policy','staged','--nPreRun','12','--settling-sweeps','7','--nRun','9',
              '--nUpdateMax','5','--pt-diagnostics-interval','4','--pt-trace-interval','2','--outfile','run_']
     if a.smooth:command.append('--smooth-adaptation')
+    if a.adapt:
+        command[command.index('1,4')]='1,2,4'
+        command+=['--pt-adapt-temperatures','--pt-adapt-interval','2','--pt-adapt-rounds','2']
     result=subprocess.run(command,cwd=directory,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=100)
     assert result.returncode==0,result.stdout[-15000:]
     base=Path(directory)
@@ -37,6 +45,11 @@ with tempfile.TemporaryDirectory(prefix='gm-staged-') as directory:
     assert float(status['scale_target'])==.25
     assert int(status['factorized_scale_updates'])==(3 if a.smooth else 0)
     assert status['adaptation_sweeps']=='12' and status['settling_sweeps']=='7'
+    assert status['temperature_updates']==('2' if a.adapt else '0') and status['temperatures_frozen']=='1'
+    if a.adapt:
+        with (base/'run_pt_temperature_adaptation.csv').open() as f:history=list(csv.DictReader(f))
+        assert {int(r['sweep']) for r in history}=={0,2,6}
+        assert (base/'run_proposal.txt').read_text().startswith('BAT_MPI_PROPOSAL 2\n')
     assert status['stop_reason']=='adaptation_budget_exhausted' and status['posterior_convergence_assessed']=='0'
     with (base/'run_pt_checkpoints.csv').open() as f:ledger=list(csv.DictReader(f))
     assert {x['phase'] for x in ledger}=={'prerun','warmup','production'}

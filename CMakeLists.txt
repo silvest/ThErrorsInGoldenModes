@@ -179,6 +179,8 @@ message(STATUS "")
 option(GOLDENMODES_BUILD_TESTS "Build model prior-range regression test" OFF)
 if(GOLDENMODES_BUILD_TESTS)
     enable_testing()
+    add_executable(test_mpi_launch_config tests/mpi_launch_config.cpp)
+    add_test(NAME mpi_launch_config COMMAND test_mpi_launch_config)
     add_executable(test_prior_ranges tests/prior_ranges.cpp ${LIBRARY_SOURCES})
     target_compile_options(test_prior_ranges PRIVATE ${BAT_CFLAGS_LIST})
     target_link_libraries(test_prior_ranges PRIVATE ${BAT_LIBS_LIST} ${ROOT_LIBRARIES})
@@ -192,6 +194,10 @@ if(GOLDENMODES_BUILD_TESTS)
     add_test(NAME pt_regions COMMAND test_pt_regions)
     find_package(Python3 QUIET COMPONENTS Interpreter)
     if(Python3_Interpreter_FOUND)
+        add_test(NAME mpi_launcher COMMAND ${Python3_EXECUTABLE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/mpi_launcher.py --script ${CMAKE_CURRENT_SOURCE_DIR}/scripts/submit_rm3.sh
+            --executable $<TARGET_FILE:mainGM> --mpiexec ${MPIEXEC_EXECUTABLE} "--mpi-flags=${MPIEXEC_PREFLAGS}")
+        set_tests_properties(mpi_launcher PROPERTIES TIMEOUT 45 RUN_SERIAL TRUE)
         add_test(NAME pt_region_schema COMMAND ${Python3_EXECUTABLE}
             ${CMAKE_CURRENT_SOURCE_DIR}/tests/pt_region_schema.py $<TARGET_FILE:test_pt_regions>
             ${CMAKE_CURRENT_SOURCE_DIR}/diagnostics/goldenmodes_partitions.json)
@@ -203,6 +209,10 @@ if(GOLDENMODES_BUILD_TESTS)
             ${CMAKE_CURRENT_SOURCE_DIR}/tests/staged_warmup_cli.py --executable $<TARGET_FILE:mainGM>
             --mpiexec ${MPIEXEC_EXECUTABLE} "--mpi-flags=${MPIEXEC_PREFLAGS}" --smooth)
         set_tests_properties(smooth_adaptation_cli PROPERTIES TIMEOUT 150 RUN_SERIAL TRUE)
+        add_test(NAME temperature_adaptation_cli COMMAND ${Python3_EXECUTABLE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/staged_warmup_cli.py --executable $<TARGET_FILE:mainGM>
+            --mpiexec ${MPIEXEC_EXECUTABLE} "--mpi-flags=${MPIEXEC_PREFLAGS}" --adapt)
+        set_tests_properties(temperature_adaptation_cli PROPERTIES TIMEOUT 150 RUN_SERIAL TRUE)
 
     endif()
 endif()

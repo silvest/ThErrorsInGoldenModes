@@ -15,6 +15,9 @@
 #include <stdexcept>
 #include <cmath>
 #include <limits>
+#include <cstdlib>
+#include <algorithm>
+#include "diagnostics/MPILaunchConfig.h"
 
 using namespace std;
 
@@ -26,7 +29,8 @@ void runModel(Model &model, const string &outputFileName,
               bool Univariate, const vector<double>& temperatures, unsigned swapInterval,
               const string& proposalInput, const string& proposalOutput, unsigned proposalWarmup,
               bool ptDiagnostics, unsigned diagnosticInterval, unsigned traceInterval,
-              bool stagedWarmup, unsigned settlingSweeps, bool smoothAdaptation)
+              bool stagedWarmup, unsigned settlingSweeps, bool smoothAdaptation,
+              bool adaptTemperatures, unsigned adaptInterval, unsigned adaptRounds, double adaptDamping)
 {
     model.SetNChains(nChains);
     if (!temperatures.empty()) {
@@ -45,6 +49,8 @@ void runModel(Model &model, const string &outputFileName,
     model.SetNIterationsPreRunMax(nIterationsPreRun);
     model.SetPreRunPolicy(stagedWarmup ? BCEngineMCMC::kPreRunStaged : BCEngineMCMC::kPreRunLegacy, settlingSweeps);
     model.SetScaleAdaptation(smoothAdaptation ? BCEngineMCMC::kScaleSmooth : BCEngineMCMC::kScaleLegacy);
+    model.SetPTTemperatureAdaptation(adaptTemperatures, adaptInterval, adaptRounds, adaptDamping);
+    if (adaptTemperatures) model.SetPTTemperatureAdaptationOutput(outputFileName + "pt_temperature_adaptation.csv");
     model.SetPreRunStatusOutput(outputFileName + "warmup_status.csv");
     model.SetNIterationsRun(nIterationsRun);
     model.SetProposeMultivariate(!Univariate);
@@ -63,6 +69,12 @@ void runModel(Model &model, const string &outputFileName,
         BCLog::OutWarning("Factorized warm-up covers the entire prerun: the joint multivariate proposal will have no prerun sampling phase.");
     model.MarginalizeAll();
     if (!temperatures.empty()) {
+        // The optimized or cache-restored production grid replaces the initial grid.
+        ofstream grid(outputFileName + "pt_temperatures.csv");
+        if (!grid) throw runtime_error("Cannot write final PT temperatures");
+        grid.precision(17); grid << "slot,ladder,temperature\n";
+        for (unsigned c = 0; c < model.GetNChains(); ++c)
+            grid << c << "," << c % model.GetNColdChains() << "," << model.GetChainTemperature(c) << "\n";
         model.WriteParallelTemperingDiagnostics(outputFileName + "pt_swaps.csv");
         model.WriteParallelTemperingTransport(outputFileName);
         model.CloseOutputFile();
@@ -152,9 +164,34 @@ int main(int argc, char* argv[]) {
     unsigned proposalWarmup = 1000;
     bool stagedWarmup = false, settlingExplicit = false, smoothAdaptation = false;
     unsigned settlingSweeps = 1000;
+    bool adaptTemperatures = false, adaptOptions = false;
+    unsigned adaptInterval = 1000, adaptRounds = 4;
+    double adaptDamping = 0.5;
 
     for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "--smooth-adaptation") == 0) {
+        if (strcmp(argv[i], "--pt-adapt-temperatures") == 0) {
+            adaptTemperatures = true;
+        } else if (strcmp(argv[i], "--pt-adapt-interval") == 0 || strcmp(argv[i], "--pt-adapt-rounds") == 0) {
+            const bool interval = strcmp(argv[i], "--pt-adapt-interval") == 0;
+            if (i+1 >= argc) { cerr << argv[i] << " requires a positive integer" << endl; return 1; }
+            try {
+                const string value = argv[++i]; size_t used = 0;
+                const long long n = stoll(value, &used);
+                if (value.find_first_not_of("0123456789") != string::npos || used != value.size() || n <= 0 ||
+                    n > (interval ? numeric_limits<int>::max() : 30)) throw invalid_argument("out of range");
+                (interval ? adaptInterval : adaptRounds) = static_cast<unsigned>(n);
+                adaptOptions = true;
+            } catch (const exception& e) { cerr << "Invalid PT adaptation count: " << e.what() << endl; return 1; }
+        } else if (strcmp(argv[i], "--pt-adapt-damping") == 0) {
+            if (i+1 >= argc) { cerr << "--pt-adapt-damping requires a number in (0,1]" << endl; return 1; }
+            try {
+                const string value = argv[++i]; size_t used = 0;
+                adaptDamping = stod(value, &used);
+                if (used != value.size() || !isfinite(adaptDamping) || adaptDamping <= 0. || adaptDamping > 1.)
+                    throw invalid_argument("out of range");
+                adaptOptions = true;
+            } catch (const exception& e) { cerr << "Invalid PT adaptation damping: " << e.what() << endl; return 1; }
+        } else if (strcmp(argv[i], "--smooth-adaptation") == 0) {
             smoothAdaptation = true;
         } else if (strcmp(argv[i], "--prerun-policy") == 0) {
             if (i+1 >= argc) { cerr << "--prerun-policy requires legacy or staged" << endl; return 1; }
@@ -320,6 +357,10 @@ int main(int argc, char* argv[]) {
                   "  --pt-diagnostics-interval N    Save diagnostic blocks every N sweeps (default: 1000)\n"
                   "  --pt-trace-interval N          State trace stride (default: 100; 0 disables traces)\n"
                   "  --no-pt-diagnostics            Disable streaming diagnostics (enabled for PT by default)\n"
+                  "  --pt-adapt-temperatures        Tune intermediate temperatures during staged prerun\n"
+                  "  --pt-adapt-interval N          Initial batch sweeps; subsequent batches double (default: 1000)\n"
+                  "  --pt-adapt-rounds N            Number of ladder updates (default: 4; maximum: 30)\n"
+                  "  --pt-adapt-damping X           Update damping in (0,1] (default: 0.5)\n"
                   "  --pt-swap-interval <value>     Sweeps between exchanges (default: 10)\n"
                   "                                With PT, --nChains counts independent ladders\n"
                   "  --Univariate                   Enable univariate mode\n"                  "  --indSU3                        Use goldenmodesB_indSU3 (independent SU(3) breaking)\n"
@@ -331,6 +372,19 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    if (adaptOptions && !adaptTemperatures) {
+        cerr << "PT adaptation options require --pt-adapt-temperatures" << endl; return 1;
+    }
+    if (adaptTemperatures) {
+        if (temperatures.size() < 3 || !stagedWarmup || !settlingSweeps || !proposalInput.empty()) {
+            cerr << "--pt-adapt-temperatures requires >=3 temperatures, --prerun-policy staged, positive settling and no loaded proposal" << endl; return 1;
+        }
+        const unsigned long long last = max<unsigned long long>(static_cast<unsigned long long>(adaptInterval)*((1ULL << adaptRounds)-1),
+            Univariate ? 0 : max(0, nIterationsPreRunFactorized));
+        if (nIterationsPreRun <= 0 || last + max(1, nIterationsUpdateMax) > unsigned(nIterationsPreRun) || adaptInterval < swapInterval) {
+            cerr << "PT temperature batches must include exchanges and leave a full proposal-check window on the final ladder within --nPreRun" << endl; return 1;
+        }
+    }
     if (settlingExplicit && !stagedWarmup) {
         cerr << "--settling-sweeps requires --prerun-policy staged" << endl; return 1;
     }
@@ -395,6 +449,9 @@ int main(int argc, char* argv[]) {
     auto start = chrono::high_resolution_clock::now();
 
     try {
+        if (mpi_rank == 0)
+            GoldenModesMPI::validateRanks(mpi_size, std::getenv("GOLDENMODES_MPI_EXPECTED_RANKS"),
+                                         std::getenv("PBS_NODEFILE"));
         if (flagIndSU3) {
             goldenmodesB_indSU3 model(ewp_limit, flagBJPSIP, flagBJPSIV, flagBDDb, su3_sigma, flagGaussianCKM, flagPositiveG2tP, flagPositiveEA1P, flagPositiveImEA2tP, flagSmallE2tP, flagMinimal, flagPositiveE2tV, flagPositiveG2tV, flagSmallEA1P, flagPositiveG1tD, flagPositiveA1D, ptFullPriors);
             model.SetSU3Weight(su3_weight);
@@ -405,7 +462,7 @@ int main(int argc, char* argv[]) {
                 cout << "Model (indSU3) constructed correctly, running with "
                      << mpi_size << " MPI process(es)" << endl;
                 runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
-                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval, stagedWarmup, settlingSweeps, smoothAdaptation);
+                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval, stagedWarmup, settlingSweeps, smoothAdaptation, adaptTemperatures, adaptInterval, adaptRounds, adaptDamping);
                 terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
             }
         } else {
@@ -417,7 +474,7 @@ int main(int argc, char* argv[]) {
                 cout << "Model constructed correctly, running with "
                      << mpi_size << " MPI process(es)" << endl;
                 runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
-                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval, stagedWarmup, settlingSweeps, smoothAdaptation);
+                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval, stagedWarmup, settlingSweeps, smoothAdaptation, adaptTemperatures, adaptInterval, adaptRounds, adaptDamping);
                 terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
             }
         }

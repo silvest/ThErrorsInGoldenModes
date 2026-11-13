@@ -27,6 +27,76 @@ entries in Linux LD_LIBRARY_PATH can override it; check ldd on the compute node.
 The explicit BAT_SOURCE_DIR/BAT_LIBRARY mode documented below still works.
 See bat_MPI/INSTALL.md for the full migration and cluster procedure.
 
+MPI launch and CPU-slot allocation
+=================================
+MPI parallelizes proposal likelihood evaluations across replica slots. Rank 0
+both coordinates the sampler and evaluates one slot in each batch. There is no
+extra master-only rank to add to the replica count.
+
+For four ladders and 17 temperatures there are 68 replicas. The current BAT
+scheduler needs ceil(68 / MPI_processes) batches per coordinate or joint proposal:
+35 processes need two batches; 68 or 69 processes need one. With 69 processes,
+one process has no likelihood slot. Beyond 68, extra ranks cannot accelerate
+this ensemble. Serial statistics, diagnostics and ROOT output still limit speedup.
+
+PBS allocation and MPI process count are separate. The cluster job launcher
+must use the CPU-slot count, not the number of unique hosts:
+  NCPU=$(awk 'NF { n++ } END { print n+0 }' "$PBS_NODEFILE")
+  mpiexec -machinefile "$PBS_NODEFILE" -n "$NCPU" \
+    --use-hwthread-cpus --map-by hwthread --bind-to hwthread --report-bindings ./mainGM ...
+Using -n $NNODES on a single-node allocation launches ONE process whether the
+job reserves 35 or 69 slots. The observed cluster outputs MPI_job.o306549 and
+MPI_job.o307563 both printed "MPI processes: 1" with those allocations.
+
+A versioned PBS launcher is supplied in scripts/submit_rm3.sh. Submit from the
+directory containing mainGM and the intended output paths; export ARGS as in
+the existing runs (colon-separated temperatures avoid qsub comma parsing):
+  export ARGS='...existing model and sampler arguments...'
+  qsub -l nodes=1:ppn=35 -v ARGS /path/to/ThErrorsInGoldenModes/scripts/submit_rm3.sh
+  qsub -l nodes=1:ppn=69 -v ARGS /path/to/ThErrorsInGoldenModes/scripts/submit_rm3.sh
+Use distinct output/cache paths for concurrent runs. The template uses the
+existing Roma Tre MPI/BAT environment; GOLDENMODES_MPIEXEC, GOLDENMODES_BAT_LIBDIR
+and GOLDENMODES_WORKDIR can override those paths. ARGS is split on whitespace
+without eval or wildcard expansion. Each MPI rank uses one BLAS/OpenMP thread.
+
+The launchers explicitly use hardware-thread CPUs and hardware-thread binding.
+Open MPI otherwise treats processing elements as physical cores; a PBS allocation
+of 69 CPU slots need not provide 69 distinct cores. This caused the observed
+BYCORE/CORE binding error before mainGM started. Hardware-thread placement allows
+distinct SMT CPUs to be used without forcing two ranks onto the same processing
+unit. Neither overload-allowed nor oversubscribe is enabled. If the node or job
+CPU set genuinely contains fewer than 69 hardware threads, MPI should still
+reject the request: reduce ranks/allocation or request sufficient nodes/resources.
+The same 68-replica ensemble can use fewer ranks with additional batches.
+
+The job log includes MPI binding reports, the node's lscpu core/thread/socket
+summary, and the launcher's Cpus_allowed_list where available. lscpu describes
+the node topology; Cpus_allowed_list describes the launcher's affinity, which
+may be broader than the PBS reservation on clusters without CPU-set enforcement.
+These details distinguish SMT placement from an allocation/topology mismatch.
+69 hardware threads do not imply twice the compute throughput of 35 physical
+cores. Keep comparisons tied to actual placement and equal sampler workloads.
+See Open MPI 5.0.10's mpirun manual for --use-hwthread-cpus and --bind-to:
+  https://docs.open-mpi.org/en/v5.0.10/man-openmpi/man1/mpirun.1.html
+
+New mainGM builds check MPI_Comm_size against GOLDENMODES_MPI_EXPECTED_RANKS,
+or against nonempty lines in PBS_NODEFILE if no explicit expectation is set.
+A mismatch aborts before MCMC initialization. For an intentional subset of a
+larger allocation, explicitly set GOLDENMODES_MPI_EXPECTED_RANKS to the selected
+process count. Standalone runs without either variable work normally.
+
+Check "MPI processes: N" in job stdout. Updated BAT also reports the process,
+replica, active-process and batch counts in its sampler log for fresh and
+loaded-proposal runs. CPU time or wall time from allocations alone does not
+establish which ranks were launched. Compare identical ensemble/model settings
+and the same sampling phase; mode finding and final plots run on rank 0.
+
+The launcher change applies to newly submitted jobs. An already running job
+keeps the process count with which it started. Build production executables
+with -DCMAKE_BUILD_TYPE=Release. MPI backend tests now verify work reaches every
+available rank up to the replica count, and launcher tests cover 35/69 slots,
+multiple hostnames and a real MPI startup mismatch.
+
 Parallel Tempering per goldenmodesB_indSU3
 ========================================
 
@@ -231,3 +301,41 @@ cold ROOT tree records physical Replica IDs. Use bat_MPI/diagnostics/analyze_mcm
 for modern production R-hat/ESS/MCSE, region occupancy and plots. See
 PT_DIAGNOSTICS.txt (bat_MPI/diagnostics/README.txt) for installation, examples
 and interpretation. These checks do not certify discovery of every mode.
+
+
+Optional temperature optimization during staged prerun
+------------------------------------------------------
+Add --pt-adapt-temperatures to an existing PT command, together with
+--prerun-policy staged and positive --settling-sweeps. For example, keep the
+same physics flags and initial --pt-temperatures ladder and add:
+  --prerun-policy staged --nPreRun 50000 --nPreRunFactorized 10000 \
+  --nUpdateMax 1000 --settling-sweeps 2000 \
+  --pt-adapt-temperatures --pt-adapt-interval 1000 \
+  --pt-adapt-rounds 4 --pt-adapt-damping 0.5
+
+At least three temperatures are required. This opt-in Syed et al.
+communication-barrier method changes intermediate temperatures only, preserving
+T=1, Tmax, replica count and exchange interval. Default doubling batches update
+at 1000, 3000, 7000 and 15000 sweeps. The remaining prerun trains proposals on
+the final ladder, followed by discarded settling with a fixed ladder and kernel.
+--smooth-adaptation remains an independent option. The total batch budget and
+the joint-proposal switch must leave at least one full --nUpdateMax window
+within --nPreRun. An initial batch must include an exchange round. Adaptation
+parameters require --pt-adapt-temperatures; rounds are 1..30, damping is (0,1].
+
+Inspect <outfile>pt_temperature_adaptation.csv and the added temperature fields
+in warmup_status.csv. Each transport diagnostic block is closed before a ladder
+change; production uses the final ladder only. pt_temperatures.csv is refreshed
+by streaming and after sampling, including when a cache restores the ladder.
+See bat_MPI/diagnostics/README.txt for estimator, damping and diagnostic details.
+Reference: https://arxiv.org/abs/1905.02939 (Sections 5.1, 5.2, 5.4).
+
+The proposal cache includes the optimized ladder (format v2). To reuse it, remove
+--pt-adapt-temperatures and its settings, --prerun-policy staged, settling and
+smooth adaptation options; use --load-proposal <file> --proposal-warmup 2000.
+Keep the same ladder count, temperature count and endpoints. Intermediate
+configured temperatures are replaced by those in the optimized cache. Existing
+unoptimized v1 caches retain exact ladder matching. Rebuild/install bat_MPI and
+rebuild mainGM before using the new option or optimized caches. No cluster run
+is submitted automatically. Compare fixed vs optimized ladders using cold ESS
+per wall-clock hour and region-weight precision at equal computational cost.
