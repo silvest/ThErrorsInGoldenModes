@@ -30,7 +30,7 @@ using namespace std;
 
 static CKMParameters ckm;
 
-goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP, bool positiveEA1P, bool positiveImEA2tP, bool smallE2tP, bool minimal, bool positiveE2tV, bool positiveG2tV, bool smallEA1P, bool positiveG1tD, bool positiveA1D, bool fullPriorRanges) : BCModel(), histos(obs)
+goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb, double su3_sigma_in, bool gaussianCKM, bool positiveG2tP, bool positiveEA1P, bool positiveImEA2tP, bool smallE2tP, bool minimal, bool positiveE2tV, bool positiveG2tV, bool smallEA1P, bool positiveG1tD, bool positiveA1D, bool fullPriorRanges) : GoldenModesLikelihoodModel(), histos(obs)
 {
     
     flagBJPSIP = BJPSIP;
@@ -3752,7 +3752,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
             double observed = meas.at("ACP" + channel).getMean();
             double uncertainty = meas.at("ACP" + channel).getSigma();
             double diff = acp - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            ll_uncorr += likelihoodWeights.Gaussian("ACP" + channel, diff, uncertainty);
         }
 
         if (meas.find("C" + channel) != meas.end())
@@ -3776,7 +3776,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
             double observed = meas.at("C" + channel).getMean();
             double uncertainty = meas.at("C" + channel).getSigma();
             double diff = c - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            ll_uncorr += likelihoodWeights.Gaussian("C" + channel, diff, uncertainty);
         }
 
         if (meas.find("S" + channel) != meas.end())
@@ -3805,7 +3805,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
             double observed = meas.at("S" + channel).getMean();
             double uncertainty = meas.at("S" + channel).getSigma();
             double diff = s - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            ll_uncorr += likelihoodWeights.Gaussian("S" + channel, diff, uncertainty);
         }
 
         // **Compute and store branching ratios if they exist in meas**
@@ -3846,7 +3846,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
             double observed = meas.at(br_measKey).getMean();
             double uncertainty = meas.at(br_measKey).getSigma();
             double diff = br_predicted - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            ll_uncorr += likelihoodWeights.Gaussian(br_measKey, diff, uncertainty);
         }
 
         // **Compute polarization fractions and phases for vector meson channels**
@@ -3866,7 +3866,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
                     double observed    = meas.at(frac_key).getMean();
                     double uncertainty = meas.at(frac_key).getSigma();
                     double diff = obs.at(frac_key) - observed;
-                    ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+                    ll_uncorr += likelihoodWeights.Gaussian(frac_key, diff, uncertainty);
                 }
             }
 
@@ -3878,7 +3878,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
                 double uncertainty = meas.at(delta_paral_key).getSigma();
 		// double diff = obs.at("delta_paral_" + channel) - observed;
 		double diff = AngleDiff(obs.at("delta_paral_" + channel), observed);
-                ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+                ll_uncorr += likelihoodWeights.Gaussian(delta_paral_key, diff, uncertainty);
             }
             string delta_perp_key = "delta_perp_" + channel;
             if (meas.find(delta_perp_key) != meas.end())
@@ -3887,7 +3887,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
                 double uncertainty = meas.at(delta_perp_key).getSigma();
 		// double diff = obs.at("delta_perp_" + channel) - observed;
 		double diff = AngleDiff(obs.at("delta_perp_" + channel), observed);
-                ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+                ll_uncorr += likelihoodWeights.Gaussian(delta_perp_key, diff, uncertainty);
             }
         }
     }
@@ -4015,7 +4015,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
                 double observed = meas.at(ratioKey).getMean();
                 double uncertainty = meas.at(ratioKey).getSigma();
                 double diff = R_predicted - observed;
-                ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+                ll_uncorr += likelihoodWeights.Gaussian(ratioKey, diff, uncertainty);
             }
         }
         else
@@ -4080,7 +4080,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
             double observed = meas.at(deltaAKey).getMean();
             double uncertainty = meas.at(deltaAKey).getSigma();
             double diff = deltaA_predicted - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            ll_uncorr += likelihoodWeights.Gaussian(deltaAKey, diff, uncertainty);
         }
     }
 
@@ -4133,7 +4133,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
                     double uncertainty = meas.at(pd.key).getSigma();
 		    // double diff = pd.value - observed;
 		    double diff = AngleDiff(pd.value, observed);
-                    ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+                    ll_uncorr += likelihoodWeights.Gaussian(pd.key, diff, uncertainty);
                 }
             }
 
@@ -4153,7 +4153,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
                         double observed    = meas.at(ar.key).getMean();
                         double uncertainty = meas.at(ar.key).getSigma();
                         double diff = ar.value - observed;
-                        ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+                        ll_uncorr += likelihoodWeights.Gaussian(ar.key, diff, uncertainty);
                     }
                 }
             }
@@ -4197,7 +4197,7 @@ double goldenmodesB_indSU3::Calculate_UncorrelatedObservables(map<string, pair<T
                     double observed    = meas.at(ap.key).getMean();
                     double uncertainty = meas.at(ap.key).getSigma();
                     double diff = ap.value - observed;
-                    ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+                    ll_uncorr += likelihoodWeights.Gaussian(ap.key, diff, uncertainty);
                 }
             }
         }
@@ -4693,7 +4693,7 @@ double goldenmodesB_indSU3::Calculate_CorrelatedObservables(map<string, pair<TCo
             res(i) = obs[obs_name];
         }
 
-        ll_corr += corrObs.logweight(res);
+        ll_corr += CorrelatedWeight(key, corrObs, res, obs_names);
     }
 
     return ll_corr;
@@ -4908,7 +4908,9 @@ double goldenmodesB_indSU3::LogLikelihood(const vector<double> &parameters)
     if (su3_sigma_is_free) {
         local_su3_sigma = getParameterValue("su3_sigma");
     }
-    ll += CalculateSU3Penalty(local_su3_sigma);
+    const double su3Penalty = CalculateSU3Penalty(local_su3_sigma);
+    ll += su3Penalty;
+    likelihoodWeights.Record("SU3Breaking", su3Penalty, "constraint");
 
     return ll;
 }
@@ -4999,13 +5001,15 @@ void goldenmodesB_indSU3::MCMCUserIterationInterface()
         pars = fMCMCStates.at(i).parameters;
         try
         {
-            obs["LogLikelihood"] = LogLikelihood(pars);
+            obs["LogLikelihood"] = EvaluateOutputLikelihood(pars);
         }
         catch (const exception &e)
         {
+            if (GetWriteMCMCWeights()) throw;
             cerr << "Error in LogLikelihood: " << e.what() << endl;
             return;
         }
+        WriteLikelihoodWeights(i, obs.at("LogLikelihood"));
 
         // |subleading / leading| hadronic ratio for every channel (and every
         // transversity in the V sector).  Both brackets were filled by the

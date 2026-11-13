@@ -30,9 +30,11 @@ void runModel(Model &model, const string &outputFileName,
               const string& proposalInput, const string& proposalOutput, unsigned proposalWarmup,
               bool ptDiagnostics, unsigned diagnosticInterval, unsigned traceInterval,
               bool stagedWarmup, unsigned settlingSweeps, bool smoothAdaptation,
-              bool adaptTemperatures, unsigned adaptInterval, unsigned adaptRounds, double adaptDamping)
+              bool adaptTemperatures, unsigned adaptInterval, unsigned adaptRounds, double adaptDamping,
+              bool writeMCMCWeights)
 {
     model.SetNChains(nChains);
+    model.SetWriteMCMCWeights(writeMCMCWeights);
     if (!temperatures.empty()) {
         model.SetParallelTempering(temperatures, nChains, swapInterval);
         if (ptDiagnostics) model.SetPTDiagnosticsOutput(outputFileName.empty() ? "./" : outputFileName, diagnosticInterval, traceInterval);
@@ -46,6 +48,8 @@ void runModel(Model &model, const string &outputFileName,
         for (unsigned c = 0; c < model.GetNChains(); ++c)
             config << c << ',' << c % model.GetNColdChains() << ',' << model.GetChainTemperature(c) << '\n';
     }
+    if (writeMCMCWeights && temperatures.empty())
+        model.WriteMarkovChain(outputFileName + "chains.root", "RECREATE", true, false);
     model.SetNIterationsPreRunMax(nIterationsPreRun);
     model.SetPreRunPolicy(stagedWarmup ? BCEngineMCMC::kPreRunStaged : BCEngineMCMC::kPreRunLegacy, settlingSweeps);
     model.SetScaleAdaptation(smoothAdaptation ? BCEngineMCMC::kScaleSmooth : BCEngineMCMC::kScaleLegacy);
@@ -77,8 +81,8 @@ void runModel(Model &model, const string &outputFileName,
             grid << c << "," << c % model.GetNColdChains() << "," << model.GetChainTemperature(c) << "\n";
         model.WriteParallelTemperingDiagnostics(outputFileName + "pt_swaps.csv");
         model.WriteParallelTemperingTransport(outputFileName);
-        model.CloseOutputFile();
     }
+    if (!temperatures.empty() || writeMCMCWeights) model.CloseOutputFile();
     model.FindMode();
     model.PrintSummary();
     model.PrintAllMarginalized(outputFileName + "marginalized_parameters.pdf");
@@ -167,9 +171,12 @@ int main(int argc, char* argv[]) {
     bool adaptTemperatures = false, adaptOptions = false;
     unsigned adaptInterval = 1000, adaptRounds = 4;
     double adaptDamping = 0.5;
+    bool writeMCMCWeights = false;
 
     for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "--pt-adapt-temperatures") == 0) {
+        if (strcmp(argv[i], "--write-mcmc-weights") == 0) {
+            writeMCMCWeights = true;
+        } else if (strcmp(argv[i], "--pt-adapt-temperatures") == 0) {
             adaptTemperatures = true;
         } else if (strcmp(argv[i], "--pt-adapt-interval") == 0 || strcmp(argv[i], "--pt-adapt-rounds") == 0) {
             const bool interval = strcmp(argv[i], "--pt-adapt-interval") == 0;
@@ -358,6 +365,7 @@ int main(int argc, char* argv[]) {
                   "  --pt-trace-interval N          State trace stride (default: 100; 0 disables traces)\n"
                   "  --no-pt-diagnostics            Disable streaming diagnostics (enabled for PT by default)\n"
                   "  --pt-adapt-temperatures        Tune intermediate temperatures during staged prerun\n"
+                  "  --write-mcmc-weights           Save per-observable/block log weights with production chains\n"
                   "  --pt-adapt-interval N          Initial batch sweeps; subsequent batches double (default: 1000)\n"
                   "  --pt-adapt-rounds N            Number of ladder updates (default: 4; maximum: 30)\n"
                   "  --pt-adapt-damping X           Update damping in (0,1] (default: 0.5)\n"
@@ -462,7 +470,7 @@ int main(int argc, char* argv[]) {
                 cout << "Model (indSU3) constructed correctly, running with "
                      << mpi_size << " MPI process(es)" << endl;
                 runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
-                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval, stagedWarmup, settlingSweeps, smoothAdaptation, adaptTemperatures, adaptInterval, adaptRounds, adaptDamping);
+                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval, stagedWarmup, settlingSweeps, smoothAdaptation, adaptTemperatures, adaptInterval, adaptRounds, adaptDamping, writeMCMCWeights);
                 terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
             }
         } else {
@@ -474,7 +482,7 @@ int main(int argc, char* argv[]) {
                 cout << "Model constructed correctly, running with "
                      << mpi_size << " MPI process(es)" << endl;
                 runModel(model, outputFileName, nChains, nIterationsPreRun, nIterationsRun,
-                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval, stagedWarmup, settlingSweeps, smoothAdaptation, adaptTemperatures, adaptInterval, adaptRounds, adaptDamping);
+                         nIterationsPreRunFactorized, nIterationsUpdateMax, Univariate, temperatures, swapInterval, proposalInput, proposalOutput, proposalWarmup, ptDiagnostics, diagnosticInterval, traceInterval, stagedWarmup, settlingSweeps, smoothAdaptation, adaptTemperatures, adaptInterval, adaptRounds, adaptDamping, writeMCMCWeights);
                 terminateWorkers(mpi_size, static_cast<int>(model.GetNParameters()) + 1);
             }
         }

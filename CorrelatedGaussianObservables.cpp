@@ -1,6 +1,7 @@
 #include "CorrelatedGaussianObservables.h"
 #include <TMatrixDSymEigen.h>
 #include <unistd.h>  // for sleep()
+#include <stdexcept>
 
 CorrelatedGaussianObservables::CorrelatedGaussianObservables(vector<dato> v_i,
         const TMatrixDSym& corr_i)
@@ -137,3 +138,18 @@ double CorrelatedGaussianObservables::logweight(const TVectorD& v) const {
 
     return(-0.5*chisq);
   }
+
+std::vector<double> CorrelatedGaussianObservables::computeLeaveOneOutWeights(const TVectorD& v) const
+{
+    if (v.GetNrows() != Obs.GetNrows())
+        throw std::invalid_argument("Correlated likelihood-weight vector has the wrong size");
+    std::vector<double> weights(1, logweight(v));
+    for (int i = 0; i < Obs.GetNrows(); ++i) {
+        const double residual = v(i)-Obs(i);
+        double cross = 0.;
+        for (int j = 0; j < Obs.GetNrows(); ++j) if (j != i)
+            cross += (Cov(i,j)+Cov(j,i))*(v(j)-Obs(j));
+        weights.push_back(-0.5*residual*(Cov(i,i)*residual+cross));
+    }
+    return weights;
+}

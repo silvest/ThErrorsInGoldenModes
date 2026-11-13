@@ -339,3 +339,13 @@ unoptimized v1 caches retain exact ladder matching. Rebuild/install bat_MPI and
 rebuild mainGM before using the new option or optimized caches. No cluster run
 is submitted automatically. Compare fixed vs optimized ladders using cold ESS
 per wall-clock hour and region-weight precision at equal computational cost.
+
+
+Per-observable log-likelihood output
+-----------------------------------
+Use --write-mcmc-weights to save individual Gaussian terms, correlated dataset
+weights and HEPfit-style correlated-member contrasts beside the production
+parameter tree. Works with both model classes, ordinary MPI and PT. PT uses
+cold_chains.root; ordinary runs with this flag also write chains.root.
+See LIKELIHOOD_WEIGHTS.md for ROOT names, additive-term metadata, SU(3)/prior
+separation, exact row alignment and the correlated-member definition.

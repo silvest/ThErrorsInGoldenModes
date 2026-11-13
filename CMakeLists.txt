@@ -84,6 +84,7 @@ include_directories(
 
 # Source files for the library
 set(LIBRARY_SOURCES
+    LikelihoodWeights.cpp
     goldenmodesB.cpp
     goldenmodesB_indSU3.cpp
     CKM.cpp
@@ -95,6 +96,7 @@ set(LIBRARY_SOURCES
 
 # Header files
 set(LIBRARY_HEADERS
+    LikelihoodWeights.h
     goldenmodesB.h
     goldenmodesB_indSU3.h
     CKM.h
@@ -108,6 +110,7 @@ set(LIBRARY_HEADERS
 # Create main executable directly with all source files
 add_executable(mainGM 
     mainGM.cpp
+    LikelihoodWeights.cpp
     goldenmodesB.cpp
     goldenmodesB_indSU3.cpp
     CKM.cpp
@@ -179,6 +182,9 @@ message(STATUS "")
 option(GOLDENMODES_BUILD_TESTS "Build model prior-range regression test" OFF)
 if(GOLDENMODES_BUILD_TESTS)
     enable_testing()
+    add_executable(test_pdg_average tests/pdg_average.cpp PDGAverage.cpp)
+    target_link_libraries(test_pdg_average PRIVATE ${ROOT_LIBRARIES})
+    add_test(NAME pdg_average COMMAND test_pdg_average)
     add_executable(test_mpi_launch_config tests/mpi_launch_config.cpp)
     add_test(NAME mpi_launch_config COMMAND test_mpi_launch_config)
     add_executable(test_prior_ranges tests/prior_ranges.cpp ${LIBRARY_SOURCES})
@@ -192,6 +198,26 @@ if(GOLDENMODES_BUILD_TESTS)
     target_compile_options(test_pt_regions PRIVATE ${BAT_CFLAGS_LIST})
     target_link_libraries(test_pt_regions PRIVATE ${BAT_LIBS_LIST} ${ROOT_LIBRARIES} MPI::MPI_CXX)
     add_test(NAME pt_regions COMMAND test_pt_regions)
+    add_executable(test_likelihood_weights tests/likelihood_weights.cpp LikelihoodWeights.cpp CorrelatedGaussianObservables.cpp)
+    target_include_directories(test_likelihood_weights PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_compile_options(test_likelihood_weights PRIVATE ${BAT_CFLAGS_LIST})
+    target_link_libraries(test_likelihood_weights PRIVATE ${BAT_LIBS_LIST} ${ROOT_LIBRARIES} MPI::MPI_CXX)
+    foreach(case IN ITEMS ordinary pt)
+        if(case STREQUAL "ordinary")
+            set(weight_processes 1)
+        else()
+            set(weight_processes 3)
+        endif()
+        add_test(NAME likelihood_weights_${case} COMMAND ${MPIEXEC_EXECUTABLE} -n ${weight_processes}
+            ${MPIEXEC_PREFLAGS} $<TARGET_FILE:test_likelihood_weights> ${case})
+        set_tests_properties(likelihood_weights_${case} PROPERTIES TIMEOUT 90 RUN_SERIAL TRUE)
+    endforeach()
+    add_executable(test_likelihood_weight_models tests/likelihood_weight_models.cpp ${LIBRARY_SOURCES})
+    target_include_directories(test_likelihood_weight_models PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_compile_options(test_likelihood_weight_models PRIVATE ${BAT_CFLAGS_LIST})
+    target_link_libraries(test_likelihood_weight_models PRIVATE ${BAT_LIBS_LIST} ${ROOT_LIBRARIES} MPI::MPI_CXX)
+    add_test(NAME likelihood_weight_models COMMAND ${MPIEXEC_EXECUTABLE} -n 2 ${MPIEXEC_PREFLAGS} $<TARGET_FILE:test_likelihood_weight_models>)
+    set_tests_properties(likelihood_weight_models PROPERTIES TIMEOUT 90 RUN_SERIAL TRUE)
     find_package(Python3 QUIET COMPONENTS Interpreter)
     if(Python3_Interpreter_FOUND)
         add_test(NAME mpi_launcher COMMAND ${Python3_EXECUTABLE}
@@ -213,6 +239,10 @@ if(GOLDENMODES_BUILD_TESTS)
             ${CMAKE_CURRENT_SOURCE_DIR}/tests/staged_warmup_cli.py --executable $<TARGET_FILE:mainGM>
             --mpiexec ${MPIEXEC_EXECUTABLE} "--mpi-flags=${MPIEXEC_PREFLAGS}" --adapt)
         set_tests_properties(temperature_adaptation_cli PROPERTIES TIMEOUT 150 RUN_SERIAL TRUE)
+        add_test(NAME likelihood_weights_cli COMMAND ${Python3_EXECUTABLE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/likelihood_weights_cli.py --executable $<TARGET_FILE:mainGM>
+            --checker $<TARGET_FILE:test_likelihood_weights> --mpiexec ${MPIEXEC_EXECUTABLE} "--mpi-flags=${MPIEXEC_PREFLAGS}")
+        set_tests_properties(likelihood_weights_cli PROPERTIES TIMEOUT 260 RUN_SERIAL TRUE)
 
     endif()
 endif()

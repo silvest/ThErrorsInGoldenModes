@@ -17,10 +17,11 @@
 #include "histo.h"
 #include "dato.h"
 #include "CorrelatedGaussianObservables.h"
+#include "LikelihoodWeights.h"
 
 using namespace std;
 
-class goldenmodesB : public BCModel
+class goldenmodesB : public GoldenModesLikelihoodModel
 {
 public:
     // Constructors and destructor
@@ -35,7 +36,7 @@ public:
     // map<string,double> obs;
     map<string, double> obs;
 
-    double LogLikelihood(const vector<double> &parameters);
+    double LogLikelihood(const vector<double> &parameters) override;
     // void MCMCUserIterationInterface();
     void PrintHistogram();
 
@@ -148,7 +149,7 @@ public:
     double Calculate_UncorrelatedObservables(map<string, pair<TComplex, TComplex>> &amplitude_map);
     double Calculate_CorrelatedObservables(map<string, pair<TComplex, TComplex>> &amplitude_map);
 
-    void MCMCUserIterationInterface();
+    void MCMCUserIterationInterface() override;
     void SaveHistograms(const string &filename);
     void PrintObservablePulls(const string &filename);
 

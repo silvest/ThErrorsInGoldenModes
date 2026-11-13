@@ -30,7 +30,7 @@ using namespace std;
 
 static CKMParameters ckm;
 
-goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb) : BCModel(), histos(obs)
+goldenmodesB::goldenmodesB(double &dsu3_limit_in, double &ewp_limit_in, bool BJPSIP, bool BJPSIV, bool BDDb) : GoldenModesLikelihoodModel(), histos(obs)
 {
     int mpi_rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
@@ -3085,7 +3085,7 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
             double observed = meas.at("ACP" + channel).getMean();
             double uncertainty = meas.at("ACP" + channel).getSigma();
             double diff = acp - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            ll_uncorr += likelihoodWeights.Gaussian("ACP" + channel, diff, uncertainty);
         }
 
         if (meas.find("C" + channel) != meas.end())
@@ -3109,7 +3109,7 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
             double observed = meas.at("C" + channel).getMean();
             double uncertainty = meas.at("C" + channel).getSigma();
             double diff = c - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            ll_uncorr += likelihoodWeights.Gaussian("C" + channel, diff, uncertainty);
         }
 
         if (meas.find("S" + channel) != meas.end())
@@ -3138,7 +3138,7 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
             double observed = meas.at("S" + channel).getMean();
             double uncertainty = meas.at("S" + channel).getSigma();
             double diff = s - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            ll_uncorr += likelihoodWeights.Gaussian("S" + channel, diff, uncertainty);
         }
 
         // **Compute and store branching ratios if they exist in meas**
@@ -3177,7 +3177,7 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
             double observed = meas.at(br_measKey).getMean();
             double uncertainty = meas.at(br_measKey).getSigma();
             double diff = br_predicted - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            ll_uncorr += likelihoodWeights.Gaussian(br_measKey, diff, uncertainty);
         }
     }
 
@@ -3303,7 +3303,7 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
                 double observed = meas.at(ratioKey).getMean();
                 double uncertainty = meas.at(ratioKey).getSigma();
                 double diff = R_predicted - observed;
-                ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+                ll_uncorr += likelihoodWeights.Gaussian(ratioKey, diff, uncertainty);
             }
         }
         else
@@ -3367,7 +3367,7 @@ double goldenmodesB::Calculate_UncorrelatedObservables(map<string, pair<TComplex
             double observed = meas.at(deltaAKey).getMean();
             double uncertainty = meas.at(deltaAKey).getSigma();
             double diff = deltaA_predicted - observed;
-            ll_uncorr += -0.5 * (diff * diff / (uncertainty * uncertainty));
+            ll_uncorr += likelihoodWeights.Gaussian(deltaAKey, diff, uncertainty);
         }
     }
 
@@ -3810,7 +3810,7 @@ double goldenmodesB::Calculate_CorrelatedObservables(map<string, pair<TComplex, 
             res(i) = obs[obs_name];
         }
 
-        ll_corr += corrObs.logweight(res);
+        ll_corr += CorrelatedWeight(key, corrObs, res, obs_names);
     }
 
     return ll_corr;
@@ -4028,13 +4028,15 @@ void goldenmodesB::MCMCUserIterationInterface()
         pars = fMCMCStates.at(i).parameters;
         try
         {
-            obs["LogLikelihood"] = LogLikelihood(pars);
+            obs["LogLikelihood"] = EvaluateOutputLikelihood(pars);
         }
         catch (const exception &e)
         {
+            if (GetWriteMCMCWeights()) throw;
             cerr << "Error in LogLikelihood: " << e.what() << endl;
             return;
         }
+        WriteLikelihoodWeights(i, obs.at("LogLikelihood"));
 
         // Directly fill histograms
         histos.fillh1d();

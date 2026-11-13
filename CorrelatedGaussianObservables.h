@@ -32,6 +32,9 @@ public:
   const size_t getNObs() const { return Obs.GetNoElements(); }
 
   double logweight(const TVectorD& v) const;
+  // HEPfit convention: full block, then logL(r)-logL(r with r_i=0).
+  // Member contrasts are NOT an additive decomposition or marginal deletion.
+  std::vector<double> computeLeaveOneOutWeights(const TVectorD& v) const;
 
 private:
   TVectorD Obs;

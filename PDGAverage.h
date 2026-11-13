@@ -51,10 +51,10 @@ private:
     // member variables
     std::string fName;
     std::vector<dato> fData;
-    double fAverage;
-    double fUncertainty;
-    double fScaleFactor;
-    bool fIsAngle;
+    double fAverage = 0.;
+    double fUncertainty = 0.;
+    double fScaleFactor = 1.;
+    bool fIsAngle = false;
 
     // Helper: signed angular difference wrapped into (-pi, pi]
     double AngleDiff(double pred, double meas) const

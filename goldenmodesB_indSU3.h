@@ -18,6 +18,7 @@
 #include "histo.h"
 #include "dato.h"
 #include "CorrelatedGaussianObservables.h"
+#include "LikelihoodWeights.h"
 
 using namespace std;
 
@@ -42,7 +43,7 @@ using namespace std;
 //   su3_sigma_in : if > 0, used as fixed σ_SU3
 //                  if ≤ 0, σ_SU3 is added as a free BAT parameter
 // -------------------------------------------------------------------
-class goldenmodesB_indSU3 : public BCModel
+class goldenmodesB_indSU3 : public GoldenModesLikelihoodModel
 {
 public:
     goldenmodesB_indSU3(double &ewp_limit, bool BJPSIP = true, bool BJPSIV = true, bool BDDb = true, double su3_sigma_in = 0.3, bool gaussianCKM = false, bool positiveG2tP = false, bool positiveEA1P = false, bool positiveImEA2tP = false, bool smallE2tP = false, bool minimal = false, bool positiveE2tV = false, bool positiveG2tV = false, bool smallEA1P = false, bool positiveG1tD = false, bool positiveA1D = false, bool fullPriorRanges = false);
@@ -56,7 +57,7 @@ public:
 
     map<string, double> obs;
 
-    double LogLikelihood(const vector<double> &parameters);
+    double LogLikelihood(const vector<double> &parameters) override;
     std::vector<PTDiagnosticPartition> DefinePTDiagnosticPartitions() const override;
     void ClassifyPTDiagnosticRegions(const std::vector<double>& parameters,
                                       std::vector<unsigned>& labels) const override;
@@ -152,7 +153,7 @@ public:
     // Switch SU(3) weight modes: "abs", "complex", or "reIm" (default: "abs")
     void SetSU3Weight(const string &weight) { su3_weight = weight; }
 
-    void MCMCUserIterationInterface();
+    void MCMCUserIterationInterface() override;
     void SaveHistograms(const string &filename);
     void PrintObservablePulls(const string &filename);
 
