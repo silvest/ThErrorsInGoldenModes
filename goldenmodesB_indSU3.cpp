@@ -1270,6 +1270,7 @@ goldenmodesB_indSU3::goldenmodesB_indSU3(double &ewp_limit_in, bool BJPSIP, bool
     histos.createH1D("phis", 500, 0.0, 0.0);
     histos.createH1D("myphis", 500, 0.0, 0.0);
     histos.createH1D("myphid", 500, 0.0, 0.0);
+    histos.createH1D("sin_myphid", 100, 0., 0.);
 
     histos.createH1D("LogLikelihood", 500, 0.0, 0.0);
 
@@ -5010,6 +5011,8 @@ void goldenmodesB_indSU3::MCMCUserIterationInterface()
             return;
         }
         WriteLikelihoodWeights(i, obs.at("LogLikelihood"));
+
+        obs["sin_myphid"] = sin(obs.at("myphid"));
 
         // |subleading / leading| hadronic ratio for every channel (and every
         // transversity in the V sector).  Both brackets were filled by the
